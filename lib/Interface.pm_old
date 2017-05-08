@@ -1,0 +1,591 @@
+package Interface;
+
+use strict;
+use warnings;
+
+use Storable qw(dclone);
+use Term::ANSIColor;
+use Term::ReadKey;
+use Term::Cap;
+use POSIX;
+use List::Util qw(min);
+
+use Data::Dumper;
+use utf8;
+
+use lib qw(lib);
+use Consts qw($X $Y $LT $RD $size_term);
+use Printer;
+use Logger qw(dmp dmp_array);
+use Interface::Map;
+use Interface::Text;
+use Interface::ListObj;
+use Interface::Actions;
+
+sub new {
+    my $self = shift;
+    my $map = shift;
+    my $moving_obj = shift;
+    my $text_obj = shift;
+    my $chooser = shift;
+    my $inv = shift;
+
+    system('clear');
+
+    my $size_interface = _get_size_interface();
+    my $size_area_map = _get_size_area_map($size_interface);
+    my $size_area_text = _get_size_area_text($size_interface, $size_area_map),
+    my $size_area_list_obj = _get_size_area_list_obj($size_interface, $size_area_map);
+    my $size_area_action = _get_size_area_action($size_interface, $size_area_list_obj);
+    my $data_print = _data_print_init($size_interface, $size_area_map, $size_area_list_obj);
+
+    $text_obj->inition($size_area_text);
+
+    my $hash = {
+        map => {
+            obj => $map,
+            size => $size_area_map,
+        },
+        moving_obj => $moving_obj,
+        size => $size_interface,
+        data_print  => $data_print, 
+        old_data_print => [],
+        text => {
+            obj => $text_obj,
+            size => $size_area_text,
+        },
+        list_obj => {
+            size => $size_area_list_obj,
+            chooser_list => [], 
+        },
+        action => {
+            size => $size_area_action,
+        },
+        chooser => $chooser,
+        inv => {
+            obj => $inv,
+            size => $size_area_map,
+        },
+    };
+
+    return bless($hash, $self);
+}
+
+sub _data_print_init {
+    my $size_interface = shift;
+    my $size_area_map = shift;
+    my $size_area_list_obj = shift;
+
+    my $array = [];
+    my $y_bound_map = $size_area_map->[$RD][$Y];
+    my $x_bound_map = $size_area_map->[$RD][$X];
+
+    my $y_bound_list_obj = $size_area_list_obj->[$RD][$Y];
+    my $x_bound_list_obj = $size_area_list_obj->[$RD][$X];
+
+    for my $y (0 .. $size_interface->[$RD][$Y] - 1) {
+        for my $x (0 .. $size_interface->[$RD][$X] - 1) {
+            $array->[$y][$x]->{symbol} = '';
+            $array->[$y][$x]->{color} = '';
+            if ($y == $y_bound_map) {
+                $array->[$y][$x]->{symbol} = '=';
+                $array->[$y][$x]->{color} = '';
+            }
+            if ($x == $x_bound_map) {
+                $array->[$y][$x]->{symbol} = 'ǁ';
+                $array->[$y][$x]->{color} = '';
+            }
+            if ($y < $y_bound_map and $x == $x_bound_list_obj) {
+                $array->[$y][$x]->{symbol} = 'ǁ';
+                $array->[$y][$x]->{color} = '';
+            }
+        }
+    }
+
+    return $array;
+}
+
+sub print {
+    my $self = shift;
+    my $process_block = shift;
+
+    if (ref $self->{old_data_print}->[0] ne 'ARRAY') {
+        #Нет предыдущей версии, невозможно сделать диф
+        $self->_process_block('all');
+        my $array = $self->{data_print};
+        $self->{old_data_print} = dclone($array); 
+        Printer::print_all($array);
+        
+    } else {
+        for my $block (keys %$process_block) {
+            $self->_process_block($block);
+            $self->_get_screen_diff($block);
+        }
+        Printer::print_diff($self->{diff});
+        $self->{diff} = {};
+    }
+}
+
+
+sub _process_block {
+    my $self = shift;
+    my $block = shift;
+
+    if ($block eq 'map') {
+        #$self->_process_map();
+        Interface::Map::process_block($self);
+    } elsif ($block eq 'text') {
+        #$self->_process_text();
+        Interface::Text::process_block($self);
+    } elsif ($block eq 'list_obj') {
+        #$self->_process_list_obj();
+        Interface::ListObj::process_block($self);
+    } elsif ($block eq 'action') {
+        # $self->_process_action();
+        Interface::Actions::process_block($self);
+    } elsif ($block eq 'all') {
+        #$self->_process_map();
+        Interface::Map::process_block($self);
+        #$self->_process_text();
+        Interface::Text::process_block($self);
+        #$self->_process_list_obj();
+        Interface::ListObj::process_block($self);
+    }
+}
+
+sub _is_object_into_area {
+    my $size_area = shift;
+    my $object_array = shift;
+
+    my $y_obj = scalar @$object_array;
+    my $x_obj = scalar @{$object_array->[0]};
+    my ($y_ar, $x_ar) = @$size_area;
+    if ($y_ar >= $y_obj and $x_ar >= $x_obj) {
+        return 1;
+    }
+
+    return 0;
+}
+
+sub _get_size {
+    my $coords = shift;
+
+    my $size = [
+        $coords->[$RD][$Y] - $coords->[$LT][$Y],
+        $coords->[$RD][$X] - $coords->[$LT][$X]
+    ];
+
+    return $size;
+}
+
+
+
+#Второй массив поверх первого с учетом смещения
+sub overlay_arrays_simple {
+    my $lower_layer = shift;
+    my $top_layer = shift;
+    my $offset = shift || [0, 0];
+    
+    my $offset_y = $offset->[$Y];
+    my $offset_x = $offset->[$X];
+    for (my $y = 0; $y < @$top_layer; $y++) {
+        for (my $x = 0; $x < @{$top_layer->[0]}; $x++) {
+            my $symbol = $top_layer->[$y][$x];
+            $lower_layer->[$y+$offset_y][$x+$offset_x] = $symbol;
+        }
+    }
+}
+
+
+
+sub _get_screen_diff {
+    my $self = shift;
+    my $block = shift;
+
+    my $bound_lt = $self->{$block}{size}[0];
+    my $bound_rd = $self->{$block}{size}[1];
+
+    my $array = $self->{data_print};
+
+    my $diff = {};
+    my $old_data_print = $self->{old_data_print};
+    for (my $y = $bound_lt->[$Y]; $y < $bound_rd->[$Y]; $y++) {
+        my $key_glob;
+        for (my $x = $bound_lt->[$X]; $x < $bound_rd->[$X]; $x++) {
+            my $symbol = $array->[$y][$x]->{symbol};
+            my $color = $array->[$y][$x]->{color};
+            my $key = "$y,$x";
+            if ($symbol eq $old_data_print->[$y][$x]->{symbol}
+               and $color eq $old_data_print->[$y][$x]->{color}
+            ) {
+                $key_glob = $key;
+                next;
+            }
+
+            if ($key_glob 
+                and exists($diff->{$key_glob})
+                and $diff->{$key_glob}->{color} eq $color
+            ) {
+               $key = $key_glob;
+            } else {
+                $key_glob = $key;
+            }
+            push(@{$diff->{$key}->{symbol}}, $symbol);
+            $diff->{$key}->{color} = $color;
+            $self->{old_data_print}->[$y][$x]->{symbol} = $symbol;
+            $self->{old_data_print}->[$y][$x]->{color} = $color;
+        }
+    }
+    map { $diff->{$_}->{symbol} = join('', @{$diff->{$_}->{symbol}})} keys %$diff;
+    for my $key (keys %$diff) {
+        $self->{diff}{$key} = $diff->{$key};
+    }
+}
+
+sub _get_size_area_action {
+    my $size_interface = shift;
+    my $size_area_list_obj = shift;
+    
+    my $size_area_action = [];
+
+    
+    $size_area_action->[$LT] = [
+        0,
+        $size_area_list_obj->[$RD][$X] + 1
+    ];
+    $size_area_action->[$RD] = [
+        $size_area_list_obj->[$RD][$Y],
+        $size_interface->[$RD][$X]
+    ];
+
+    return $size_area_action;
+}
+
+sub _get_size_area_list_obj {
+    my $size_interface = shift;
+    my $size_area_map  = shift;
+    
+    my $size_area_list_obj = [];
+
+    
+    $size_area_list_obj->[$LT] = [
+        0,
+        $size_area_map->[$RD][$X] + 1
+    ];
+    $size_area_list_obj->[$RD] = [
+        $size_area_map->[$RD][$Y],
+        int( ($size_interface->[$RD][$X] - $size_area_map->[$RD][$X]+1) / 2) + $size_area_map->[$RD][$X]
+    ];
+
+    return $size_area_list_obj;
+}
+
+sub _get_size_interface {
+    return [
+        [0, 0], 
+        [$size_term->[$Y], $size_term->[$X]]
+    ];
+}
+
+sub _get_size_area_text {
+    my $size_interface = shift;
+    my $size_area_map  = shift;
+
+    my $size_area_text = [];
+
+    $size_area_text->[$LT] = [
+        $size_area_map->[$RD][$Y] + 1,
+        0
+    ];
+    $size_area_text->[$RD] = [
+        $size_interface->[$RD][$Y],
+        $size_area_map->[$RD][$X]
+    ];
+
+    return $size_area_text;
+}
+
+sub _get_size_area_map {
+    my $size_interface = shift;
+
+    return [
+        [0,0],
+        [
+            int($size_interface->[$RD][$Y] * 0.7), 
+            int($size_interface->[$RD][$X] * 0.7)
+        ]
+    ];
+}
+
+=map
+sub overlay_arrays {
+    my $lower_layer = shift;
+    my $top_layer = shift;
+    my $offset = shift || [0, 0];
+    my $size_area_map = shift;
+
+    my $bound = $size_area_map;
+
+    my $offset_lower_y = 0;
+    my $offset_lower_x = 0;
+    my $offset_top_y = 0;
+    my $offset_top_x = 0;
+
+    if ($offset->[$Y] >= 0) {
+        $offset_lower_y = $offset->[$Y];
+    } else {
+        $offset_top_y = -$offset->[$Y];
+    }
+
+    if ($offset->[$X] >= 0) {
+        $offset_lower_x = $offset->[$X];
+    } else {
+        $offset_top_x = -$offset->[$X];
+    }
+
+    for (my $y = 0; $y + $offset_lower_y < $bound->[$Y]; $y++) {
+        for (my $x = 0; $x + $offset_lower_x < $bound->[$X]; $x++) {
+            my $symbol = $top_layer->[$y+$offset_top_y][$x+$offset_top_x];
+            $lower_layer->[$y+$offset_lower_y][$x+$offset_lower_x] = $symbol;
+        }
+    }
+
+    return $lower_layer;
+}
+
+sub overlay_bigmap_and_area {
+    my $main_array = shift;
+    my $map_array = shift;
+    my $main_hero_coord = shift;
+    my $size_area_map = shift;
+
+    my $map_center = _get_center($map_array);
+    my $area_center = _get_center($size_area_map);
+
+    my $top_map = @$map_array;
+    my $length_map = @{$map_array->[0]};
+
+    my $length_area = $size_area_map->[$X];
+    my $top_area = $size_area_map->[$Y];
+
+
+    my $diff_y = $area_center->[$Y] - $main_hero_coord->[$Y];
+    my $diff_x = $area_center->[$X] - $main_hero_coord->[$X];
+
+    my $offset_y = $diff_y;
+    my $offset_x = $diff_x;
+
+    my $bound = $size_area_map;
+    if ($area_center->[$Y] - $main_hero_coord->[$Y] > 0) {
+        $offset_y = 0;
+        $bound->[$Y] = min($size_area_map->[$Y], $top_map);
+    }
+
+    if ($area_center->[$X] - $main_hero_coord->[$X] > 0) {
+        $offset_x = 0;
+        $bound->[$X] = min($size_area_map->[$X], $length_map);
+    }
+
+    if (($top_map - $main_hero_coord->[$Y]) <= $area_center->[$Y]) { #Снизу край карты
+        $offset_y = $size_area_map->[$Y] - $top_map; #Количество строк вылезло за край вверху.
+    }
+
+    if (($length_map - $main_hero_coord->[$X]) <= $area_center->[$X]) { #Справа край карты
+        $offset_x = $size_area_map->[$X] - $length_map;
+    }
+
+    my $offset = [$offset_y, $offset_x];
+
+    _clear_area($main_array, $size_area_map);
+    overlay_arrays($main_array, $map_array, $offset, $bound); 
+}
+
+sub _process_map {
+    my $self = shift;
+
+    my $map = $self->{map}{obj};
+    my $moving_obj = $self->{moving_obj};
+    my $map_array = $map->get_map_static($moving_obj);
+    my $main_array = $self->{data_print};
+    my $size_area_map = $self->{map}{size}[$RD]; 
+
+    if (_is_object_into_area($size_area_map, $map_array)) {
+        overlay_arrays_simple($main_array, $map_array, _get_offset($size_area_map, $map_array));
+    } else {
+        my $main_hero_coord = $moving_obj->{'A'};
+       
+        overlay_bigmap_and_area($main_array, $map_array, $main_hero_coord, $size_area_map);
+    }
+}
+
+sub _process_text {
+    my $self = shift;
+
+    my $text = $self->{text}{obj};
+    my $text_array = $text->get_text_array($self->{text}{size});
+    my $size_area_text_lt = $self->{text}{size}[$LT];
+    my $main_array = $self->{data_print};
+    my $size_area_text = _get_size($self->{text}{size});
+
+    my $scroll = $text->{scroll};
+
+    my $offset = [
+        $size_area_text_lt->[$Y],
+        $size_area_text_lt->[$X],
+    ];
+
+    if (_is_object_into_area($size_area_text, $text_array) ) {
+        overlay_arrays_simple($main_array, $text_array, $offset);
+    } else {
+        my $last_str_number = @$text_array - $scroll - 1;
+        my $first_str_number = $last_str_number - $size_area_text->[$Y] + 1; 
+        my $text_array_chank = [@$text_array[$first_str_number .. $last_str_number]];
+        
+        overlay_arrays_simple($main_array, $text_array_chank, $offset);
+    }
+}
+#Можно передать размер массива [$y, $x] или двумерный массив
+sub _get_center {
+    my $array = shift;
+   
+    my $size = [];
+    if (ref $array->[0] eq 'ARRAY') {
+        $size->[$Y] = @$array;
+        $size->[$X] = @{$array->[0]};
+    } else { #Передан не двухмерный массив, а размер массива
+        $size = $array;
+    }
+
+    return [
+        int( $size->[$Y] / 2 ),
+        int( $size->[$X] / 2 )
+    ];
+}
+sub _get_offset {
+    my $array_1 = shift;
+    my $array_2 = shift;
+
+    my $center_1 = _get_center($array_1);
+    my $center_2 = _get_center($array_2);
+
+    return [
+        $center_1->[$Y] - $center_2->[$Y], 
+        $center_1->[$X] - $center_2->[$X]
+    ]
+}
+sub _process_list_obj {
+    my $self = shift;
+
+    my $main_array = $self->{data_print};
+    my $map = $self->{map}{obj};
+    my $moving_obj_main_coord = $self->{moving_obj}{A};
+    my $containers = $map->get_container_nigh($moving_obj_main_coord);
+    
+    my $size_area = _get_size($self->{list_obj}{size});
+
+    my $obj_array = [];
+    for (my $y=0; $y < $size_area->[$Y]; $y++) {
+        for (my $x=0; $x < $size_area->[$X]; $x++) {
+            $obj_array->[$y][$x] = {
+               'color' => '',
+               'symbol' => ' ',
+            }
+        }
+    }
+    my $list_obj = [@$containers];
+    my $chooser = $self->{chooser};
+    $chooser->{list}{list_obj} = $list_obj;
+    
+    for (my $y=0; $y < @$list_obj; $y++) {
+        my @symbols = split( //, $list_obj->[$y]->get_name());
+        my $color = '';
+        if ($chooser and $chooser->get_position() == $y) {
+            $color = 'on_green';
+            for (my $x = 0; $x < $size_area->[$X]; $x++) {
+                $obj_array->[$y][$x]{'color'} = $color;
+            }
+        }
+
+        my $bound = min(scalar @symbols, $size_area->[$X]);
+        for (my $x=0; $x < $bound; $x++) {
+            $obj_array->[$y][$x]{symbol} = $symbols[$x];
+        }
+    }
+
+    my $offset = [
+        $self->{list_obj}{size}[$LT][$Y],
+        $self->{list_obj}{size}[$LT][$X]
+    ];
+    overlay_arrays_simple($main_array, $obj_array, $offset);
+
+    $self->_process_action();
+    if (ref $self->{old_data_print}->[0] eq 'ARRAY') {
+        $self->_get_screen_diff('action');
+    }
+}
+sub _process_action {
+    my $self = shift;
+    my $main_array = $self->{data_print};
+    my $chooser = $self->{chooser}; 
+    my $list_obj = $chooser->{list}{list_obj};
+    my $obj = $list_obj->[$chooser->{position}{list_obj}];
+    my $list_actions = $obj->{actions} || [];
+
+    $chooser->{list}{action} = $list_actions;
+
+    my $size_area = _get_size($self->{action}{size});
+    my $action_array = [];
+    for (my $y=0; $y < $size_area->[$Y]; $y++) {
+        for (my $x=0; $x < $size_area->[$X]; $x++) {
+            $action_array->[$y][$x] = {
+               'color' => '',
+               'symbol' => ' ',
+            }
+        }
+    }
+   
+    my $chooser_position = 0;
+    if ($chooser->{block_name} eq 'action') {
+        $chooser_position = $chooser->get_position();
+    }
+    $chooser->get_position(); 
+    for (my $y=0; $y < @$list_actions; $y++) {
+        my @symbols = split( //, $list_actions->[$y]);
+        my $color = '';
+        if ($chooser and $chooser_position == $y) {
+            $color = 'on_green';
+            for (my $x = 0; $x < $size_area->[$X]; $x++) {
+                $action_array->[$y][$x]{'color'} = $color;
+            }
+        }
+
+        my $bound = min(scalar @symbols, $size_area->[$X]);
+        for (my $x=0; $x < $bound; $x++) {
+            $action_array->[$y][$x]{symbol} = $symbols[$x];
+        }
+    }
+
+    my $offset = [
+        $self->{action}{size}[$LT][$Y],
+        $self->{action}{size}[$LT][$X]
+    ];
+
+    overlay_arrays_simple($main_array, $action_array, $offset);
+}
+sub _clear_area {
+    my $main_array = shift;
+    my $size_area_map = shift;
+    my $offset = shift || [0, 0];
+
+    my $offset_y = $offset->[$Y];
+    my $offset_x = $offset->[$X];
+    for (my $y = 0; $y < $size_area_map->[$Y]; $y++) {
+        for (my $x = 0; $x < $size_area_map->[$X]; $x++) {
+            $main_array->[$y + $offset_y][$x + $offset_x] = ' ';
+        }
+    }
+}
+
+
+=cut
+1;
