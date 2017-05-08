@@ -28,12 +28,12 @@ my $chooser = Choouser->new();
 my $text_obj = Text->new('text_test');
 my $inv = Inv->new();
 
-my $interface = Interface->new($map, $moving_obj, $text_obj, $chooser, $inv); 
+my $interface = Interface->new($map, $moving_obj, $text_obj, $chooser, $inv);
 $text_obj->set_size_area_text($interface->{text});
 my $process_block = {};
 
 while() {
-    
+
     $interface->print($process_block);
 
     $process_block = {};
@@ -42,29 +42,13 @@ while() {
     # my $key = ReadKey(-1);
     ReadMode('normal');
 
-    if ($key =~ /^[dD]$/) {
-        $coord = _move($coord, $map, 'right');
-        $process_block->{map} = 1;
-        $process_block->{list_obj} = 1;
-        $chooser->reset_position();
-    }
-    if ($key =~ /^[aA]$/) {
-        $coord = _move($coord, $map, 'left');
-        $process_block->{map} = 1;
-        $process_block->{list_obj} = 1;
-        $chooser->reset_position();
-    }
-    if ($key =~ /^[wW]$/) {
-        $coord = _move($coord, $map, 'top');
-        $process_block->{map} = 1;
-        $process_block->{list_obj} = 1;
-        $chooser->reset_position();
-    }
-    if ($key =~ /^[sS]$/) {
-        $coord = _move($coord, $map, 'down');
-        $process_block->{map} = 1;
-        $process_block->{list_obj} = 1;
-        $chooser->reset_position();
+    if ($key =~ /^[dDaAwWsS]$/) {
+        if (!$inv->{on}) {
+            _move($key);
+            $process_block->{map} = 1;
+            $process_block->{list_obj} = 1;
+            $chooser->reset_position();
+        }
     }
     if ($key =~ /^[rR]$/) {
         $text_obj->top();
@@ -105,13 +89,21 @@ while() {
         $process_block->{list_obj} = 1;
     }
     if ($key =~ /^[Ii]$/) {
-        $chooser->{block_name} = 'inv';
-        $chooser->{position}{inv} = 0;
-        $process_block->{inv} = 1;
+        if (!$inv->{on}) {
+            $chooser->{block_name} = 'inv';
+            $chooser->{position}{inv} = 0;
+            $process_block->{inv} = 1;
+        } else {
+            $inv->off();
+            $interface->clean_after_itself('inv');
+            $chooser->{block_name} = 'list_obj';
+            $chooser->{position}{inv} = 0;
+            $process_block->{all} = 1;
+        }
     }
 }
 
-sub _move {
+sub _change_coord {
     my $coord = shift;
     my $map_obj = shift;
     my $move = shift;
@@ -138,7 +130,7 @@ sub _move {
             $y++;
         }
     }
-   
+
     my $cell = $map->[$y][$x];
 
     if ($cell->{blocker}) {
@@ -149,4 +141,25 @@ sub _move {
     $coord->[$Y] = $y;
 
     return $coord;
+}
+
+sub _move {
+    my $key = shift;
+
+    my $move = '';
+    if ($key =~ /^[dD]$/) {
+        $move = 'right';
+    }
+    elsif ($key =~ /^[aA]$/) {
+        $move = 'left';
+    }
+    elsif ($key =~ /^[wW]$/) {
+        $move = 'top';
+    }
+    elsif ($key =~ /^[sS]$/) {
+        $move = 'down';
+    }
+
+    _change_coord($coord, $map, $move);
+
 }

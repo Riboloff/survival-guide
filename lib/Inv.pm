@@ -11,6 +11,7 @@ sub new {
     my $self = shift;
 
     my $inv = {
+        'on' => 0,
         'bag' => {
             'items' => ['предмет1', 'предмет2'],
         },
@@ -59,6 +60,18 @@ sub get_harness {
     my $self = shift;
 
     return $self->{harness};
+}
+
+sub on {
+    my $self = shift;
+
+    $self->{on} = 1;
+}
+
+sub off {
+    my $self = shift;
+
+    $self->{on} = 0;
 }
 
 1;

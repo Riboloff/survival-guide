@@ -45,9 +45,6 @@ sub print_all {
     $console->Cursor(0, 0);
     for (my $y = 0; $y < @$array; $y++) {
         for(my $x = 0; $x < @{$array->[$y]}; $x++) {
-            #dmp($y);
-            #dmp($x);
-            #dmp($array->[$y][$x]);
             my $symbol = $array->[$y][$x]->{symbol};
             my $color = $array->[$y][$x]->{color};
 
@@ -59,6 +56,16 @@ sub print_all {
             }
         }
         print "\n";
+    }
+}
+
+sub clean_screen {
+    $console->Cursor(0, 0);
+
+    for (my $y = 0; $y <= $size_term->[$Y]; $y++) {
+        for(my $x = 0; $x <= $size_term->[$X]; $x++) {
+            print " ";
+        }
     }
 }
 

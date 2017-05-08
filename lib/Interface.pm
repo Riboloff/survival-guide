@@ -52,7 +52,7 @@ sub new {
         },
         moving_obj => $moving_obj,
         size => $size_interface,
-        data_print  => $data_print, 
+        data_print  => $data_print,
         old_data_print => [],
         text => {
             obj => $text_obj,
@@ -60,7 +60,7 @@ sub new {
         },
         list_obj => {
             size => $size_area_list_obj,
-            chooser_list => [], 
+            chooser_list => [],
         },
         action => {
             size => $size_area_action,
@@ -120,12 +120,16 @@ sub print {
     my $process_block = shift;
 
     if (ref $self->{old_data_print}->[0] ne 'ARRAY') {
-        #Нет предыдущей версии, невозможно сделать диф
         $self->_process_block('all');
         my $array = $self->{data_print};
-        $self->{old_data_print} = dclone($array); 
+        $self->{old_data_print} = dclone($array);
         Printer::print_all($array);
-        
+    } elsif ($process_block->{all}) {
+        $self->_process_block('all');
+        my $array = $self->{data_print};
+        $self->{old_data_print} = dclone($array);
+        #Printer::clean_screen();
+        Printer::print_all($array);
     } else {
         for my $block (keys %$process_block) {
             $self->_process_block($block);
@@ -182,7 +186,7 @@ sub _get_screen_diff {
                 next;
             }
 
-            if ($key_glob 
+            if ($key_glob
                 and exists($diff->{$key_glob})
                 and $diff->{$key_glob}->{color} eq $color
             ) {
@@ -202,13 +206,26 @@ sub _get_screen_diff {
     }
 }
 
+sub clean_after_itself {
+    my $self = shift;
+    my $name = shift;
+
+    my $area = $self->{$name}{size};
+    for (my $y = $area->[$LT][$Y]; $y < $area->[$RD][$Y]; $y++) {
+        for (my $x = $area->[$LT][$X]; $x < $area->[$RD][$X]; $x++) {
+            $self->{data_print}->[$y][$x]->{symbol} = '';
+            $self->{data_print}->[$y][$x]->{color} = '';
+        }
+    }
+}
+
 sub _get_size_area_action {
     my $size_interface = shift;
     my $size_area_list_obj = shift;
-    
+
     my $size_area_action = [];
 
-    
+
     $size_area_action->[$LT] = [
         0,
         $size_area_list_obj->[$RD][$X] + 1
@@ -224,10 +241,10 @@ sub _get_size_area_action {
 sub _get_size_area_list_obj {
     my $size_interface = shift;
     my $size_area_map  = shift;
-    
+
     my $size_area_list_obj = [];
 
-    
+
     $size_area_list_obj->[$LT] = [
         0,
         $size_area_map->[$RD][$X] + 1
@@ -242,7 +259,7 @@ sub _get_size_area_list_obj {
 
 sub _get_size_interface {
     return [
-        [0, 0], 
+        [0, 0],
         [$size_term->[$Y], $size_term->[$X]]
     ];
 }
@@ -271,7 +288,7 @@ sub _get_size_area_map {
     return [
         [0,0],
         [
-            int($size_interface->[$RD][$Y] * 0.7), 
+            int($size_interface->[$RD][$Y] * 0.7),
             int($size_interface->[$RD][$X] * 0.7)
         ]
     ];

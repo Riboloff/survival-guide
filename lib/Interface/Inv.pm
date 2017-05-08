@@ -20,7 +20,7 @@ sub process_bag {
 
     my $bag_array = Interface::Utils::init_array($area, $size_area);
 
-    my $chooser = $interface->{chooser}; 
+    my $chooser = $interface->{chooser};
     $chooser->{list}{inv} = $list_items;
     my $chooser_position = 0;
     if ($chooser->{block_name} eq 'inv') {
@@ -34,7 +34,7 @@ sub process_bag {
         size_area => $size_area,
     };
     $bag_array = Interface::Utils::list_to_array_symbols($args);
-    
+
     return $bag_array;
 }
 
@@ -51,19 +51,38 @@ sub process_harness {
     my $harness = $inv->get_harness();
     my $harness_array = Interface::Utils::init_array($area, $size_area);
 
-    for my $body_p (keys %$harness) {
+    my $list_harness = [];
+
+    my @sort_keys_harness = sort {
+                                $harness->{$a}{number} <=> $harness->{$b}{number}
+                            } keys %$harness;
+
+    for my $body_p (@sort_keys_harness) {
         my $name = $harness->{$body_p}{name};
         my $items = join(', ', @{$harness->{$body_p}{items}});
         my $number = $harness->{$body_p}{number};
 
-        my $str = join(' | ', ($name, $items, $number));
+        my $str = join(' | ', ($number, $name, $items));
+        push(@$list_harness, $str);
     }
+
+    my $args = {
+        list => $list_harness,
+        array => $harness_array,
+        chooser_position => 999,
+        size_area => $size_area,
+    };
+    $harness_array = Interface::Utils::list_to_array_symbols($args);
 
     return $harness_array;
 }
 
 sub process_block {
     my $interface = shift;
+
+    my $inv = $interface->{inv}{obj};
+    $inv->on();
+    dmp($inv);
 
     my $inv_array = init_inv($interface->{inv});
     my $main_array = $interface->{data_print};
