@@ -11,15 +11,15 @@ sub process_block {
     my $interface = shift;
 
     my $map = $interface->{map}{obj};
-    my $moving_obj = $interface->{moving_obj};
-    my $map_array = $map->get_map_static($moving_obj);
+    my $character = $interface->{character};
+    my $map_array = $map->get_map_static($character);
     my $main_array = $interface->{data_print};
     my $size_area_map = $interface->{map}{size}[$RD]; 
 
     if (Interface::Utils::is_object_into_area($size_area_map, $map_array)) {
         Interface::Utils::overlay_arrays_simple($main_array, $map_array, Interface::Utils::get_offset($size_area_map, $map_array));
     } else {
-        my $main_hero_coord = $moving_obj->{'A'};
+        my $main_hero_coord = $character->{coord};
        
         overlay_bigmap_and_area($main_array, $map_array, $main_hero_coord, $size_area_map);
     }

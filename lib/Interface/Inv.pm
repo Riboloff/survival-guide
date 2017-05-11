@@ -81,8 +81,6 @@ sub process_block {
     my $interface = shift;
 
     my $inv = $interface->{inv}{obj};
-    $inv->on();
-    dmp($inv);
 
     my $inv_array = init_inv($interface->{inv});
     my $main_array = $interface->{data_print};

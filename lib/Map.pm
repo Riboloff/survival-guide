@@ -43,11 +43,11 @@ sub new {
 
 sub get_map_static {
     my $self = shift;
-    my $moving_obj = shift; 
-    my $map = $self->{map};
+    my $character = shift;
 
+    my $map = $self->{map};
     my $map_stat = dclone($map);
-    $map_stat = _placement_moving_obj($map_stat, $moving_obj);
+    $map_stat = _placement_character($map_stat, $character);
 
     my $map_array = [];
     for (my $y = 0; $y < @$map_stat; $y++) {
@@ -67,16 +67,15 @@ sub get_map_static {
     return $map_array;
 }
 
-sub _placement_moving_obj {
+sub _placement_character {
     my $map = shift;
-    my $moving_obj = shift; 
+    my $character = shift;
 
-    for my $symbol (keys %$moving_obj) {
-        my $y = $moving_obj->{$symbol}->[$Y];
-        my $x = $moving_obj->{$symbol}->[$X];
-        $map->[$y][$x]->{element} = $symbol;
-        $map->[$y][$x]->{color} = 'red';
-    }
+    my $coord = $character->get_coord();
+    my $y = $coord->[$Y];
+    my $x = $coord->[$X];
+    $map->[$y][$x]->{element} = $character->{symbol};
+    $map->[$y][$x]->{color} = 'red';
 
     return $map;
 }
@@ -84,9 +83,10 @@ sub _placement_moving_obj {
 #В области с радиусом 1, найти все контейнеры
 sub get_container_nigh {
     my $self = shift;
-    my $coord = shift;
+    my $character = shift;
     my $radius = shift || 1; #Если радиус сделать больше единицы, то лутать можно будет через стены.
 
+    my $coord = $character->get_coord();
     my $map = $self->{map};
     my $containers = [];
     my $cells = [];

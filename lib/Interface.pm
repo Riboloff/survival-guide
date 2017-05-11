@@ -26,7 +26,7 @@ use Interface::Inv;
 sub new {
     my $self = shift;
     my $map = shift;
-    my $moving_obj = shift;
+    my $character = shift;
     my $text_obj = shift;
     my $chooser = shift;
     my $inv = shift;
@@ -50,7 +50,7 @@ sub new {
             obj => $map,
             size => $size_area_map,
         },
-        moving_obj => $moving_obj,
+        character => $character,
         size => $size_interface,
         data_print  => $data_print,
         old_data_print => [],

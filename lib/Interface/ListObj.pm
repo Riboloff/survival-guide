@@ -11,9 +11,9 @@ sub process_block {
 
     my $main_array = $interface->{data_print};
     my $map = $interface->{map}{obj};
-    my $moving_obj_main_coord = $interface->{moving_obj}{A};
-    my $containers = $map->get_container_nigh($moving_obj_main_coord);
-    
+    my $character = $interface->{character};
+    my $containers = $map->get_container_nigh($character);
+
     my $area = $interface->{list_obj}{size};
     my $size_area = Interface::Utils::get_size($area);
 
@@ -22,7 +22,7 @@ sub process_block {
     my $list_obj = [@$containers];
     my $chooser = $interface->{chooser};
     $chooser->{list}{list_obj} = $list_obj;
-   
+
     my @list = map {$_->get_name()} @$list_obj;
     my $chooser_position = $chooser->get_position();
 
