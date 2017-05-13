@@ -22,6 +22,7 @@ use Interface::Text;
 use Interface::ListObj;
 use Interface::Actions;
 use Interface::Inv;
+use Interface::Looting;
 
 sub new {
     my $self = shift;
@@ -41,6 +42,8 @@ sub new {
     my $size_area_inv = _get_size_area_inv($size_interface, $size_area_map);
     my $size_area_bag = _get_size_area_bag($size_interface, $size_area_inv);
     my $size_area_harness = _get_size_area_harness($size_interface, $size_area_inv, $size_area_bag);
+    my $size_area_loot_list = _get_size_area_loot_list($size_interface, $size_area_bag);
+    my $size_area_looting = _get_size_area_looting($size_area_inv);
     my $data_print = _data_print_init($size_interface, $size_area_map, $size_area_list_obj);
 
     $text_obj->inition($size_area_text);
@@ -76,6 +79,15 @@ sub new {
                 size => $size_area_harness,
             },
         },
+        looting => {
+            size => $size_area_looting,
+            bag => {
+                size => $size_area_bag,
+            },
+            loot_list => {
+                size => $size_area_loot_list,
+            },
+        }
     };
 
     return bless($hash, $self);
@@ -155,6 +167,8 @@ sub _process_block {
         Interface::Actions::process_block($self);
     } elsif ($block eq 'inv') {
         Interface::Inv::process_block($self);
+    } elsif ($block eq 'looting') {
+        Interface::Looting::process_block($self);
     } elsif ($block eq 'all') {
         Interface::Map::process_block($self);
         Interface::Text::process_block($self);
@@ -347,6 +361,42 @@ sub _get_size_area_harness {
     ];
 
     return $size_area_harness;
+}
+
+sub _get_size_area_loot_list {
+    my $size_interface = shift;
+    my $size_area_bag  = shift;
+
+    my $size_area_loot_list = [];
+
+    $size_area_loot_list->[$LT] = [
+        $size_area_bag->[$LT][$Y],
+        $size_area_bag->[$RD][$X]+1
+    ];
+    my $size_bag = Interface::Utils::get_size($size_area_bag);
+    $size_area_loot_list->[$RD] = [
+        $size_area_bag->[$RD][$Y],
+        $size_area_bag->[$RD][$X] + $size_bag->[$X],
+    ];
+
+    return $size_area_loot_list;
+}
+
+sub _get_size_area_looting {
+    my $size_inv = shift;
+
+    my $size_area_looting = [];
+
+    $size_area_looting->[$LT] = [
+        $size_inv->[$LT][$Y],
+        $size_inv->[$LT][$X]
+    ];
+    $size_area_looting->[$RD] = [
+        $size_inv->[$RD][$Y],
+        $size_inv->[$RD][$X]
+    ];
+
+    return $size_area_looting;
 }
 
 1;

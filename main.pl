@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use utf8;
 
 use Term::ReadKey;
 
@@ -14,8 +15,6 @@ use Logger qw(dmp);
 use Choouser;
 use Inv;
 use Character;
-
-#open (STDERR, '>>', 'debug.log');
 
 my $map = Map->new('squa');
 #my $map = Map->new('main');
@@ -40,7 +39,11 @@ while() {
     my $key = ReadKey(0);
     # my $key = ReadKey(-1);
     ReadMode('normal');
+    dmp($key);
 
+    if ($key eq "\n") { #Enter заменить на нормальный сигнал
+        _enter();
+    }
     if ($key =~ /^[dDaAwWsS]$/) {
         if (!$inv->{on}) {
             _move($key);
@@ -83,9 +86,18 @@ while() {
             $inv->off();
             $interface->clean_after_itself('inv');
             $chooser->{block_name} = 'list_obj';
-$chooser->{position}{inv} = 0;
+            $chooser->{position}{inv} = 0;
             $process_block->{all} = 1;
         }
+    }
+}
+
+sub _enter {
+    if ($chooser->{block_name} eq 'action') {
+        my $position = $chooser->get_position();
+         if ($chooser->{list}{action}[$position] eq 'открыть') { #Ужасное говно!!! Экшены сделать объектом!
+            $process_block->{looting} = 1;
+         }
     }
 }
 

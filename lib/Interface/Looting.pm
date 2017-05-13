@@ -1,4 +1,4 @@
-package Interface::Inv;
+package Interface::Looting;
 
 use strict;
 use warnings;
@@ -17,6 +17,7 @@ sub process_bag {
     my $list_items = $inv->get_all_items_bag();
     my $area = $interface->{inv}{bag}{size};
     my $size_area = Interface::Utils::get_size($area);
+    dmp($size_area);
 
     my $bag_array = Interface::Utils::init_array($area, $size_area);
 
@@ -38,25 +39,19 @@ sub process_bag {
     return $bag_array;
 }
 
-
-sub process_harness {
+sub process_loot_list {
     my $interface = shift;
 
     my $main_array = $interface->{data_print};
     my $inv = $interface->{inv}{obj};
 
-    my $area = $interface->{inv}{harness}{size};
+    my $area = $interface->{looting}{loot_list}{size};
     my $size_area = Interface::Utils::get_size($area);
 
-    my $harness = $inv->get_harness();
-    my $harness_array = Interface::Utils::init_array($area, $size_area);
+    my $loot_array = Interface::Utils::init_array($area, $size_area);
 
-    my $list_harness = [];
-
-    my @sort_keys_harness = sort {
-                                $harness->{$a}{number} <=> $harness->{$b}{number}
-                            } keys %$harness;
-
+    my $loot = [];
+=we
     for my $body_p (@sort_keys_harness) {
         my $name = $harness->{$body_p}{name};
         my $items = join(', ', @{$harness->{$body_p}{items}});
@@ -72,64 +67,64 @@ sub process_harness {
         chooser_position => 999,
         size_area => $size_area,
     };
-    $harness_array = Interface::Utils::list_to_array_symbols($args);
+    $loot_array = Interface::Utils::list_to_array_symbols($args);
+=cut
 
-    return $harness_array;
+    return $loot_array;
 }
 
 sub process_block {
     my $interface = shift;
 
-    my $inv = $interface->{inv}{obj};
-
-    my $inv_array = init_inv($interface->{inv});
+    my $looting_array = init_looting($interface->{looting});
     my $main_array = $interface->{data_print};
 
     my $bag_array = process_bag($interface);
-    my $harness_array = process_harness($interface);
+    my $loot_list_array = process_loot_list($interface);
 
     my $offset_bag = [
         $interface->{inv}{bag}{size}[$LT][$Y],
         $interface->{inv}{bag}{size}[$LT][$X]
     ];
-    my $offset_harness = [
-        $interface->{inv}{harness}{size}[$LT][$Y],
-        $interface->{inv}{harness}{size}[$LT][$X]
+    my $offset_loot_list = [
+        $interface->{looting}{loot_list}{size}[$LT][$Y],
+        $interface->{looting}{loot_list}{size}[$LT][$X]
     ];
     my $offset = [
-        $interface->{inv}{size}[$LT][$Y],
-        $interface->{inv}{size}[$LT][$X]
+        $interface->{looting}{size}[$LT][$Y],
+        $interface->{looting}{size}[$LT][$X]
     ];
 
-    Interface::Utils::overlay_arrays_simple($inv_array, $bag_array, $offset_bag);
-    Interface::Utils::overlay_arrays_simple($inv_array, $harness_array, $offset_harness);
+    Interface::Utils::overlay_arrays_simple($looting_array, $bag_array, $offset_bag);
+    Interface::Utils::overlay_arrays_simple($looting_array, $loot_list_array, $offset_loot_list);
 
-    Interface::Utils::overlay_arrays_simple($main_array, $inv_array, $offset);
+    Interface::Utils::overlay_arrays_simple($main_array, $looting_array, $offset);
 }
 
 
-sub init_inv {
-    my $inv = shift;
+sub init_looting {
+    my $looting = shift;
 
-    my $inv_array = [];
+    my $looting_array = [];
 
-    my $y_bound_inv = $inv->{size}->[$RD][$Y];
-    my $x_bound_inv = $inv->{size}->[$RD][$X];
-    my $y_bound_bag = $inv->{bag}{size}->[$RD][$Y];
-    my $x_bound_bag = $inv->{bag}{size}->[$RD][$X];
+    my $y_bound_looting = $looting->{size}[$RD][$Y];
+    my $x_bound_looting = $looting->{size}[$RD][$X];
 
-    for my $y (0 .. $y_bound_inv - 1) {
-        for my $x (0 .. $x_bound_inv - 1) {
-            $inv_array->[$y][$x]->{symbol} = ' ';
-            $inv_array->[$y][$x]->{color} = '';
+    my $y_bound_bag = $looting->{bag}{size}[$RD][$Y];
+    my $x_bound_bag = $looting->{bag}{size}[$RD][$X];
+
+    for my $y (0 .. $y_bound_looting - 1) {
+        for my $x (0 .. $x_bound_looting - 1) {
+            $looting_array->[$y][$x]{symbol} = ' ';
+            $looting_array->[$y][$x]{color} = '';
             if ($x == $x_bound_bag) {
-                $inv_array->[$y][$x]->{symbol} = 'ǁ';
-                $inv_array->[$y][$x]->{color} = '';
+                $looting_array->[$y][$x]{symbol} = 'ǁ';
+                $looting_array->[$y][$x]{color} = '';
             }
         }
     }
 
-    return $inv_array;
+    return $looting_array;
 }
 
 1;

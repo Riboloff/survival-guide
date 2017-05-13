@@ -5,6 +5,7 @@ use warnings;
 
 use lib qw/lib/;
 use Container;
+use Item;
 use utf8;
 
 sub new {
@@ -30,7 +31,7 @@ sub new {
     if ($element =~ /[⊔]/) {
         $cell->{blocker} = 1;
         $cell->{type} = 'Container';
-        $cell->{obj} = Container->new('Коробка', ['item1', 'item2'], ['открыть', 'взломать', 'посмотреть']);
+        $cell->{obj} = Container->new('Коробка', [_create_item_for_test(), _create_item_for_test()], ['открыть', 'взломать', 'посмотреть']);
     }
     if ($element =~ /[⁘]/) {
         $cell->{blocker} = 1;
@@ -60,6 +61,12 @@ sub get_obj {
     my $self = shift;
 
     return $self->{obj};
+}
+
+sub _create_item_for_test {
+    my $name = 'предмет' . int(rand(10));
+    my $type = 'loot';
+    my $item = Item->new($name, $type);
 }
 
 1;
