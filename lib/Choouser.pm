@@ -27,7 +27,7 @@ sub down {
 
     my $block_name = $self->{block_name};
     if ($self->{position}{$block_name} < $#{$self->{list}{$block_name}}) {
-        $self->{position}{$block_name} ++;
+        $self->{position}{$block_name}++;
     }
 }
 

@@ -24,4 +24,17 @@ sub get_name {
 
     return $self->{name};
 }
+
+sub get_actions {
+    my $self = shift;
+
+    return $self->{actions};
+}
+
+sub get_items {
+    my $self = shift;
+
+    return $self->{items};
+}
+
 1;

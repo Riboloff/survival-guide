@@ -50,25 +50,19 @@ sub process_loot_list {
 
     my $loot_array = Interface::Utils::init_array($area, $size_area);
 
-    my $loot = [];
-=we
-    for my $body_p (@sort_keys_harness) {
-        my $name = $harness->{$body_p}{name};
-        my $items = join(', ', @{$harness->{$body_p}{items}});
-        my $number = $harness->{$body_p}{number};
-
-        my $str = join(' | ', ($number, $name, $items));
-        push(@$list_harness, $str);
-    }
+    my $chooser = $interface->{chooser};
+    my $position_list_obj = $chooser->{position}{list_obj};
+    my $container = $chooser->{list}{list_obj}[$position_list_obj];
+    my $items = $container->get_items();
+    my @loots = map {$_->get_name()} @$items;
 
     my $args = {
-        list => $list_harness,
-        array => $harness_array,
-        chooser_position => 999,
+        list => \@loots,
+        array => $loot_array,
+        chooser_position => 0,
         size_area => $size_area,
     };
     $loot_array = Interface::Utils::list_to_array_symbols($args);
-=cut
 
     return $loot_array;
 }

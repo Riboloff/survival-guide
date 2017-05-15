@@ -13,7 +13,7 @@ sub process_block {
     my $chooser = $interface->{chooser}; 
     my $list_obj = $chooser->{list}{list_obj};
     my $obj = $list_obj->[$chooser->{position}{list_obj}];
-    my $list_actions = $obj->{actions} || [];
+    my $list_actions = $obj->get_actions() || [];
 
     $chooser->{list}{action} = $list_actions;
 
