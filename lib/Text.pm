@@ -2,14 +2,14 @@ package Text;
 
 use strict;
 use warnings;
-
+use utf8;
 use Storable qw(dclone);
 
 
 use lib qw(lib);
 use Logger qw(dmp);
 use Consts qw($X $Y $LT $RD);
-
+use open ':encoding(utf8)';
 sub new {
     my $self = shift;
     my $file_name = shift;
@@ -50,19 +50,18 @@ sub get_text_array {
     my $self = shift;
     my $size = shift;
 
-    my $size_rd_y = $size->[$RD]->[$Y];
-    my $size_rd_x = $size->[$RD]->[$X];
+    my $size_y = $size->[$Y];
+    my $size_x = $size->[$X];
 
     my $array = $self->{array};
 
     my @new_lines = ();
     for my $line (split(/\n/, $self->{text})) {
         my $parse_text = _parse_color($line);
-
-        if (@$parse_text > $size_rd_x) {
-            for (0 .. int(@$parse_text/$size_rd_x)) {
+        if (@$parse_text > $size_x) {
+            for (0 .. int(@$parse_text/$size_x)) {
                 my $new_line = [];
-                for (my $x = $_ * $size_rd_x; $x < $size_rd_x * $_ + $size_rd_x; $x++) {
+                for (my $x = $_ * $size_x; $x < $size_x * $_ + $size_x; $x++) {
                     if (!defined $parse_text->[$x]) {
                         $parse_text->[$x] = {'color' => '', 'symbol' => ' '};
                     } 
@@ -83,8 +82,8 @@ sub get_text_array {
         for (my $x = 0; $x < @symbols; $x++) {
             $array->[$y][$x] = $symbols[$x];
         }
-        if (@{$array->[$y]} < $size_rd_x) {
-            for (my $x = @{$array->[$y]}; $x < $size_rd_x; $x++) {
+        if (@{$array->[$y]} < $size_x) {
+            for (my $x = @{$array->[$y]}; $x < $size_x; $x++) {
                 $array->[$y][$x] = {'symbol' => ' ', 'color' => ''};
             }
         }

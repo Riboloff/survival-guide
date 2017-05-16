@@ -44,6 +44,7 @@ sub new {
     my $size_area_harness = _get_size_area_harness($size_interface, $size_area_inv, $size_area_bag);
     my $size_area_loot_list = _get_size_area_loot_list($size_interface, $size_area_bag);
     my $size_area_looting = _get_size_area_looting($size_area_inv);
+    my $size_area_desc_item = _get_size_area_desc_item($size_area_looting, $size_area_loot_list);
     my $data_print = _data_print_init($size_interface, $size_area_map, $size_area_list_obj);
 
     $text_obj->inition($size_area_text);
@@ -87,6 +88,9 @@ sub new {
             },
             loot_list => {
                 size => $size_area_loot_list,
+            },
+            desc_item => {
+                size => $size_area_desc_item,
             },
         }
     };
@@ -381,6 +385,24 @@ sub _get_size_area_loot_list {
     ];
 
     return $size_area_loot_list;
+}
+
+sub _get_size_area_desc_item {
+    my $size_area_looting = shift;
+    my $size_area_loot_list  = shift;
+
+    my $size_area_desc_item = [];
+
+    $size_area_desc_item->[$LT] = [
+        $size_area_loot_list->[$LT][$Y],
+        $size_area_loot_list->[$RD][$X]+1
+    ];
+    $size_area_desc_item->[$RD] = [
+        $size_area_looting->[$RD][$Y],
+        $size_area_looting->[$RD][$X],
+    ];
+
+    return $size_area_desc_item;
 }
 
 sub _get_size_area_looting {

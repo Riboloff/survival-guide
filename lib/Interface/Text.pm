@@ -10,10 +10,10 @@ sub process_block {
     my $interface = shift;
 
     my $text = $interface->{text}{obj};
-    my $text_array = $text->get_text_array($interface->{text}{size});
+    my $size_area_text = Interface::Utils::get_size($interface->{text}{size});
+    my $text_array = $text->get_text_array($size_area_text);
     my $size_area_text_lt = $interface->{text}{size}[$LT];
     my $main_array = $interface->{data_print};
-    my $size_area_text = Interface::Utils::get_size($interface->{text}{size});
 
     my $scroll = $text->{scroll};
 

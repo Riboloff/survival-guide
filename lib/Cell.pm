@@ -63,14 +63,6 @@ sub get_obj {
     return $self->{obj};
 }
 
-sub _create_item_for_test {
-    my $name = 'предмет' . int(rand(10));
-    my $type = 'loot';
-    my $item = Item->new($name, $type);
-
-    return $item;
-}
-
 sub _create_items_for_test {
     my $count = shift;
 
@@ -78,8 +70,12 @@ sub _create_items_for_test {
     for (0 .. $count) {
         my $name = 'предмет' . int(rand(10));
         my $type = 'loot';
-        push(@$items, Item->new($name, $type));
+        my $file_name = 'desc_item';
+        $file_name .=  int(rand(3)) + 1;
+        my $desc = Text->new($file_name);
+        push(@$items, Item->new($name, $type, $desc));
     }
+
     return $items;
 }
 
