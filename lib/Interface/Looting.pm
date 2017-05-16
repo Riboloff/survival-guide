@@ -17,16 +17,12 @@ sub process_bag {
     my $list_items = $inv->get_all_items_bag();
     my $area = $interface->{inv}{bag}{size};
     my $size_area = Interface::Utils::get_size($area);
-    dmp($size_area);
 
     my $bag_array = Interface::Utils::init_array($area, $size_area);
 
     my $chooser = $interface->{chooser};
-    $chooser->{list}{inv} = $list_items;
-    my $chooser_position = 0;
-    if ($chooser->{block_name} eq 'inv') {
-        $chooser_position = $chooser->get_position();
-    }
+    $chooser->{list}{bag} = $list_items;
+    my $chooser_position = $chooser->get_position('bag');
 
     my $args = {
         list => $list_items,
@@ -56,12 +52,16 @@ sub process_loot_list {
     my $items = $container->get_items();
     my @loots = map {$_->get_name()} @$items;
 
+    $chooser->{list}{loot_list} = \@loots;
+    my $chooser_position = $chooser->get_position('loot_list');
+
     my $args = {
         list => \@loots,
         array => $loot_array,
-        chooser_position => 0,
+        chooser_position => $chooser_position,
         size_area => $size_area,
     };
+
     $loot_array = Interface::Utils::list_to_array_symbols($args);
 
     return $loot_array;
@@ -69,6 +69,8 @@ sub process_loot_list {
 
 sub process_block {
     my $interface = shift;
+
+    $interface->{main_block_show} = 'looting';
 
     my $looting_array = init_looting($interface->{looting});
     my $main_array = $interface->{data_print};

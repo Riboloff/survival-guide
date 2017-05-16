@@ -49,6 +49,7 @@ sub new {
     $text_obj->inition($size_area_text);
 
     my $hash = {
+        main_block_show => 'map', #map, looting, inv
         map => {
             obj => $map,
             size => $size_area_map,
@@ -180,8 +181,8 @@ sub _get_screen_diff {
     my $self = shift;
     my $block = shift;
 
-    my $bound_lt = $self->{$block}{size}[0];
-    my $bound_rd = $self->{$block}{size}[1];
+    my $bound_lt = $self->{$block}{size}[$LT];
+    my $bound_rd = $self->{$block}{size}[$RD];
 
     my $array = $self->{data_print};
 
@@ -397,6 +398,12 @@ sub _get_size_area_looting {
     ];
 
     return $size_area_looting;
+}
+
+sub get_main_block_show {
+    my $self = shift;
+
+    return $self->{main_block_show};
 }
 
 1;

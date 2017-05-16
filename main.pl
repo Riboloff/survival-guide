@@ -45,7 +45,7 @@ while() {
         _enter();
     }
     if ($key =~ /^[dDaAwWsS]$/) {
-        if (!$inv->{on}) {
+        if ($interface->get_main_block_show() eq 'map') {
             _move($key);
             $process_block->{map} = 1;
             $process_block->{list_obj} = 1;
@@ -59,31 +59,48 @@ while() {
     if ($key =~ /^[tTgG]$/) {
         _move_chooser($key);
         my $chooser_block_name = $chooser->{block_name};
-        $process_block->{$chooser_block_name} = 1;
+        if (
+            $chooser_block_name eq 'loot_list'
+            or $chooser_block_name eq 'bag'
+        ) {
+            $process_block->{looting} = 1;
+        } else {
+            $process_block->{$chooser_block_name} = 1;
+        }
 
     }
     if ($key =~ /^[>]$/) {
-        if (!$inv->{on}) {
+        my $show_block = $interface->get_main_block_show();
+        if ($show_block eq 'map') {
             $chooser->{block_name} = 'action';
             $chooser->{position}{action} = 0;
             $process_block->{action} = 1;
+        } elsif ($show_block eq 'looting') {
+            if ($chooser->{block_name} ne 'loot_list') {
+                $chooser->{block_name} = 'loot_list';
+                $process_block->{looting} = 1;
+            }
         }
     }
     if ($key =~ /^[<]$/) {
-        if (!$inv->{on}) {
+        my $show_block = $interface->get_main_block_show();
+        if ($show_block eq 'map') {
             $chooser->{block_name} = 'list_obj';
             $chooser->{position}{action} = 0;
             $process_block->{list_obj} = 1;
+        } elsif ($show_block eq 'looting') {
+            if ($chooser->{block_name} ne 'bag') {
+                $chooser->{block_name} = 'bag';
+                $process_block->{looting} = 1;
+            }
         }
     }
     if ($key =~ /^[Ii]$/) {
-        if (!$inv->{on}) {
-            $inv->on();
+        if ($interface->get_main_block_show() ne 'inv') {
             $chooser->{block_name} = 'inv';
             $chooser->{position}{inv} = 0;
             $process_block->{inv} = 1;
         } else {
-            $inv->off();
             $interface->clean_after_itself('inv');
             $chooser->{block_name} = 'list_obj';
             $chooser->{position}{inv} = 0;
@@ -95,9 +112,12 @@ while() {
 sub _enter {
     if ($chooser->{block_name} eq 'action') {
         my $position = $chooser->get_position();
-         if ($chooser->{list}{action}[$position] eq 'открыть') { #Ужасное говно!!! Экшены сделать объектом!
-            $process_block->{looting} = 1;
-         }
+        if ($chooser->{list}{action}[$position] eq 'открыть') {
+           $chooser->{position}{loot_list} = 0;
+           $chooser->{position}{bag} = 0;
+           $chooser->{block_name} = 'bag';
+           $process_block->{looting} = 1;
+        }
     }
 }
 

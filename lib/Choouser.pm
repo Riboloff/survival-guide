@@ -14,6 +14,8 @@ sub new {
         position => {
             action => 0,
             list_obj => 0,
+            bag => 0,
+            loot_list => 0,
         },
         block_name => 'list_obj',
         list => {},
@@ -42,16 +44,17 @@ sub top {
 
 sub get_position {
     my $self = shift;
+    my $block_name = shift || $self->{block_name};
 
-    my $block_name = $self->{block_name};
     return $self->{position}{$block_name};
 }
 
 sub reset_position {
     my $self = shift;
 
-    $self->{position}{list_obj} = 0;
-    $self->{position}{action} = 0;
+    for my $block_name (keys %{$self->{position}}) {
+        $self->{position}{$block_name} = 0;
+    }
     $self->{block_name} = 'list_obj';
 }
 

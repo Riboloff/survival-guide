@@ -12,8 +12,9 @@ sub process_block {
     my $main_array = $interface->{data_print};
     my $chooser = $interface->{chooser}; 
     my $list_obj = $chooser->{list}{list_obj};
-    my $obj = $list_obj->[$chooser->{position}{list_obj}];
-    my $list_actions = $obj->get_actions() || [];
+    my $position_list_obj = $chooser->{position}{list_obj};
+    my $obj = $list_obj->[$position_list_obj];
+    my $list_actions = $obj ? $obj->get_actions() : [];
 
     $chooser->{list}{action} = $list_actions;
 
@@ -33,7 +34,8 @@ sub process_block {
         chooser_position => $chooser_position,
         size_area => $size_area,
     };
-    Interface::Utils::list_to_array_symbols($args);
+
+    $action_array = Interface::Utils::list_to_array_symbols($args);
 
     my $offset = [
         $interface->{action}{size}[$LT][$Y],

@@ -10,6 +10,7 @@ use List::Util qw(min);
 sub process_block {
     my $interface = shift;
 
+    $interface->{main_block_show} = 'map';
     my $map = $interface->{map}{obj};
     my $character = $interface->{character};
     my $map_array = $map->get_map_static($character);

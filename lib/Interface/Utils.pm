@@ -129,7 +129,7 @@ sub list_to_array_symbols {
 
     my $list = $args->{list};
     my $array = $args->{array};
-    my $chooser_position = $args->{chooser_position};
+    my $chooser_position = $args->{chooser_position} || 0;
     my $size_area = $args->{size_area};
 
 

@@ -26,17 +26,17 @@ sub new {
     if ($element =~ /[⊟]/) {
         $cell->{blocker} = 1;
         $cell->{type} = 'Container';
-        $cell->{obj} = Container->new('Полка', ['item1', 'item2'], ['открыть', 'взломать']);
+        $cell->{obj} = Container->new('Полка', _create_items_for_test(4), ['открыть', 'взломать']);
     }
     if ($element =~ /[⊔]/) {
         $cell->{blocker} = 1;
         $cell->{type} = 'Container';
-        $cell->{obj} = Container->new('Коробка', [_create_item_for_test(), _create_item_for_test()], ['открыть', 'взломать', 'посмотреть']);
+        $cell->{obj} = Container->new('Коробка', _create_items_for_test(3), ['открыть', 'взломать', 'посмотреть']);
     }
     if ($element =~ /[⁘]/) {
         $cell->{blocker} = 1;
         $cell->{type} = 'Container';
-        $cell->{obj} = Container->new('Куча мусора', ['item1', 'item2'], ['посмотреть', 'открыть', 'взломать']);
+        $cell->{obj} = Container->new('Куча мусора', _create_items_for_test(5), ['посмотреть', 'открыть', 'взломать']);
     }
 
     bless($cell, $self);
@@ -67,6 +67,20 @@ sub _create_item_for_test {
     my $name = 'предмет' . int(rand(10));
     my $type = 'loot';
     my $item = Item->new($name, $type);
+
+    return $item;
+}
+
+sub _create_items_for_test {
+    my $count = shift;
+
+    my $items = [];
+    for (0 .. $count) {
+        my $name = 'предмет' . int(rand(10));
+        my $type = 'loot';
+        push(@$items, Item->new($name, $type));
+    }
+    return $items;
 }
 
 1;

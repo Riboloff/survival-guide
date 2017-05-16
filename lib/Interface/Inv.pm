@@ -80,6 +80,7 @@ sub process_harness {
 sub process_block {
     my $interface = shift;
 
+    $interface->{main_block_show} = 'inv';
     my $inv = $interface->{inv}{obj};
 
     my $inv_array = init_inv($interface->{inv});
