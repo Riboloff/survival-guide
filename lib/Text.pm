@@ -58,20 +58,23 @@ sub get_text_array {
     my @new_lines = ();
     for my $line (split(/\n/, $self->{text})) {
         my $parse_text = _parse_color($line);
-        if (@$parse_text > $size_x) {
-            for (0 .. int(@$parse_text/$size_x)) {
-                my $new_line = [];
-                for (my $x = $_ * $size_x; $x < $size_x * $_ + $size_x; $x++) {
-                    if (!defined $parse_text->[$x]) {
-                        $parse_text->[$x] = {'color' => '', 'symbol' => ' '};
-                    } 
-                    push(@$new_line, $parse_text->[$x]);
-                }
-                push(@new_lines, $new_line);
+
+        my $words_array = _split_words($parse_text);
+        my $line_size = $size_x;
+
+        my $line_buffer = [];
+        for my $word (@$words_array) {
+            my $size_word = scalar @$word;
+            if ((scalar @$line_buffer + $size_word - 1) <= $line_size) {
+                push(@$line_buffer, @$word);
+            } else {
+                push(@new_lines, $line_buffer);
+                $line_buffer = [];
+                push(@$line_buffer, @$word);
             }
-        } else {
-            push(@new_lines, $parse_text);
         }
+        push(@new_lines, $line_buffer);
+
     }
     for (my $y = 0; $y < @new_lines; $y++) {
         my $line = $new_lines[$y];
@@ -111,6 +114,26 @@ sub _parse_color {
     return $symbols;
 }
 
+sub _split_words {
+    my $text_array = shift;
+
+    my $words = [];
+    my $word = [];
+    for (my $i = 0; $i < @$text_array; ++$i) {
+        my $symbol = $text_array->[$i]{symbol};
+        push (@$word, $text_array->[$i]);
+
+        if ($symbol =~ /\s/ ) {
+            push (@$words, $word);
+            $word = [];
+        }
+    }
+    push (@$words, $word);
+
+
+    return $words;
+}
+
 sub down {
     my $self = shift;
 
@@ -123,10 +146,8 @@ sub top {
     my $self = shift;
 
     my $scroll_lines = @{$self->{array}};
-    dmp($self->{size_area_text});
     my $size_area_text = $self->{size_area_text}[$RD][$Y] - $self->{size_area_text}[$LT][$Y];
     if ($self->{scroll} < $scroll_lines - $size_area_text) {
-        #if ($self->{scroll} < $scroll_lines - 1) {
         $self->{scroll}++;
     }
 }
