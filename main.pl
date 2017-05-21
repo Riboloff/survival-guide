@@ -48,7 +48,8 @@ while() {
         if ($interface->get_main_block_show() eq 'map') {
             _move($key);
             $process_block->{map} = 1;
-            $process_block->{list_obj} = 1;
+            #$process_block->{list_obj} = 1;
+            $process_block->{objects} = 1;
             $chooser->reset_position();
         }
     }
@@ -64,6 +65,11 @@ while() {
             or $chooser_block_name eq 'bag'
         ) {
             $process_block->{looting} = 1;
+        } elsif(
+            $chooser_block_name eq 'list_obj'
+            or $chooser_block_name eq 'action'
+        ) {
+            $process_block->{objects} = 1;
         } else {
             $process_block->{$chooser_block_name} = 1;
         }
@@ -74,7 +80,7 @@ while() {
         if ($show_block eq 'map') {
             $chooser->{block_name} = 'action';
             $chooser->{position}{action} = 0;
-            $process_block->{action} = 1;
+            $process_block->{objects} = 1;
         } elsif ($show_block eq 'looting') {
             if ($chooser->{block_name} ne 'loot_list') {
                 $chooser->{block_name} = 'loot_list';
@@ -87,7 +93,8 @@ while() {
         if ($show_block eq 'map') {
             $chooser->{block_name} = 'list_obj';
             $chooser->{position}{action} = 0;
-            $process_block->{list_obj} = 1;
+            #$process_block->{list_obj} = 1;
+            $process_block->{objects} = 1;
         } elsif ($show_block eq 'looting') {
             if ($chooser->{block_name} ne 'bag') {
                 $chooser->{block_name} = 'bag';

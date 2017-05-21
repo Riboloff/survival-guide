@@ -19,8 +19,9 @@ use Printer;
 use Logger qw(dmp dmp_array);
 use Interface::Map;
 use Interface::Text;
-use Interface::ListObj;
-use Interface::Actions;
+#use Interface::ListObj;
+#use Interface::Actions;
+use Interface::Objects;
 use Interface::Inv;
 use Interface::Looting;
 
@@ -39,6 +40,7 @@ sub new {
     my $size_area_text = _get_size_area_text($size_interface, $size_area_map),
     my $size_area_list_obj = _get_size_area_list_obj($size_interface, $size_area_map);
     my $size_area_action = _get_size_area_action($size_interface, $size_area_list_obj);
+    my $size_area_objects = _get_size_area_objects($size_area_list_obj, $size_area_action);
     my $size_area_inv = _get_size_area_inv($size_interface, $size_area_map);
     my $size_area_bag = _get_size_area_bag($size_interface, $size_area_inv);
     my $size_area_harness = _get_size_area_harness($size_interface, $size_area_inv, $size_area_bag);
@@ -63,12 +65,15 @@ sub new {
             obj => $text_obj,
             size => $size_area_text,
         },
-        list_obj => {
-            size => $size_area_list_obj,
-            chooser_list => [],
-        },
-        action => {
-            size => $size_area_action,
+        objects => {
+            list_obj => {
+                size => $size_area_list_obj,
+                #chooser_list => [],
+            },
+            action => {
+                size => $size_area_action,
+            },
+            size => $size_area_objects,
         },
         chooser => $chooser,
         inv => {
@@ -122,10 +127,10 @@ sub _data_print_init {
                 $array->[$y][$x]->{symbol} = 'ǁ';
                 $array->[$y][$x]->{color} = '';
             }
-            if ($y < $y_bound_map and $x == $x_bound_list_obj) {
-                $array->[$y][$x]->{symbol} = 'ǁ';
-                $array->[$y][$x]->{color} = '';
-            }
+            #if ($y < $y_bound_map and $x == $x_bound_list_obj) {
+            #    $array->[$y][$x]->{symbol} = 'ǁ';
+            #    $array->[$y][$x]->{color} = '';
+            #}
         }
     }
 
@@ -166,10 +171,10 @@ sub _process_block {
         Interface::Map::process_block($self);
     } elsif ($block eq 'text') {
         Interface::Text::process_block($self);
-    } elsif ($block eq 'list_obj') {
-        Interface::ListObj::process_block($self);
-    } elsif ($block eq 'action') {
-        Interface::Actions::process_block($self);
+    } elsif ($block eq 'objects') {
+        Interface::Objects::process_block($self);
+        #} elsif ($block eq 'action') {
+        #Interface::Actions::process_block($self);
     } elsif ($block eq 'inv') {
         Interface::Inv::process_block($self);
     } elsif ($block eq 'looting') {
@@ -177,7 +182,8 @@ sub _process_block {
     } elsif ($block eq 'all') {
         Interface::Map::process_block($self);
         Interface::Text::process_block($self);
-        Interface::ListObj::process_block($self);
+        #Interface::ListObj::process_block($self);
+        Interface::Objects::process_block($self);
     }
 }
 
@@ -244,7 +250,6 @@ sub _get_size_area_action {
 
     my $size_area_action = [];
 
-
     $size_area_action->[$LT] = [
         0,
         $size_area_list_obj->[$RD][$X] + 1
@@ -255,6 +260,25 @@ sub _get_size_area_action {
     ];
 
     return $size_area_action;
+}
+
+sub _get_size_area_objects {
+    my $size_area_list_obj = shift;
+    my $size_area_action = shift;
+
+    my $size_area_objects = [];
+
+    $size_area_objects->[$LT] = [
+        $size_area_list_obj->[$LT][$Y],
+        $size_area_list_obj->[$LT][$X],
+
+    ];
+    $size_area_objects->[$RD] = [
+        $size_area_action->[$RD][$Y],
+        $size_area_action->[$RD][$X],
+    ];
+
+    return $size_area_objects;
 }
 
 sub _get_size_area_list_obj {
@@ -270,7 +294,7 @@ sub _get_size_area_list_obj {
     ];
     $size_area_list_obj->[$RD] = [
         $size_area_map->[$RD][$Y],
-        int( ($size_interface->[$RD][$X] - $size_area_map->[$RD][$X]+1) / 2) + $size_area_map->[$RD][$X]
+        int( ($size_interface->[$RD][$X] - $size_area_map->[$RD][$X]+1) / 2) + $size_area_map->[$RD][$X] - 1
     ];
 
     return $size_area_list_obj;

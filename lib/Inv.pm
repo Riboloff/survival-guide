@@ -5,6 +5,7 @@ use warnings;
 
 use lib qw/lib/;
 use Container;
+use Cell;
 use utf8;
 
 sub new {
@@ -13,7 +14,7 @@ sub new {
     my $inv = {
         'on' => 0,
         'bag' => {
-            'items' => ['предмет1', 'предмет2'],
+            'items' => Cell::_create_items_for_test(2),
         },
         'harness' => {
             head => {

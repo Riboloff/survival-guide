@@ -24,11 +24,12 @@ sub process_bag {
     $chooser->{list}{inv} = $list_items;
     my $chooser_position = 0;
     if ($chooser->{block_name} eq 'inv') {
-        $chooser_position = $chooser->get_position();
+        $chooser_position = $chooser->get_position('inv');
     }
 
+    my @list_items_name = map {$_->get_name} @$list_items;
     my $args = {
-        list => $list_items,
+        list => \@list_items_name,
         array => $bag_array,
         chooser_position => $chooser_position,
         size_area => $size_area,

@@ -131,13 +131,14 @@ sub list_to_array_symbols {
     my $array = $args->{array};
     my $chooser_position = $args->{chooser_position} || 0;
     my $size_area = $args->{size_area};
+    my $color_chooser =  $args->{color_chooser} || 'on_green';
 
 
     for (my $y=0; $y < @$list; $y++) {
         my @symbols = split( //, $list->[$y]);
         my $color = '';
         if ($chooser_position == $y) {
-            $color = 'on_green';
+            $color = $color_chooser;
             for (my $x = 0; $x < $size_area->[$X]; $x++) {
                 $array->[$y][$x]{'color'} = $color;
             }

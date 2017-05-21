@@ -23,11 +23,18 @@ sub process_bag {
     $chooser->{list}{bag} = $list_items;
     my $chooser_position = $chooser->get_position('bag');
 
+    my $color_chooser = 'on_green';
+    if ($chooser->{block_name} ne 'bag') {
+        $chooser_position = 999;
+    }
+
+    my @list_items_name = map {$_->get_name} @$list_items;
     my $args = {
-        list => $list_items,
+        list => \@list_items_name,
         array => $bag_array,
         chooser_position => $chooser_position,
         size_area => $size_area,
+        color_chooser => $color_chooser,
     };
     $bag_array = Interface::Utils::list_to_array_symbols($args);
 
@@ -50,12 +57,17 @@ sub process_loot_list {
 
     $chooser->{list}{loot_list} = $items;
     my $chooser_position = $chooser->get_position('loot_list');
+    my $color_chooser = 'on_green';
+    if ($chooser->{block_name} ne 'loot_list') {
+        $chooser_position = 999;
+    }
 
     my $args = {
         list => \@loots,
         array => $loot_array,
         chooser_position => $chooser_position,
         size_area => $size_area,
+        color_chooser => $color_chooser,
     };
 
     $loot_array = Interface::Utils::list_to_array_symbols($args);
@@ -67,14 +79,13 @@ sub process_desc_item {
     my $interface = shift;
 
     my $chooser = $interface->{chooser};
-    my $position_chooser = $chooser->{position}{loot_list};
-    my $item = $chooser->{list}{loot_list}[$position_chooser];
+    my $chooser_block_name = $chooser->{block_name};
+    my $position_chooser = $chooser->{position}{$chooser_block_name};
+    my $item = $chooser->{list}{$chooser_block_name}[$position_chooser];
 
     my $text = $item->get_desc(); 
     my $area = $interface->{looting}{desc_item}{size};
-    dmp($area);
     my $size_area = Interface::Utils::get_size($area);
-    dmp($size_area);
     my $text_array = $text->get_text_array($size_area);
 
     return $text_array;
@@ -104,7 +115,7 @@ sub process_block {
         $interface->{looting}{desc_item}{size}[$LT][$Y],
         $interface->{looting}{desc_item}{size}[$LT][$X]
     ];
-    my $offset = [
+    my $offset_looting = [
         $interface->{looting}{size}[$LT][$Y],
         $interface->{looting}{size}[$LT][$X]
     ];
@@ -113,7 +124,7 @@ sub process_block {
     Interface::Utils::overlay_arrays_simple($looting_array, $loot_list_array, $offset_loot_list);
     Interface::Utils::overlay_arrays_simple($looting_array, $desc_item, $offset_desc_item);
 
-    Interface::Utils::overlay_arrays_simple($main_array, $looting_array, $offset);
+    Interface::Utils::overlay_arrays_simple($main_array, $looting_array, $offset_looting);
 }
 
 
