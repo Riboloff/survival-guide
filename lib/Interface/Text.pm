@@ -5,6 +5,7 @@ use warnings;
 
 use Consts;
 use Interface::Utils;
+use Logger qw(dmp dmp_array);
 
 sub process_block {
     my $interface = shift;

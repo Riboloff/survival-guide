@@ -39,7 +39,6 @@ while() {
     my $key = ReadKey(0);
     # my $key = ReadKey(-1);
     ReadMode('normal');
-    dmp($key);
 
     if ($key eq "\n") { #Enter заменить на нормальный сигнал
         _enter();
@@ -48,7 +47,6 @@ while() {
         if ($interface->get_main_block_show() eq 'map') {
             _move($key);
             $process_block->{map} = 1;
-            #$process_block->{list_obj} = 1;
             $process_block->{objects} = 1;
             $chooser->reset_position();
         }
@@ -57,7 +55,7 @@ while() {
         _scroll_text($key);
         $process_block->{text} = 1;
     }
-    if ($key =~ /^[tTgG]$/) {
+    if ($key =~ /^[JjKk]$/) {
         _move_chooser($key);
         my $chooser_block_name = $chooser->{block_name};
         if (
@@ -75,7 +73,7 @@ while() {
         }
 
     }
-    if ($key =~ /^[>]$/) {
+    if ($key =~ /^[Ll]$/) {
         my $show_block = $interface->get_main_block_show();
         if ($show_block eq 'map') {
             $chooser->{block_name} = 'action';
@@ -88,12 +86,11 @@ while() {
             }
         }
     }
-    if ($key =~ /^[<]$/) {
+    if ($key =~ /^[Hh]$/) {
         my $show_block = $interface->get_main_block_show();
         if ($show_block eq 'map') {
             $chooser->{block_name} = 'list_obj';
             $chooser->{position}{action} = 0;
-            #$process_block->{list_obj} = 1;
             $process_block->{objects} = 1;
         } elsif ($show_block eq 'looting') {
             if ($chooser->{block_name} ne 'bag') {
@@ -112,6 +109,13 @@ while() {
             $chooser->{block_name} = 'list_obj';
             $chooser->{position}{inv} = 0;
             $process_block->{all} = 1;
+        }
+    }
+    if ($key =~ /^[><]$/) {
+        my $show_block = $interface->get_main_block_show();
+        if ($show_block eq 'looting') {
+            _move_item($key, $chooser, $interface);
+            $process_block->{looting} = 1;
         }
     }
 }
@@ -206,11 +210,37 @@ sub _scroll_text {
 sub _move_chooser {
     my $key = shift;
 
-    if ($key =~ /^[tT]$/) {
+    if ($key =~ /^[Kk]$/) {
         $chooser->top();
     }
-    elsif ($key =~ /^[gG]$/) {
+    elsif ($key =~ /^[jJ]$/) {
         $chooser->down();
+    }
+
+    return;
+}
+
+sub _move_item {
+    my $key = shift;
+    my $chooser = shift;
+    my $interface = shift;
+
+    my $bag = $interface->{inv}{obj}{bag};
+
+    my $chooser_position_list_obj = $chooser->{position}{list_obj};
+    my $container = $chooser->{list}{list_obj}[$chooser_position_list_obj];
+
+    if ($key eq '>' and $chooser->{block_name} eq 'bag') {
+        my $chooser_position_bag = $chooser->{position}{bag};
+        my ($item) = splice(@{$bag->{items}}, $chooser_position_bag, 1);
+        push(@{$container->{items}}, $item);
+
+    }
+    elsif ($key eq '<' and $chooser->{block_name} eq 'loot_list') {
+        my $chooser_position_loot_list = $chooser->{position}{loot_list};
+        my ($item) = splice(@{$container->{items}}, $chooser_position_loot_list, 1);
+        push(@{$bag->{items}}, $item);
+
     }
 
     return;

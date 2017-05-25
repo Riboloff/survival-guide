@@ -65,7 +65,7 @@ sub get_text_array {
         my $line_buffer = [];
         for my $word (@$words_array) {
             my $size_word = scalar @$word;
-            if ((scalar @$line_buffer + $size_word - 1) <= $line_size) {
+            if ((scalar @$line_buffer + $size_word) <= $line_size) {
                 push(@$line_buffer, @$word);
             } else {
                 push(@new_lines, $line_buffer);

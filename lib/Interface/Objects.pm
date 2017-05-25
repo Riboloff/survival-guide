@@ -104,9 +104,6 @@ sub process_block {
         $interface->{objects}{size}[$LT][$X]
     ];
     Interface::Utils::overlay_arrays_simple($objects_array, $list_obj_array, $offset_list_obj);
-    for (@$objects_array) {
-        dmp ($_)
-    }
     Interface::Utils::overlay_arrays_simple($objects_array, $actions_array, $offset_actions);
 
     Interface::Utils::overlay_arrays_simple($main_array, $objects_array, $offset_objects);

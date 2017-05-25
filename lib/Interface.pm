@@ -127,10 +127,6 @@ sub _data_print_init {
                 $array->[$y][$x]->{symbol} = 'ǁ';
                 $array->[$y][$x]->{color} = '';
             }
-            #if ($y < $y_bound_map and $x == $x_bound_list_obj) {
-            #    $array->[$y][$x]->{symbol} = 'ǁ';
-            #    $array->[$y][$x]->{color} = '';
-            #}
         }
     }
 

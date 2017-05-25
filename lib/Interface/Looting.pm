@@ -83,6 +83,10 @@ sub process_desc_item {
     my $position_chooser = $chooser->{position}{$chooser_block_name};
     my $item = $chooser->{list}{$chooser_block_name}[$position_chooser];
 
+    if (!defined $item) {
+        return [];
+    }
+
     my $text = $item->get_desc(); 
     my $area = $interface->{looting}{desc_item}{size};
     my $size_area = Interface::Utils::get_size($area);
