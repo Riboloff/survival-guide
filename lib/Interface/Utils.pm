@@ -26,9 +26,12 @@ sub overlay_arrays_simple {
     my $lower_layer = shift;
     my $top_layer = shift;
     my $offset = shift || [0, 0];
-    
+   
     my $offset_y = $offset->[$Y];
     my $offset_x = $offset->[$X];
+    if ($offset_y < 0 or $offset_x < 0) {
+        die('$offset_y < 0 or $offset_x < 0');
+    } 
     for (my $y = 0; $y < @$top_layer; $y++) {
         for (my $x = 0; $x < @{$top_layer->[0]}; $x++) {
             my $symbol = $top_layer->[$y][$x];
@@ -76,7 +79,8 @@ sub clear_area {
     my $offset_x = $offset->[$X];
     for (my $y = 0; $y < $size_area_map->[$Y]; $y++) {
         for (my $x = 0; $x < $size_area_map->[$X]; $x++) {
-            $main_array->[$y + $offset_y][$x + $offset_x] = ' ';
+            $main_array->[$y + $offset_y][$x + $offset_x]->{symbol} = ' ';
+            $main_array->[$y + $offset_y][$x + $offset_x]->{color} = '';
         }
     }
 }

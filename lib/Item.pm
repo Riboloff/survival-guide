@@ -6,10 +6,9 @@ use warnings;
 use utf8;
 
 sub new {
-    my ($self, $name, $type, $desc) = @_;
+    my ($self, $name, $desc) = @_;
 
     my $item = {
-        'type' => $type,
         'name' => $name,
         'desc' => $desc,
     };
@@ -23,12 +22,6 @@ sub get_name {
     my $self = shift;
 
     return $self->{name};
-}
-
-sub get_type {
-    my $self = shift;
-
-    return $self->{type};
 }
 
 sub get_desc {

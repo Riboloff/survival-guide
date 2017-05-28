@@ -6,6 +6,7 @@ use warnings;
 use Storable qw(dclone);
 use Term::ANSIColor;
 use Term::ReadKey;
+use JSON;
 
 use Logger qw(dmp);
 
@@ -21,19 +22,24 @@ sub new {
     my $file_name = shift;
 
     my $map_txt = "";
+    my $map_conf = {};
     {
         local $/;
         open(my $in_file_map, '<:utf8' , "map/$file_name") or die();
         $map_txt = <$in_file_map>;
         close($in_file_map);
+
+        open(my $in_file_map_conf, '<:utf8' , "map/$file_name.conf") or die();
+        my $map_conf_json = <$in_file_map_conf>;
+        $map_conf = JSON::from_json($map_conf_json);
+        close($in_file_map_conf);
     }
     my $map = [];
-
     my @lines = split(/\n/, $map_txt);
     for (my $y = 0; $y < @lines; $y++) {
         my @symbols_line = split('', $lines[$y]);
         for (my $x = 0; $x < @symbols_line; $x++ ) {
-            my $cell = Cell->new($symbols_line[$x]);
+            my $cell = Cell->new($symbols_line[$x], $map_conf->{"$y,$x"}, "$y,$x");
             $map->[$y][$x] = $cell;
         }
     }
@@ -54,11 +60,11 @@ sub get_map_static {
         for(my $x = 0; $x < @{$map_stat->[$y]}; $x++) {
             my $print = '';
             my $cell = $map_stat->[$y][$x];
-            if ($cell->{element} eq '') {
+            if ($cell->{icon} eq '') {
                 $map_array->[$y][$x]->{symbol} = ' ';
                 $map_array->[$y][$x]->{color} = '';
             } else {
-                $map_array->[$y][$x]->{symbol} = $cell->{element};
+                $map_array->[$y][$x]->{symbol} = $cell->{icon};
                 $map_array->[$y][$x]->{color} = $cell->{color} || '';
             }
         }
@@ -74,7 +80,7 @@ sub _placement_character {
     my $coord = $character->get_coord();
     my $y = $coord->[$Y];
     my $x = $coord->[$X];
-    $map->[$y][$x]->{element} = $character->{symbol};
+    $map->[$y][$x]->{icon} = $character->{symbol};
     $map->[$y][$x]->{color} = 'red';
 
     return $map;

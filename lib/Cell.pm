@@ -2,38 +2,57 @@ package Cell;
 
 use strict;
 use warnings;
+use utf8;
 
 use lib qw/lib/;
 use Container;
 use Item;
-use utf8;
+use Consts;
+use Language;
+use Logger qw(dmp);
 
 sub new {
     my $self = shift;
-    my $element = shift || '';
+    my $icon = shift || '';
+    my $conf = shift;
+    my $cord = shift;
+
 
     my $cell = {
-        'element' => $element,
+        'icon' => $icon,
         'blocker' => 0,
         'type' => '',
         'obj' => '',
     };
+    if ($icon eq 'C' and (ref $conf eq 'HASH') ) {
+       $cell->{icon} = $conf->{icon};
+       $cell->{type} = $conf->{type};
+       $cell->{blocker} = $conf->{blocker} || 1;
 
-    if ($element =~ /[-|+]/) {
+       $cell->{name_id} = $conf->{name_id};
+       my $obj_text = Language::get_text_object($cell->{name_id});
+       my $name = $obj_text->{name}; 
+       my $desc = $obj_text->{desc};
+       my $items_id = $conf->{items_id};
+       my $actions = $conf->{actions};
+       my $items = _get_items($items_id);
+       $cell->{obj} = Container->new($name, $items, $actions);
+    }
+    if ($icon =~ /[-|+]/) {
         $cell->{blocker} = 1;
         $cell->{type} = 'wall';
     }
-    if ($element =~ /[⊟]/) {
+    if ($icon =~ /[⊟]/) {
         $cell->{blocker} = 1;
         $cell->{type} = 'Container';
         $cell->{obj} = Container->new('Полка', _create_items_for_test(4), ['открыть', 'взломать']);
     }
-    if ($element =~ /[⊔]/) {
+    if ($icon =~ /[⊔]/) {
         $cell->{blocker} = 1;
         $cell->{type} = 'Container';
         $cell->{obj} = Container->new('Коробка', _create_items_for_test(3), ['открыть', 'взломать', 'посмотреть']);
     }
-    if ($element =~ /[⁘]/) {
+    if ($icon =~ /[⁘]/) {
         $cell->{blocker} = 1;
         $cell->{type} = 'Container';
         $cell->{obj} = Container->new('Куча мусора', _create_items_for_test(5), ['посмотреть', 'открыть', 'взломать']);
@@ -44,10 +63,10 @@ sub new {
     return $cell;
 }
 
-sub get_element {
+sub get_icon {
     my $self = shift;
 
-    return $self->{element};
+    return $self->{icon};
 }
 
 
@@ -69,11 +88,25 @@ sub _create_items_for_test {
     my $items = [];
     for (0 .. $count) {
         my $name = 'предмет' . int(rand(10));
-        my $type = 'loot';
         my $file_name = 'desc_item';
         $file_name .=  int(rand(3)) + 1;
         my $desc = Text->new($file_name);
-        push(@$items, Item->new($name, $type, $desc));
+        push(@$items, Item->new($name, $desc));
+    }
+
+    return $items;
+}
+
+sub _get_items {
+    my $items_id = shift;
+
+    my $items = [];
+    for my $id (@$items_id) {
+        my $file_name = $Consts::items_id->{$id};
+        my $hash = Language::read_json_file("text/items/$file_name");
+        my $desc = Text->new(undef, $hash->{desc});
+        my $name = $hash->{name};
+        push(@$items, Item->new($name, $desc));
     }
 
     return $items;

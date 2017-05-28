@@ -19,11 +19,10 @@ use Printer;
 use Logger qw(dmp dmp_array);
 use Interface::Map;
 use Interface::Text;
-#use Interface::ListObj;
-#use Interface::Actions;
 use Interface::Objects;
 use Interface::Inv;
 use Interface::Looting;
+use Interface::Size;
 
 sub new {
     my $self = shift;
@@ -35,70 +34,60 @@ sub new {
 
     system('clear');
 
-    my $size_interface = _get_size_interface();
-    my $size_area_map = _get_size_area_map($size_interface);
-    my $size_area_text = _get_size_area_text($size_interface, $size_area_map),
-    my $size_area_list_obj = _get_size_area_list_obj($size_interface, $size_area_map);
-    my $size_area_action = _get_size_area_action($size_interface, $size_area_list_obj);
-    my $size_area_objects = _get_size_area_objects($size_area_list_obj, $size_area_action);
-    my $size_area_inv = _get_size_area_inv($size_interface, $size_area_map);
-    my $size_area_bag = _get_size_area_bag($size_interface, $size_area_inv);
-    my $size_area_harness = _get_size_area_harness($size_interface, $size_area_inv, $size_area_bag);
-    my $size_area_loot_list = _get_size_area_loot_list($size_interface, $size_area_bag);
-    my $size_area_looting = _get_size_area_looting($size_area_inv);
-    my $size_area_desc_item = _get_size_area_desc_item($size_area_looting, $size_area_loot_list);
-    my $data_print = _data_print_init($size_interface, $size_area_map, $size_area_list_obj);
-
-    $text_obj->inition($size_area_text);
 
     my $hash = {
         main_block_show => 'map', #map, looting, inv
         map => {
             obj => $map,
-            size => $size_area_map,
+            size => [],
         },
         character => $character,
-        size => $size_interface,
-        data_print  => $data_print,
+        size => [],
+        data_print  => [],
         old_data_print => [],
         text => {
             obj => $text_obj,
-            size => $size_area_text,
+            size => [],
         },
         objects => {
             list_obj => {
-                size => $size_area_list_obj,
-                #chooser_list => [],
+                size => [],
             },
             action => {
-                size => $size_area_action,
+                size => [],
             },
-            size => $size_area_objects,
+            size => [],
         },
         chooser => $chooser,
         inv => {
             obj => $inv,
-            size => $size_area_inv,
+            size => [],
             bag => {
-                size => $size_area_bag,
+                size => [],
             },
             harness => {
-                size => $size_area_harness,
+                size => [],
             },
         },
         looting => {
-            size => $size_area_looting,
+            size => [],
             bag => {
-                size => $size_area_bag,
+                size => [],
             },
             loot_list => {
-                size => $size_area_loot_list,
+                size => [],
             },
             desc_item => {
-                size => $size_area_desc_item,
+                size => [],
             },
         }
     };
+
+    set_size_all_block($hash);
+    
+    $hash->{data_print} = _data_print_init($hash->{size}, $hash->{map}{size});
+
+    $text_obj->inition($hash->{text}{size});
 
     return bless($hash, $self);
 }
@@ -106,14 +95,10 @@ sub new {
 sub _data_print_init {
     my $size_interface = shift;
     my $size_area_map = shift;
-    my $size_area_list_obj = shift;
 
     my $array = [];
     my $y_bound_map = $size_area_map->[$RD][$Y];
     my $x_bound_map = $size_area_map->[$RD][$X];
-
-    my $y_bound_list_obj = $size_area_list_obj->[$RD][$Y];
-    my $x_bound_list_obj = $size_area_list_obj->[$RD][$X];
 
     for my $y (0 .. $size_interface->[$RD][$Y] - 1) {
         for my $x (0 .. $size_interface->[$RD][$X] - 1) {
@@ -146,7 +131,6 @@ sub print {
         $self->_process_block('all');
         my $array = $self->{data_print};
         $self->{old_data_print} = dclone($array);
-        #Printer::clean_screen();
         Printer::print_all($array);
     } else {
         for my $block (keys %$process_block) {
@@ -163,23 +147,21 @@ sub _process_block {
     my $self = shift;
     my $block = shift;
 
-    if ($block eq 'map') {
+    if ($block eq 'all') {
+        Interface::Map::process_block($self);
+        Interface::Text::process_block($self);
+        Interface::Objects::process_block($self);
+    }
+    elsif ($block eq 'map') {
         Interface::Map::process_block($self);
     } elsif ($block eq 'text') {
         Interface::Text::process_block($self);
     } elsif ($block eq 'objects') {
         Interface::Objects::process_block($self);
-        #} elsif ($block eq 'action') {
-        #Interface::Actions::process_block($self);
     } elsif ($block eq 'inv') {
         Interface::Inv::process_block($self);
     } elsif ($block eq 'looting') {
         Interface::Looting::process_block($self);
-    } elsif ($block eq 'all') {
-        Interface::Map::process_block($self);
-        Interface::Text::process_block($self);
-        #Interface::ListObj::process_block($self);
-        Interface::Objects::process_block($self);
     }
 }
 
@@ -240,212 +222,16 @@ sub clean_after_itself {
     }
 }
 
-sub _get_size_area_action {
-    my $size_interface = shift;
-    my $size_area_list_obj = shift;
-
-    my $size_area_action = [];
-
-    $size_area_action->[$LT] = [
-        0,
-        $size_area_list_obj->[$RD][$X] + 1
-    ];
-    $size_area_action->[$RD] = [
-        $size_area_list_obj->[$RD][$Y],
-        $size_interface->[$RD][$X]
-    ];
-
-    return $size_area_action;
-}
-
-sub _get_size_area_objects {
-    my $size_area_list_obj = shift;
-    my $size_area_action = shift;
-
-    my $size_area_objects = [];
-
-    $size_area_objects->[$LT] = [
-        $size_area_list_obj->[$LT][$Y],
-        $size_area_list_obj->[$LT][$X],
-
-    ];
-    $size_area_objects->[$RD] = [
-        $size_area_action->[$RD][$Y],
-        $size_area_action->[$RD][$X],
-    ];
-
-    return $size_area_objects;
-}
-
-sub _get_size_area_list_obj {
-    my $size_interface = shift;
-    my $size_area_map  = shift;
-
-    my $size_area_list_obj = [];
-
-
-    $size_area_list_obj->[$LT] = [
-        0,
-        $size_area_map->[$RD][$X] + 1
-    ];
-    $size_area_list_obj->[$RD] = [
-        $size_area_map->[$RD][$Y],
-        int( ($size_interface->[$RD][$X] - $size_area_map->[$RD][$X]+1) / 2) + $size_area_map->[$RD][$X] - 1
-    ];
-
-    return $size_area_list_obj;
-}
-
-sub _get_size_interface {
-    return [
-        [0, 0],
-        [$size_term->[$Y], $size_term->[$X]]
-    ];
-}
-
-sub _get_size_area_text {
-    my $size_interface = shift;
-    my $size_area_map  = shift;
-
-    my $size_area_text = [];
-
-    $size_area_text->[$LT] = [
-        $size_area_map->[$RD][$Y] + 1,
-        0
-    ];
-    $size_area_text->[$RD] = [
-        $size_interface->[$RD][$Y],
-        $size_area_map->[$RD][$X]
-    ];
-
-    return $size_area_text;
-}
-
-sub _get_size_area_map {
-    my $size_interface = shift;
-
-    return [
-        [0,0],
-        [
-            int($size_interface->[$RD][$Y] * 0.7),
-            int($size_interface->[$RD][$X] * 0.7)
-        ]
-    ];
-}
-
-sub _get_size_area_inv {
-    my $size_interface = shift;
-    my $size_area_map  = shift;
-
-    my $size_area_inv = [];
-
-    $size_area_inv->[$LT] = [
-        $size_area_map->[$LT][$Y],
-        $size_area_map->[$LT][$X]
-    ];
-    $size_area_inv->[$RD] = [
-        $size_area_map->[$RD][$Y],
-        $size_area_map->[$RD][$X]
-    ];
-
-    return $size_area_inv;
-}
-
-sub _get_size_area_bag {
-    my $size_interface = shift;
-    my $size_area_inv  = shift;
-
-    my $size_area_bag = [];
-
-    $size_area_bag->[$LT] = [
-        $size_area_inv->[$LT][$Y],
-        $size_area_inv->[$LT][$X]
-    ];
-    $size_area_bag->[$RD] = [
-        $size_area_inv->[$RD][$Y],
-        int( $size_area_inv->[$RD][$X] / 3)
-    ];
-
-    return $size_area_bag;
-}
-
-sub _get_size_area_harness {
-    my $size_interface = shift;
-    my $size_area_inv  = shift;
-    my $size_area_bag  = shift;
-
-    my $size_area_harness = [];
-
-    $size_area_harness->[$LT] = [
-        $size_area_bag->[$LT][$Y],
-        $size_area_bag->[$RD][$X]+1
-    ];
-    $size_area_harness->[$RD] = [
-        $size_area_inv->[$RD][$Y],
-        $size_area_inv->[$RD][$X],
-    ];
-
-    return $size_area_harness;
-}
-
-sub _get_size_area_loot_list {
-    my $size_interface = shift;
-    my $size_area_bag  = shift;
-
-    my $size_area_loot_list = [];
-
-    $size_area_loot_list->[$LT] = [
-        $size_area_bag->[$LT][$Y],
-        $size_area_bag->[$RD][$X]+1
-    ];
-    my $size_bag = Interface::Utils::get_size($size_area_bag);
-    $size_area_loot_list->[$RD] = [
-        $size_area_bag->[$RD][$Y],
-        $size_area_bag->[$RD][$X] + $size_bag->[$X],
-    ];
-
-    return $size_area_loot_list;
-}
-
-sub _get_size_area_desc_item {
-    my $size_area_looting = shift;
-    my $size_area_loot_list  = shift;
-
-    my $size_area_desc_item = [];
-
-    $size_area_desc_item->[$LT] = [
-        $size_area_loot_list->[$LT][$Y],
-        $size_area_loot_list->[$RD][$X]+1
-    ];
-    $size_area_desc_item->[$RD] = [
-        $size_area_looting->[$RD][$Y],
-        $size_area_looting->[$RD][$X],
-    ];
-
-    return $size_area_desc_item;
-}
-
-sub _get_size_area_looting {
-    my $size_inv = shift;
-
-    my $size_area_looting = [];
-
-    $size_area_looting->[$LT] = [
-        $size_inv->[$LT][$Y],
-        $size_inv->[$LT][$X]
-    ];
-    $size_area_looting->[$RD] = [
-        $size_inv->[$RD][$Y],
-        $size_inv->[$RD][$X]
-    ];
-
-    return $size_area_looting;
-}
-
 sub get_main_block_show {
     my $self = shift;
 
     return $self->{main_block_show};
+}
+
+sub set_size_all_block {
+    my $self = shift;
+
+    Interface::Size::set_size_all_block($self);
 }
 
 1;

@@ -3,23 +3,23 @@ package Text;
 use strict;
 use warnings;
 use utf8;
-use Storable qw(dclone);
 
+use Storable qw(dclone);
+use JSON;
 
 use lib qw(lib);
 use Logger qw(dmp);
 use Consts qw($X $Y $LT $RD);
-use open ':encoding(utf8)';
+use Language;
+
 sub new {
     my $self = shift;
     my $file_name = shift;
+    my $text = shift;
 
-    my $text = "";
-    {
-        local $/;
-        open(my $in_file_text, '<' , "text/$file_name") or die();
-        $text = <$in_file_text>;
-        close($in_file_text);
+    if (!$text) {
+        $file_name = "text/$file_name";
+        $text = Language::read_json_file($file_name);
     }
     my $hash = {
         text => $text,

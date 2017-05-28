@@ -92,12 +92,12 @@ sub process_block {
     my $actions_array = process_actions($interface); 
 
     my $offset_list_obj = [
-        $interface->{objects}{size}[$LT][$Y] - $interface->{objects}{list_obj}{size}[$LT][$Y],
-        $interface->{objects}{size}[$LT][$X] - $interface->{objects}{list_obj}{size}[$LT][$X]
+        $interface->{objects}{list_obj}{size}[$LT][$Y] - $interface->{objects}{size}[$LT][$Y],
+        $interface->{objects}{list_obj}{size}[$LT][$X] - $interface->{objects}{size}[$LT][$X]
     ];
     my $offset_actions = [
-        $interface->{objects}{size}[$LT][$Y] - $interface->{objects}{action}{size}[$LT][$Y],
-        $interface->{objects}{size}[$LT][$X] - $interface->{objects}{action}{size}[$LT][$X]
+        $interface->{objects}{action}{size}[$LT][$Y] - $interface->{objects}{size}[$LT][$Y],
+        $interface->{objects}{action}{size}[$LT][$X] - $interface->{objects}{size}[$LT][$X]
     ];
     my $offset_objects = [
         $interface->{objects}{size}[$LT][$Y],

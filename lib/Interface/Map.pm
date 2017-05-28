@@ -68,21 +68,8 @@ sub overlay_bigmap_and_area {
     }
 
     my $offset = [$offset_y, $offset_x];
-
     Interface::Utils::clear_area($main_array, $size_area_map);
     overlay_arrays($main_array, $map_array, $offset, $bound); 
-}
-
-sub _get_size_area_map {
-    my $size_interface = shift;
-
-    return [
-        [0,0],
-        [
-            int($size_interface->[$RD][$Y] * 0.7), 
-            int($size_interface->[$RD][$X] * 0.7)
-        ]
-    ];
 }
 
 sub overlay_arrays {

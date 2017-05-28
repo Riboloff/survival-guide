@@ -40,6 +40,12 @@ while() {
     # my $key = ReadKey(-1);
     ReadMode('normal');
 
+    if (is_change_term_size()) {
+        $interface->set_size_all_block();
+        $interface->{data_print} = Interface::_data_print_init($interface->{size}, $interface->{map}{size});
+        $process_block->{all} = 1;
+        next;
+    }
     if ($key eq "\n") { #Enter заменить на нормальный сигнал
         _enter();
     }
@@ -109,6 +115,7 @@ while() {
             $chooser->{block_name} = 'list_obj';
             $chooser->{position}{inv} = 0;
             $process_block->{all} = 1;
+            next;
         }
     }
     if ($key =~ /^[><]$/) {
@@ -128,6 +135,9 @@ sub _enter {
            $chooser->{position}{bag} = 0;
            $chooser->{block_name} = 'bag';
            $process_block->{looting} = 1;
+        }
+        if ($chooser->{list}{action}[$position] eq 'посмотреть') {
+           $process_block->{text} = 1;
         }
     }
 }
@@ -241,6 +251,23 @@ sub _move_item {
         my ($item) = splice(@{$container->{items}}, $chooser_position_loot_list, 1);
         push(@{$bag->{items}}, $item);
 
+    }
+
+    return;
+}
+
+sub is_change_term_size {
+    my ($wchar_current, $hchar_current) = GetTerminalSize();
+
+    $wchar_current--;
+    $hchar_current--;
+    if (   $Consts::size_term->[$X] != $wchar_current 
+        or $Consts::size_term->[$Y] != $hchar_current
+    ) {
+         $Consts::size_term->[$X] = $wchar_current;
+         $Consts::size_term->[$Y] = $hchar_current;
+
+         return 1;
     }
 
     return;

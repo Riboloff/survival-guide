@@ -8,7 +8,7 @@ use Term::Cap;
 use lib qw(lib);
 
 use Exporter 'import';
-our @EXPORT = qw($X $Y $LT $RD $size_term);
+our @EXPORT = qw($X $Y $LT $RD $size_term $items_id $objects_id);
 
 our $X = 1;
 our $Y = 0;
@@ -22,5 +22,14 @@ $wchar--;
 $hchar--;
 
 our $size_term = [$hchar, $wchar];
+
+our $items_id = {
+    1 => 'medicine_box',
+};
+
+our $objects_id = {
+    1 => 'shelf',
+};
+
 
 1;
