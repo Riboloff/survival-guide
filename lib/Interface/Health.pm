@@ -11,7 +11,7 @@ use Logger qw(dmp dmp_array);
 sub health_line {
     my $interface = shift;
 
-    my $helth_percent = 10;
+    my $helth_percent = 24;
     my $area = [
         [
             $interface->{health}{size}[$LT][$Y],
@@ -27,8 +27,8 @@ sub health_line {
     my $health_line_array = Interface::Utils::init_array($area, $size_area);
     my $line = ["Здоровье $helth_percent%"];
 
-    my $color_line = 'on_white';
-    my $color_text = 'red';
+    my $color_line = 'on_red';
+    my $color_text = 'white';
 
     my $args = {
         line => $line,
