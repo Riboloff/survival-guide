@@ -32,7 +32,7 @@ sub print_diff {
         $console->Cursor($x, $y);
         print colored(
             $diff->{$yx}->{symbol},
-            $diff->{$yx}->{color}
+            split(/,/, $diff->{$yx}->{color})
         );
     }
 
@@ -50,7 +50,7 @@ sub print_all {
 
             $symbol = " " if ($symbol eq '');
             if ($color) {
-                print colored($symbol, $color);
+                print colored($symbol, split(/,/, $color));
             } else {
                 print $symbol;
             }

@@ -23,6 +23,7 @@ use Interface::Objects;
 use Interface::Inv;
 use Interface::Looting;
 use Interface::Size;
+use Interface::Health;
 
 sub new {
     my $self = shift;
@@ -80,6 +81,9 @@ sub new {
             desc_item => {
                 size => [],
             },
+        },
+        health => {
+            size => [],
         }
     };
 
@@ -151,6 +155,7 @@ sub _process_block {
         Interface::Map::process_block($self);
         Interface::Text::process_block($self);
         Interface::Objects::process_block($self);
+        Interface::Health::process_block($self);
     }
     elsif ($block eq 'map') {
         Interface::Map::process_block($self);
@@ -162,6 +167,8 @@ sub _process_block {
         Interface::Inv::process_block($self);
     } elsif ($block eq 'looting') {
         Interface::Looting::process_block($self);
+    } elsif ($block eq 'health') {
+        Interface::Health::process_block($self);
     }
 }
 

@@ -7,12 +7,10 @@ use utf8;
 use Consts;
 use Interface::Utils;
 use Logger qw(dmp dmp_array);
-use Interface::Utils;
 
 sub process_list_obj {
     my $interface = shift;
 
-    my $main_array = $interface->{data_print};
     my $map = $interface->{map}{obj};
     my $character = $interface->{character};
     my $containers = $map->get_container_nigh($character);
@@ -48,7 +46,6 @@ sub process_list_obj {
 sub process_actions {
     my $interface = shift;
 
-    my $main_array = $interface->{data_print};
     my $chooser = $interface->{chooser}; 
     my $list_obj = $chooser->{list}{list_obj};
     my $position_list_obj = $chooser->{position}{list_obj};
