@@ -19,27 +19,26 @@ sub health_line {
         ],
         [
             $interface->{health}{size}[$LT][$Y] + 1,
-            int(
-                $interface->{health}{size}[$LT][$X] 
-                + ($interface->{health}{size}[$RD][$X] - $interface->{health}{size}[$LT][$X]) * ($helth_percent / 100)
-            )
+            $interface->{health}{size}[$RD][$X]
         ]
     ];
     my $size_area = Interface::Utils::get_size($area);
 
     my $health_line_array = Interface::Utils::init_array($area, $size_area);
-    my $list = ["Здоровье $helth_percent%"];
+    my $line = ["Здоровье $helth_percent%"];
 
-    my $color_chooser = 'on_white,red';
+    my $color_line = 'on_white';
+    my $color_text = 'red';
 
     my $args = {
-        list => $list,
+        line => $line,
         array => $health_line_array,
-        chooser_position => 0,
         size_area => $size_area,
-        color_chooser => $color_chooser,
+        color_line => $color_line,
+        color_text => $color_text,
+        color_percent => $helth_percent,
     };
-    $health_line_array = Interface::Utils::list_to_array_symbols($args);
+    $health_line_array = Interface::Utils::one_line_to_array_symbols($args);
 
     return $health_line_array;
 }
