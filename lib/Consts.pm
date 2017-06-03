@@ -46,4 +46,8 @@ use constant OPEN     => 1;
 use constant WATCH    => 2;
 use constant LOCKPICK => 3;
 
+use constant MEDICINE_BOX => 1;
+
+use constant SHELF => 1;
+
 1;

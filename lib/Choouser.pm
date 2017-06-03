@@ -73,17 +73,23 @@ sub add_list {
     $self->{list}{$block_name} = $list;
 }
 
-sub get_target_object_name {
+sub get_target_object {
     my $self = shift;
 
     my $block_name = $self->{block_name};
     my $position = $self->{position}{$block_name};
     my $obj = $self->{list}{$block_name}->[$position];
-    my $type = '';
-    if (defined $obj) {
-        $type = $obj->get_type;
-    }
-    return  $type;
+
+    return  $obj;
+}
+
+sub get_target_list {
+    my $self = shift;
+
+    my $block_name = $self->{block_name};
+    my $list = $self->{list}{$block_name};
+
+    return  $list;
 }
 
 1;

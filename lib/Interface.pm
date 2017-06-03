@@ -88,7 +88,7 @@ sub new {
     };
 
     set_size_all_block($hash);
-    
+
     $hash->{data_print} = _data_print_init($hash->{size}, $hash->{map}{size});
 
     $text_obj->inition($hash->{text}{size});
@@ -138,6 +138,19 @@ sub print {
         Printer::print_all($array);
     } else {
         for my $block (keys %$process_block) {
+            if (
+                   $block eq 'loot_list'
+                or $block eq 'bag'
+            ) {
+                $block = 'looting';
+            }
+            elsif (
+                   $block eq 'list_obj'
+                or $block eq 'action'
+            ) {
+                $block = 'objects';
+            }
+
             $self->_process_block($block);
             $self->_get_screen_diff($block);
         }

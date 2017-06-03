@@ -64,19 +64,7 @@ while() {
     if ($key =~ /^[JjKk]$/) {
         _move_chooser($key);
         my $chooser_block_name = $chooser->{block_name};
-        if (
-            $chooser_block_name eq 'loot_list'
-            or $chooser_block_name eq 'bag'
-        ) {
-            $process_block->{looting} = 1;
-        } elsif(
-            $chooser_block_name eq 'list_obj'
-            or $chooser_block_name eq 'action'
-        ) {
-            $process_block->{objects} = 1;
-        } else {
-            $process_block->{$chooser_block_name} = 1;
-        }
+        $process_block->{$chooser_block_name} = 1;
 
     }
     if ($key =~ /^[Ll]$/) {
@@ -130,17 +118,33 @@ while() {
        $process_block->{needs} = 1;
     }
     if ($key =~ /^[eE]$/) {
-        dmp($chooser->get_target_object_name());
-        if ($chooser->get_target_object_name() eq 'item') {
-
+        my $obj = $chooser->get_target_object();
+        if ($obj and $obj->get_type eq 'item') {
+            my $item = $obj;
+            $item->used($character);
+            $process_block->{needs} = 1;
+            my $block = $chooser->{block_name};
+            $process_block->{$block} = 1;
+            _delete_item($chooser, $item);
         }
+    }
+}
+
+sub _delete_item {
+    my $chooser = shift;
+    my $item = shift;
+
+    my $items = $chooser->get_target_list() || [];
+
+    for (my $i = 0; $i < @$items; $i++) {
+        splice($items, $i, 1);
     }
 }
 
 sub _enter {
     if ($chooser->{block_name} eq 'action') {
         my $position = $chooser->get_position();
-        if ($chooser->{list}{action}[$position]->get_proto_id() eq Consts::OPEN) {
+        if ($chooser->{list}{action}[$position]->get_proto_id() == Consts::OPEN) {
            $chooser->{position}{loot_list} = 0;
            $chooser->{position}{bag} = 0;
            $chooser->{block_name} = 'loot_list';

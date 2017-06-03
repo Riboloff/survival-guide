@@ -62,8 +62,7 @@ sub create_new_id {
 sub create_new_desc {
     my $file_desc = shift;
     open(my $inf, '<', "$file_desc");
-    #my $desc = ..... 
-    return ;#$desc;
+    return ;
 }
 
 1;
