@@ -9,7 +9,7 @@ use JSON;
 
 use lib qw(lib);
 use Logger qw(dmp);
-use Consts qw($X $Y $LT $RD);
+use Consts; 
 use Language;
 
 sub new {

@@ -125,18 +125,28 @@ while() {
             $process_block->{looting} = 1;
         }
     }
+    if ($key =~ /^[-]$/) {
+       $character->get_health->sub_hp('1');
+       $process_block->{needs} = 1;
+    }
+    if ($key =~ /^[eE]$/) {
+        dmp($chooser->get_target_object_name());
+        if ($chooser->get_target_object_name() eq 'item') {
+
+        }
+    }
 }
 
 sub _enter {
     if ($chooser->{block_name} eq 'action') {
         my $position = $chooser->get_position();
-        if ($chooser->{list}{action}[$position] eq 'открыть') {
+        if ($chooser->{list}{action}[$position]->get_proto_id() eq Consts::OPEN) {
            $chooser->{position}{loot_list} = 0;
            $chooser->{position}{bag} = 0;
-           $chooser->{block_name} = 'bag';
+           $chooser->{block_name} = 'loot_list';
            $process_block->{looting} = 1;
         }
-        if ($chooser->{list}{action}[$position] eq 'посмотреть') {
+        if ($chooser->{list}{action}[$position]->get_proto_id() == Consts::WATCH) {
            $process_block->{text} = 1;
         }
     }
@@ -261,7 +271,7 @@ sub is_change_term_size {
 
     $wchar_current--;
     $hchar_current--;
-    if (   $Consts::size_term->[$X] != $wchar_current 
+    if (   $Consts::size_term->[$X] != $wchar_current
         or $Consts::size_term->[$Y] != $hchar_current
     ) {
          $Consts::size_term->[$X] = $wchar_current;

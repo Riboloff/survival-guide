@@ -48,6 +48,13 @@ sub get_position {
 
     return $self->{position}{$block_name};
 }
+sub set_position {
+    my $self = shift;
+    my $block_name = shift;
+    my $position = shift;
+
+    $self->{position}{$block_name} = $position;
+}
 
 sub reset_position {
     my $self = shift;
@@ -64,6 +71,19 @@ sub add_list {
     my $block_name = shift || $self->{block_name};
 
     $self->{list}{$block_name} = $list;
+}
+
+sub get_target_object_name {
+    my $self = shift;
+
+    my $block_name = $self->{block_name};
+    my $position = $self->{position}{$block_name};
+    my $obj = $self->{list}{$block_name}->[$position];
+    my $type = '';
+    if (defined $obj) {
+        $type = $obj->get_type;
+    }
+    return  $type;
 }
 
 1;

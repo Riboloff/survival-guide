@@ -6,11 +6,13 @@ use warnings;
 use utf8;
 
 sub new {
-    my ($self, $name, $desc) = @_;
+    my ($self, $name, $desc, $proto_id) = @_;
 
     my $item = {
-        'name' => $name,
-        'desc' => $desc,
+        'name'       => $name,
+        'desc'       => $desc,
+        'type'       => 'item',
+        'proto_id'   => $proto_id,
     };
 
     bless($item, $self);
@@ -22,6 +24,12 @@ sub get_name {
     my $self = shift;
 
     return $self->{name};
+}
+
+sub get_type {
+    my $self = shift;
+
+    return $self->{type};
 }
 
 sub get_desc {

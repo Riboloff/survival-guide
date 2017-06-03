@@ -7,6 +7,7 @@ use utf8;
 use lib qw/lib/;
 use Container;
 use Item;
+use Action;
 use Consts;
 use Language;
 use Logger qw(dmp);
@@ -34,28 +35,14 @@ sub new {
        my $name = $obj_text->{name}; 
        my $desc = $obj_text->{desc};
        my $items_id = $conf->{items_id};
-       my $actions = $conf->{actions};
+       my $actions_id = $conf->{actions_id};
+       my $actions = _get_actions($actions_id);
        my $items = _get_items($items_id);
        $cell->{obj} = Container->new($name, $items, $actions);
     }
     if ($icon =~ /[-|+]/) {
         $cell->{blocker} = 1;
         $cell->{type} = 'wall';
-    }
-    if ($icon =~ /[⊟]/) {
-        $cell->{blocker} = 1;
-        $cell->{type} = 'Container';
-        $cell->{obj} = Container->new('Полка', _create_items_for_test(4), ['открыть', 'взломать']);
-    }
-    if ($icon =~ /[⊔]/) {
-        $cell->{blocker} = 1;
-        $cell->{type} = 'Container';
-        $cell->{obj} = Container->new('Коробка', _create_items_for_test(3), ['открыть', 'взломать', 'посмотреть']);
-    }
-    if ($icon =~ /[⁘]/) {
-        $cell->{blocker} = 1;
-        $cell->{type} = 'Container';
-        $cell->{obj} = Container->new('Куча мусора', _create_items_for_test(5), ['посмотреть', 'открыть', 'взломать']);
     }
 
     bless($cell, $self);
@@ -106,10 +93,24 @@ sub _get_items {
         my $hash = Language::read_json_file("text/items/$file_name");
         my $desc = Text->new(undef, $hash->{desc});
         my $name = $hash->{name};
-        push(@$items, Item->new($name, $desc));
+        push(@$items, Item->new($name, $desc, $id));
     }
 
     return $items;
+}
+
+sub _get_actions {
+    my $actions_id = shift;
+
+    my $actions = [];
+    for my $id (@$actions_id) {
+        my $file_name = $Consts::actions_id->{$id};
+        my $hash = Language::read_json_file("text/actions/$file_name");
+        my $name = $hash->{name};
+        push(@$actions, Action->new($name, $id));
+    }
+
+    return $actions;
 }
 
 1;

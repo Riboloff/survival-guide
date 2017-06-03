@@ -210,23 +210,23 @@ sub get_size_area_looting {
     return $size_area_looting;
 }
 
-sub get_size_area_health {
+sub get_size_area_needs {
     my $size_interface = shift;
     my $size_area_text = shift;
 
-    my $size_area_health = [];
+    my $size_area_needs = [];
 
-    $size_area_health->[$LT] = [
+    $size_area_needs->[$LT] = [
         $size_area_text->[$LT][$Y],
         $size_area_text->[$RD][$X] + 1,
     
     ];
-    $size_area_health->[$RD] = [
+    $size_area_needs->[$RD] = [
         $size_interface->[$RD][$Y],
         $size_interface->[$RD][$X]
     ];
 
-    return $size_area_health;
+    return $size_area_needs;
 }
 
 sub set_size_all_block {
@@ -244,7 +244,7 @@ sub set_size_all_block {
     my $size_area_loot_list = get_size_area_loot_list($size_interface, $size_area_bag);
     my $size_area_looting = get_size_area_looting($size_area_inv);
     my $size_area_desc_item = get_size_area_desc_item($size_area_looting, $size_area_loot_list);
-    my $size_area_health = get_size_area_health($size_interface, $size_area_text);
+    my $size_area_needs = get_size_area_needs($size_interface, $size_area_text);
 
     $Interface->{size} = $size_interface;
     $Interface->{map}{size} = $size_area_map;
@@ -259,7 +259,7 @@ sub set_size_all_block {
     $Interface->{looting}{bag}{size} = $size_area_bag;
     $Interface->{looting}{loot_list}{size} = $size_area_loot_list;
     $Interface->{looting}{desc_item}{size} = $size_area_desc_item;
-    $Interface->{health}{size} = $size_area_health;
+    $Interface->{needs}{size} = $size_area_needs;
 
     return;
 }

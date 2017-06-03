@@ -66,8 +66,9 @@ sub process_actions {
         $color_chooser = 'on_red';
     }
 
+    my @list = map {$_->get_name()} @$list_actions;
     my $args = {
-        list => $list_actions,
+        list => \@list,
         array => $action_array,
         chooser_position => $chooser_position,
         size_area => $size_area,

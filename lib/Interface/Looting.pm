@@ -7,6 +7,7 @@ use utf8;
 use Logger qw(dmp);
 use Consts;
 use Interface::Utils;
+use Utils;
 
 sub process_bag {
     my $interface = shift;
@@ -22,6 +23,8 @@ sub process_bag {
     my $chooser = $interface->{chooser};
     $chooser->{list}{bag} = $list_items;
     my $chooser_position = $chooser->get_position('bag');
+    $chooser_position = Utils::clamp($chooser_position, 0, $#$list_items);
+    $chooser->set_position('bag', $chooser_position);
 
     my $color_chooser = 'on_green';
     if ($chooser->{block_name} ne 'bag') {
@@ -56,12 +59,26 @@ sub process_loot_list {
     my @loots = map {$_->get_name()} @$items;
 
     $chooser->{list}{loot_list} = $items;
-    my $chooser_position = $chooser->get_position('loot_list');
-    my $color_chooser = 'on_green';
-    if ($chooser->{block_name} ne 'loot_list') {
-        $chooser_position = 999;
-    }
 
+    my $chooser_position = $chooser->get_position('loot_list');
+    $chooser_position = Utils::clamp($chooser_position, 0, $#loots);
+    $chooser->set_position('loot_list', $chooser_position);
+
+    my $color_chooser = 'on_green';
+
+    if ($chooser->{block_name} ne 'loot_list') {
+        if (scalar @{$interface->{inv}{obj}->get_all_items_bag()}) {
+            $chooser_position = 999;
+        } else {
+            $chooser->{block_name} = 'loot_list';
+        }
+    } 
+    if (
+        $chooser->{block_name} eq 'loot_list'
+        and !@loots
+    ) {
+        $chooser->{block_name} = 'bag';
+    }
     my $args = {
         list => \@loots,
         array => $loot_array,
@@ -103,8 +120,8 @@ sub process_block {
     my $looting_array = init_looting($interface->{looting});
     my $main_array = $interface->{data_print};
 
-    my $bag_array = process_bag($interface);
     my $loot_list_array = process_loot_list($interface);
+    my $bag_array = process_bag($interface);
     my $desc_item = process_desc_item($interface);
 
     my $offset_bag = [

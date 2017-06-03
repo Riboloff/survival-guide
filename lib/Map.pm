@@ -14,8 +14,8 @@ use lib qw/lib/;
 use Cell;
 use Consts qw($X $Y);
 
-my $X = $Consts::X;
-my $Y = $Consts::Y;
+#my $X = $Consts::X;
+#my $Y = $Consts::Y;
 
 sub new {
     my $self = shift;

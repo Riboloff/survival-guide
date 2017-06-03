@@ -163,16 +163,15 @@ sub one_line_to_array_symbols {
     my $line = $args->{line};
     my $array = $args->{array};
     my $size_area = $args->{size_area};
-    my $color_line =  $args->{color_line} || 'red';
-    my $color_text =  $args->{color_text} || '';
-    my $color_percent = $args->{color_percent} || 100;
+    my $color_line =  $args->{color_line} // 'red';
+    my $color_text =  $args->{color_text} // '';
+    my $color_percent = $args->{color_percent} // 100;
 
     my $length_text = $size_area->[$X];
     my $length_line = int ($size_area->[$X] * $color_percent/100);
-    dmp($length_line);
     my @symbols = split( //, $line->[0]);
     for (my $x = 0; $x < $size_area->[$X]; $x++) {
-        if ($x > $length_line) {
+        if ($x >= $length_line) {
             $color_line = 'on_blue';
         }
         $array->[0][$x]{'color'} = "$color_text,$color_line";
