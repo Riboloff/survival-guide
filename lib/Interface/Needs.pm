@@ -46,7 +46,7 @@ sub health_line {
 sub hunger_line {
     my $interface = shift;
 
-    my $hunger_percent = 42;
+    my $hunger_percent = $interface->{character}->get_hunger->get_food();
     my $area = [
         [
             $interface->{needs}{size}[$LT][$Y],
@@ -81,7 +81,7 @@ sub hunger_line {
 sub thirst_line {
     my $interface = shift;
 
-    my $thirst_percent = 93;
+    my $thirst_percent = $interface->{character}->get_thirst->get_water();
     my $area = [
         [
             $interface->{needs}{size}[$LT][$Y],

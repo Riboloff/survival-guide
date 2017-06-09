@@ -18,7 +18,8 @@ our @EXPORT = qw(
 our $X = 1;
 our $Y = 0;
 
-#Размеры блоков интерфейса
+#Размеры блоков интерфейса 
+#определяются по двух точкам левого верннего и правого нижнего угла
 our $LT = 0; #Left top
 our $RD = 1; #reatht down
 
@@ -30,6 +31,8 @@ our $size_term = [$hchar, $wchar];
 
 our $items_id = {
     1 => 'medicine_box',
+    2 => 'bread',
+    3 => 'water',
 };
 
 our $objects_id = {
@@ -47,6 +50,8 @@ use constant WATCH    => 2;
 use constant LOCKPICK => 3;
 
 use constant MEDICINE_BOX => 1;
+use constant BREAD => 2;
+use constant WATER => 3;
 
 use constant SHELF => 1;
 

@@ -38,7 +38,7 @@ while() {
     ReadMode('cbreak');
     my $key = ReadKey(0);
     # my $key = ReadKey(-1);
-    ReadMode('normal');
+    #ReadMode('normal');
 
     if (is_change_term_size()) {
         $interface->set_size_all_block();
@@ -115,6 +115,8 @@ while() {
     }
     if ($key =~ /^[-]$/) {
        $character->get_health->sub_hp('1');
+       $character->get_hunger->sub_food('2');
+       $character->get_thirst->sub_water('3');
        $process_block->{needs} = 1;
     }
     if ($key =~ /^[eE]$/) {
@@ -132,12 +134,15 @@ while() {
 
 sub _delete_item {
     my $chooser = shift;
-    my $item = shift;
+    my $item_delete = shift;
 
     my $items = $chooser->get_target_list() || [];
 
     for (my $i = 0; $i < @$items; $i++) {
-        splice($items, $i, 1);
+        if ($items->[$i]->{id} eq $item_delete->{id}) {
+            splice($items, $i, 1);
+            last;
+        }
     }
 }
 

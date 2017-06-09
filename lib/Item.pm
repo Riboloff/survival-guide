@@ -57,6 +57,15 @@ sub used {
     if ($proto_id == Consts::MEDICINE_BOX) {
         $char->get_health->add_hp(10);
     }
+    elsif ($proto_id == Consts::BREAD) {
+        $char->get_health->add_hp(3);
+        $char->get_hunger->add_food(15);
+        $char->get_thirst->sub_water(5);
+    }
+    elsif ($proto_id == Consts::WATER) {
+        $char->get_health->add_hp(1);
+        $char->get_thirst->add_water(15);
+    }
 }
 
 1;
