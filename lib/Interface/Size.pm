@@ -22,7 +22,8 @@ sub get_size_area_action {
 
     $size_area_action->[$LT] = [
         0,
-        $size_area_list_obj->[$RD][$X] + 1
+        #$size_area_list_obj->[$RD][$X] + 1
+        $size_area_list_obj->[$RD][$X]
     ];
     $size_area_action->[$RD] = [
         $size_area_list_obj->[$RD][$Y],
@@ -60,7 +61,8 @@ sub get_size_area_list_obj {
 
     $size_area_list_obj->[$LT] = [
         0,
-        $size_area_map->[$RD][$X] + 1
+        #$size_area_map->[$RD][$X] + 1
+        $size_area_map->[$RD][$X]
     ];
     $size_area_list_obj->[$RD] = [
         $size_area_map->[$RD][$Y],
@@ -78,7 +80,8 @@ sub get_size_area_text {
     my $size_area_text = [];
 
     $size_area_text->[$LT] = [
-        $size_area_map->[$RD][$Y] + 1,
+        #$size_area_map->[$RD][$Y] + 1,
+        $size_area_map->[$RD][$Y],
         0
     ];
     $size_area_text->[$RD] = [
@@ -146,11 +149,13 @@ sub get_size_area_harness {
 
     $size_area_harness->[$LT] = [
         $size_area_bag->[$LT][$Y],
-        $size_area_bag->[$RD][$X]+1
+        #$size_area_bag->[$RD][$X]+1
+        $size_area_bag->[$RD][$X]
     ];
+    my $size_bag = Interface::Utils::get_size($size_area_bag);
     $size_area_harness->[$RD] = [
-        $size_area_inv->[$RD][$Y],
-        $size_area_inv->[$RD][$X],
+        $size_area_bag->[$RD][$Y],
+        $size_area_bag->[$RD][$X] + $size_bag->[$X],
     ];
 
     return $size_area_harness;
@@ -164,7 +169,8 @@ sub get_size_area_loot_list {
 
     $size_area_loot_list->[$LT] = [
         $size_area_bag->[$LT][$Y],
-        $size_area_bag->[$RD][$X]+1
+        #$size_area_bag->[$RD][$X]+1
+        $size_area_bag->[$RD][$X]
     ];
     my $size_bag = Interface::Utils::get_size($size_area_bag);
     $size_area_loot_list->[$RD] = [
@@ -183,7 +189,8 @@ sub get_size_area_desc_item {
 
     $size_area_desc_item->[$LT] = [
         $size_area_loot_list->[$LT][$Y],
-        $size_area_loot_list->[$RD][$X]+1
+        #$size_area_loot_list->[$RD][$X]+1
+        $size_area_loot_list->[$RD][$X]
     ];
     $size_area_desc_item->[$RD] = [
         $size_area_looting->[$RD][$Y],
@@ -218,7 +225,8 @@ sub get_size_area_needs {
 
     $size_area_needs->[$LT] = [
         $size_area_text->[$LT][$Y],
-        $size_area_text->[$RD][$X] + 1,
+        #$size_area_text->[$RD][$X] + 1,
+        $size_area_text->[$RD][$X],
     
     ];
     $size_area_needs->[$RD] = [

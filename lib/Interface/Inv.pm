@@ -35,10 +35,10 @@ sub process_bag {
         size_area => $size_area,
     };
     $bag_array = Interface::Utils::list_to_array_symbols($args);
+    my $bag_frame_array = Interface::Utils::get_frame($bag_array);
 
-    return $bag_array;
+    return $bag_frame_array;
 }
-
 
 sub process_harness {
     my $interface = shift;
@@ -74,8 +74,8 @@ sub process_harness {
         size_area => $size_area,
     };
     $harness_array = Interface::Utils::list_to_array_symbols($args);
-
-    return $harness_array;
+    my $harness_frame_array = Interface::Utils::get_frame($harness_array);
+    return $harness_frame_array;
 }
 
 sub process_block {
@@ -120,13 +120,22 @@ sub init_inv {
     my $y_bound_bag = $inv->{bag}{size}->[$RD][$Y];
     my $x_bound_bag = $inv->{bag}{size}->[$RD][$X];
 
-    for my $y (0 .. $y_bound_inv - 1) {
+    for my $y (0 .. $y_bound_inv) {
         for my $x (0 .. $x_bound_inv - 1) {
             $inv_array->[$y][$x]->{symbol} = ' ';
             $inv_array->[$y][$x]->{color} = '';
             if ($x == $x_bound_bag) {
-                $inv_array->[$y][$x]->{symbol} = 'ǁ';
+                $inv_array->[$y][$x]->{symbol} = '║';
+                #$inv_array->[$y][$x]->{symbol} = ' ';
                 $inv_array->[$y][$x]->{color} = '';
+            }
+            if ($y == $y_bound_inv) {
+                $inv_array->[$y][$x]{symbol} = '─';
+                $inv_array->[$y][$x]{color} = '';
+            }
+            if ($x == $x_bound_bag and $y == $y_bound_inv) {
+                $inv_array->[$y][$x]{symbol} = '┴';
+                $inv_array->[$y][$x]{color} = '';
             }
         }
     }

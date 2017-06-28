@@ -31,7 +31,7 @@ sub new {
        $cell->{blocker} = $conf->{blocker} || 1;
 
        $cell->{name_id} = $conf->{name_id};
-       my $obj_text = Language::get_text_object($cell->{name_id});
+       my $obj_text = Language::get_text($cell->{name_id}, 'objects');
        my $name = $obj_text->{name}; 
        my $desc = $obj_text->{desc};
        my $items_id = $conf->{items_id};
@@ -89,8 +89,7 @@ sub _get_items {
 
     my $items = [];
     for my $id (@$items_id) {
-        my $file_name = $Consts::items_id->{$id};
-        my $hash = Language::read_json_file("text/items/$file_name");
+        my $hash = Language::get_text($id, 'items');
         my $desc = Text->new(undef, $hash->{desc});
         my $name = $hash->{name};
         push(@$items, Item->new($name, $desc, $id));
@@ -104,8 +103,7 @@ sub _get_actions {
 
     my $actions = [];
     for my $id (@$actions_id) {
-        my $file_name = $Consts::actions_id->{$id};
-        my $hash = Language::read_json_file("text/actions/$file_name");
+        my $hash = Language::get_text($id, 'actions');
         my $name = $hash->{name};
         push(@$actions, Action->new($name, $id));
     }

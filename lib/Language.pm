@@ -8,35 +8,35 @@ use JSON;
 use lib qw/lib/;
 use Consts;
 use Logger qw(dmp);
-
-my $path_text = 'text/';
+use ReadFile;
 
 my $lang = 'ru'; #TODO пока хардкод.
 
-sub get_text_object {
+sub get_text {
     my $id = shift;
+    my $dir = shift;
 
-    my $obj = {};
-    my $file_name = $Consts::objects_id->{$id};
-    {
-        local $/;
-        open(my $in_file_obj, '<:utf8', "$path_text/objects/$file_name");
-        my $obj_json = <$in_file_obj>;
-        close($in_file_obj);
-        $obj = JSON::from_json($obj_json);
+    my $file_name = '';
+    my $path = 'text/';
+    if ($dir eq 'objects') {
+        $file_name = $Consts::objects_id->{$id};
+    }
+    elsif ($dir eq 'items') {
+        $file_name = $Consts::items_id->{$id};
+    }
+    elsif ($dir eq 'actions') {
+        $file_name = $Consts::actions_id->{$id};
     }
 
-    return $obj->{$lang};
+    $path .= $dir . '/' . $file_name;
+
+    return read_json_file_lang($path);
 }
 
-sub read_json_file {
+sub read_json_file_lang {
     my $path = shift;
 
-    local $/;
-    open(my $in_file, '<:utf8', "$path");
-    my $json = <$in_file>;
-    close($in_file);
-    my $hash = JSON::from_json($json);
+    my $hash = ReadFile::read_json_file($path);
 
     return $hash->{$lang};
 }

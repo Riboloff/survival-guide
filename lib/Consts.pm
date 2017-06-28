@@ -12,6 +12,8 @@ our @EXPORT = qw(
     $X $Y
     $LT $RD
     $size_term
+    $item_dir
+    $text_objects_dir
     $items_id $objects_id $actions_id
 );
 
@@ -28,6 +30,10 @@ $wchar--;
 $hchar--;
 
 our $size_term = [$hchar, $wchar];
+
+
+our $item_dir = 'proto/items/';
+our $text_objects_dir = 'text/objects/';
 
 our $items_id = {
     1 => 'medicine_box',

@@ -39,8 +39,9 @@ sub process_list_obj {
         color_chooser => $color_chooser,
     };
     $list_obj_array = Interface::Utils::list_to_array_symbols($args);
+    my $list_obj_frame_array = Interface::Utils::get_frame($list_obj_array);
 
-    return $list_obj_array;
+    return $list_obj_frame_array;
 }
 
 sub process_actions {
@@ -76,8 +77,9 @@ sub process_actions {
     };
 
     $action_array = Interface::Utils::list_to_array_symbols($args);
+    my $action_frame_array = Interface::Utils::get_frame($action_array);
 
-    return $action_array;
+    return $action_frame_array;
 }
 
 sub process_block {
@@ -120,14 +122,24 @@ sub init_objects {
     my $size_list_obj_y = $size_list_obj->[$Y];
     my $size_list_obj_x = $size_list_obj->[$X];
 
-    for my $y (0 .. $size_objects_y - 1) {
-        for my $x (0 .. $size_objects_x - 1) {
+    for my $y (0 .. $size_objects_y) {
+        #for my $x (0 .. $size_objects_x - 1) {
+        for my $x (0 .. $size_objects_x) {
             $objects_array->[$y][$x]{symbol} = ' ';
             $objects_array->[$y][$x]{color} = '';
-            if ($x == $size_list_obj_x) {
-                $objects_array->[$y][$x]{symbol} = 'ǁ';
-                $objects_array->[$y][$x]{color} = '';
-            }
+            #if ($x == $size_list_obj_x) {
+            #    $objects_array->[$y][$x]{symbol} = '│';
+            #    $objects_array->[$y][$x]{color} = '';
+            #}
+            #if ($y == $size_objects_y) {
+            #    $objects_array->[$y][$x]{symbol} = '─';
+            #    $objects_array->[$y][$x]{color} = '';
+            #}
+            #if ($x == $size_list_obj_x and $y == $size_objects_y) {
+            #    $objects_array->[$y][$x]{symbol} = '┴';
+            #    $objects_array->[$y][$x]{color} = '';
+            #}
+
         }
     }
 

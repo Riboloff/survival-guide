@@ -14,7 +14,7 @@ sub new {
     my $inv = {
         'on' => 0,
         'bag' => {
-            'items' => Cell::_get_items([1]),
+            'items' => Cell::_get_items([3]),
         },
         'harness' => {
             head => {

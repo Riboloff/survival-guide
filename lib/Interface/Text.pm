@@ -23,14 +23,19 @@ sub process_block {
         $size_area_text_lt->[$X],
     ];
 
+
     if (Interface::Utils::is_object_into_area($size_area_text, $text_array) ) {
-        Interface::Utils::overlay_arrays_simple($main_array, $text_array, $offset);
+        my $text_frame_array = Interface::Utils::get_frame($text_array);
+
+        Interface::Utils::overlay_arrays_simple($main_array, $text_frame_array, $offset);
     } else {
         my $last_str_number = @$text_array - $scroll - 1;
         my $first_str_number = $last_str_number - $size_area_text->[$Y] + 1; 
         my $text_array_chank = [@$text_array[$first_str_number .. $last_str_number]];
         
-        Interface::Utils::overlay_arrays_simple($main_array, $text_array_chank, $offset);
+        my $text_frame_array_chank = Interface::Utils::get_frame($text_array_chank);
+        Interface::Utils::overlay_arrays_simple($main_array, $text_frame_array_chank, $offset);
+        #Interface::Utils::overlay_arrays_simple($main_array, $text_array_chank, $offset);
     }
 }
 

@@ -19,7 +19,7 @@ sub new {
 
     if (!$text) {
         $file_name = "text/$file_name";
-        $text = Language::read_json_file($file_name);
+        $text = Language::read_json_file_lang($file_name);
     }
     my $hash = {
         text => $text,
@@ -53,7 +53,7 @@ sub get_text_array {
     my $size_y = $size->[$Y];
     my $size_x = $size->[$X];
 
-    my $array = $self->{array};
+    my $array = [@{$self->{array}}];
 
     my @new_lines = ();
     for my $line (split(/\n/, $self->{text})) {
@@ -146,8 +146,8 @@ sub top {
     my $self = shift;
 
     my $scroll_lines = @{$self->{array}};
-    my $size_area_text = $self->{size_area_text}[$RD][$Y] - $self->{size_area_text}[$LT][$Y];
-    if ($self->{scroll} < $scroll_lines - $size_area_text) {
+    my $size_area_text = $self->{size_area_text}[$RD][$Y] - $self->{size_area_text}[$LT][$Y] - 2;
+    if ($self->{scroll} + $size_area_text > $scroll_lines) {
         $self->{scroll}++;
     }
 }

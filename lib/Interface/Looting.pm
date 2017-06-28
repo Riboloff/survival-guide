@@ -15,7 +15,7 @@ sub process_bag {
     my $inv = $interface->{inv}{obj};
 
     my $list_items = $inv->get_all_items_bag();
-    my $area = $interface->{inv}{bag}{size};
+    my $area = $interface->{looting}{bag}{size};
     my $size_area = Interface::Utils::get_size($area);
 
     my $bag_array = Interface::Utils::init_array($area, $size_area);
@@ -40,8 +40,10 @@ sub process_bag {
         color_chooser => $color_chooser,
     };
     $bag_array = Interface::Utils::list_to_array_symbols($args);
+    my $tmp = @{$bag_array->[0]};
+    my $bag_frame_array = Interface::Utils::get_frame($bag_array);
 
-    return $bag_array;
+    return $bag_frame_array;
 }
 
 sub process_loot_list {
@@ -88,8 +90,9 @@ sub process_loot_list {
     };
 
     $loot_array = Interface::Utils::list_to_array_symbols($args);
+    my $loot_frame_array = Interface::Utils::get_frame($loot_array);
 
-    return $loot_array;
+    return $loot_frame_array;
 }
 
 sub process_desc_item {
@@ -107,9 +110,12 @@ sub process_desc_item {
     my $text = $item->get_desc(); 
     my $area = $interface->{looting}{desc_item}{size};
     my $size_area = Interface::Utils::get_size($area);
+    $text->inition($area);
     my $text_array = $text->get_text_array($size_area);
+    dmp($text_array);
+    my $text_frame_array = Interface::Utils::get_frame($text_array);
 
-    return $text_array;
+    return $text_frame_array;
 }
 
 sub process_block {
@@ -164,10 +170,10 @@ sub init_looting {
         for my $x (0 .. $x_bound_looting - 1) {
             $looting_array->[$y][$x]{symbol} = ' ';
             $looting_array->[$y][$x]{color} = '';
-            if ($x == $x_bound_bag) {
-                $looting_array->[$y][$x]{symbol} = 'ǁ';
-                $looting_array->[$y][$x]{color} = '';
-            }
+            #if ($x == $x_bound_bag) {
+            #    $looting_array->[$y][$x]{symbol} = 'ǁ';
+            #    $looting_array->[$y][$x]{color} = '';
+            #}
         }
     }
 

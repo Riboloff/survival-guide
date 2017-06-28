@@ -2,6 +2,7 @@ package Interface::Utils;
 
 use strict;
 use warnings;
+use utf8;
 
 use Consts;
 use List::Util qw(min);
@@ -26,12 +27,12 @@ sub overlay_arrays_simple {
     my $lower_layer = shift;
     my $top_layer = shift;
     my $offset = shift || [0, 0];
-   
+
     my $offset_y = $offset->[$Y];
     my $offset_x = $offset->[$X];
     if ($offset_y < 0 or $offset_x < 0) {
         die('$offset_y < 0 or $offset_x < 0');
-    } 
+    }
     for (my $y = 0; $y < @$top_layer; $y++) {
         for (my $x = 0; $x < @{$top_layer->[0]}; $x++) {
             my $symbol = $top_layer->[$y][$x];
@@ -42,7 +43,7 @@ sub overlay_arrays_simple {
 
 sub get_center {
     my $array = shift;
-   
+
     my $size = [];
     if (ref $array->[0] eq 'ARRAY') {
         $size->[$Y] = @$array;
@@ -65,7 +66,7 @@ sub get_offset {
     my $center_2 = get_center($array_2);
 
     return [
-        $center_1->[$Y] - $center_2->[$Y], 
+        $center_1->[$Y] - $center_2->[$Y],
         $center_1->[$X] - $center_2->[$X]
     ]
 }
@@ -99,25 +100,16 @@ sub get_size {
 sub init_array {
     my $area = shift;
     my $size_area = shift;
-    my $frame = shift // 0;
 
     if (!$size_area) {
         $size_area = get_size($area);
     }
 
     my $action_array = [];
-    for (my $y=0; $y < $size_area->[$Y]; $y++) {
-        for (my $x=0; $x < $size_area->[$X]; $x++) {
+    for (my $y = 0; $y < $size_area->[$Y]; $y++) {
+        for (my $x = 0; $x < $size_area->[$X]; $x++) {
             my $symbol = ' ';
             my $color = '';
-            if ($frame and ($x==0 or $x==$size_area->[$X]-1)) {
-                $symbol = '|';
-                $color = 'red';
-            }
-            if ($frame and ($y==0 or $y==$size_area->[$Y]-1)) {
-                $symbol = '-';
-                $color = 'red';
-            }
             $action_array->[$y][$x] = {
                'color' => $color,
                'symbol' => $symbol,
@@ -143,6 +135,7 @@ sub list_to_array_symbols {
         my $color = '';
         if ($chooser_position == $y) {
             $color = $color_chooser;
+            #for (my $x = 0; $x <= $size_area->[$X]; $x++) {
             for (my $x = 0; $x < $size_area->[$X]; $x++) {
                 $array->[$y][$x]{'color'} = $color;
             }
@@ -185,4 +178,55 @@ sub one_line_to_array_symbols {
 
     return $array;
 }
+
+sub get_frame {
+    my $array = shift;
+
+    my $array_frame = [];
+    my $size_array_frame_y = scalar( @$array );
+    my $size_array_frame_x = scalar( @{$array->[0]} );
+
+    for (my $y = 0; $y < $size_array_frame_y; $y++) {
+        for (my $x = 0; $x < $size_array_frame_x; $x++) {
+            if ($x == 0 and $y == 0) {
+                $array_frame->[$y][$x]->{symbol} = '╭';
+                $array_frame->[$y][$x]{color} = '';
+            }
+            elsif ($x == 0 and $y == $size_array_frame_y - 1) {
+                $array_frame->[$y][$x]->{symbol} = '╰';
+                $array_frame->[$y][$x]{color} = '';
+            }
+            elsif ($x == $size_array_frame_x - 1 and $y == 0) {
+                $array_frame->[$y][$x]->{symbol} = '╮';
+                $array_frame->[$y][$x]{color} = '';
+            }
+            elsif ($x == $size_array_frame_x - 1 and $y == $size_array_frame_y - 1) {
+                $array_frame->[$y][$x]->{symbol} = '╯';
+                $array_frame->[$y][$x]{color} = '';
+            }
+            elsif ($y == 0 or $y == $size_array_frame_y - 1) {
+                $array_frame->[$y][$x]->{symbol} = '─';
+                $array_frame->[$y][$x]->{color} = '';
+            }
+            elsif ($x == 0 or $x == $size_array_frame_x - 1) {
+                $array_frame->[$y][$x]->{symbol} = '│';
+                $array_frame->[$y][$x]{color} = '';
+            }
+            else {
+                $array_frame->[$y][$x]{symbol} = $array->[$y][$x]{symbol};
+                $array_frame->[$y][$x]{color} = $array->[$y][$x]{color};
+            }
+
+        }
+    }
+    #Чтобы влезла рамка, сдвигаем массив с данными на два символа.
+    pop(@$array);
+    pop(@$array);
+    pop(@{$array->[0]});
+    pop(@{$array->[0]});
+
+    overlay_arrays_simple($array_frame, $array, [1, 1] );
+    return $array_frame;
+}
+
 1;

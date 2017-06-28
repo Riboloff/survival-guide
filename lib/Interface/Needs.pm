@@ -134,7 +134,9 @@ sub process_block {
     Interface::Utils::overlay_arrays_simple($needs_array, $health_line_array, $offset_health_line);
     Interface::Utils::overlay_arrays_simple($needs_array, $hunger_line_array, $offset_hunger_line);
     Interface::Utils::overlay_arrays_simple($needs_array, $thirst_line_array, $offset_thirst_line);
-    Interface::Utils::overlay_arrays_simple($main_array, $needs_array, $offset_needs);
+    my $needs_frame_array = Interface::Utils::get_frame($needs_array);
+
+    Interface::Utils::overlay_arrays_simple($main_array, $needs_frame_array, $offset_needs);
 }
 
 sub init_needs {

@@ -7,6 +7,8 @@ use utf8;
 
 use lib qw(lib);
 use Consts;
+use Logger qw(dmp);
+use ReadFile;
 
 my $id_inc = 0;
 
@@ -21,6 +23,7 @@ sub new {
         'type'       => 'item',
         'proto_id'   => $proto_id,
     };
+    get_proto_feature($item);
 
     bless($item, $self);
 
@@ -65,6 +68,18 @@ sub used {
     elsif ($proto_id == Consts::WATER) {
         $char->get_health->add_hp(1);
         $char->get_thirst->add_water(15);
+    }
+}
+
+sub get_proto_feature {
+    my $item = shift;
+
+    my $file_name = $Consts::items_id->{$item->{proto_id}};
+
+    my $hash = ReadFile::read_json_file($item_dir . $file_name);
+
+    for my $key (keys %$hash) {
+        $item->{$key} = $hash->{$key};
     }
 }
 

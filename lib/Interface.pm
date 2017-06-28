@@ -108,14 +108,18 @@ sub _data_print_init {
         for my $x (0 .. $size_interface->[$RD][$X] - 1) {
             $array->[$y][$x]->{symbol} = '';
             $array->[$y][$x]->{color} = '';
-            if ($y == $y_bound_map) {
-                $array->[$y][$x]->{symbol} = '=';
-                $array->[$y][$x]->{color} = '';
-            }
-            if ($x == $x_bound_map) {
-                $array->[$y][$x]->{symbol} = 'ǁ';
-                $array->[$y][$x]->{color} = '';
-            }
+            # if ($y == $y_bound_map) {
+            #     $array->[$y][$x]->{symbol} = '─';
+            #     $array->[$y][$x]->{color} = '';
+            # }
+            # if ($x == $x_bound_map) {
+            #     $array->[$y][$x]->{symbol} = '│';
+            #     $array->[$y][$x]->{color} = '';
+            # }
+            # if ($x == $x_bound_map and $y == $y_bound_map) {
+            #     $array->[$y][$x]->{symbol} = '┼';
+            #     $array->[$y][$x]->{color} = '';
+            # }
         }
     }
 
