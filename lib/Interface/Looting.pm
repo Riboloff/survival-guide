@@ -110,9 +110,8 @@ sub process_desc_item {
     my $text = $item->get_desc(); 
     my $area = $interface->{looting}{desc_item}{size};
     my $size_area = Interface::Utils::get_size($area);
-    $text->inition($area);
+    $text->inition($area, 1);
     my $text_array = $text->get_text_array($size_area);
-    dmp($text_array);
     my $text_frame_array = Interface::Utils::get_frame($text_array);
 
     return $text_frame_array;

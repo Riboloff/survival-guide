@@ -78,6 +78,28 @@ sub process_harness {
     return $harness_frame_array;
 }
 
+sub process_desc_item {
+    my $interface = shift;
+
+    my $chooser = $interface->{chooser};
+    my $chooser_block_name = $chooser->{block_name};
+    my $position_chooser = $chooser->{position}{$chooser_block_name};
+    my $item = $chooser->{list}{$chooser_block_name}[$position_chooser];
+
+    if (!defined $item) {
+        return [];
+    }
+
+    my $text = $item->get_desc(); 
+    my $area = $interface->{looting}{desc_item}{size};
+    my $size_area = Interface::Utils::get_size($area);
+    $text->inition($area, 1);
+    my $text_array = $text->get_text_array($size_area);
+    my $text_frame_array = Interface::Utils::get_frame($text_array);
+
+    return $text_frame_array;
+}
+
 sub process_block {
     my $interface = shift;
 
@@ -89,6 +111,7 @@ sub process_block {
 
     my $bag_array = process_bag($interface);
     my $harness_array = process_harness($interface);
+    my $desc_array = process_desc_item($interface);
 
     my $offset_bag = [
         $interface->{inv}{bag}{size}[$LT][$Y],
@@ -98,6 +121,10 @@ sub process_block {
         $interface->{inv}{harness}{size}[$LT][$Y],
         $interface->{inv}{harness}{size}[$LT][$X]
     ];
+    my $offset_desc_item = [
+        $interface->{inv}{desc_item}{size}[$LT][$Y],
+        $interface->{inv}{desc_item}{size}[$LT][$X]
+    ];
     my $offset = [
         $interface->{inv}{size}[$LT][$Y],
         $interface->{inv}{size}[$LT][$X]
@@ -105,6 +132,7 @@ sub process_block {
 
     Interface::Utils::overlay_arrays_simple($inv_array, $bag_array, $offset_bag);
     Interface::Utils::overlay_arrays_simple($inv_array, $harness_array, $offset_harness);
+    Interface::Utils::overlay_arrays_simple($inv_array, $desc_array, $offset_desc_item);
 
     Interface::Utils::overlay_arrays_simple($main_array, $inv_array, $offset);
 }
@@ -124,19 +152,19 @@ sub init_inv {
         for my $x (0 .. $x_bound_inv - 1) {
             $inv_array->[$y][$x]->{symbol} = ' ';
             $inv_array->[$y][$x]->{color} = '';
-            if ($x == $x_bound_bag) {
-                $inv_array->[$y][$x]->{symbol} = '║';
-                #$inv_array->[$y][$x]->{symbol} = ' ';
-                $inv_array->[$y][$x]->{color} = '';
-            }
-            if ($y == $y_bound_inv) {
-                $inv_array->[$y][$x]{symbol} = '─';
-                $inv_array->[$y][$x]{color} = '';
-            }
-            if ($x == $x_bound_bag and $y == $y_bound_inv) {
-                $inv_array->[$y][$x]{symbol} = '┴';
-                $inv_array->[$y][$x]{color} = '';
-            }
+            # if ($x == $x_bound_bag) {
+            #     $inv_array->[$y][$x]->{symbol} = '║';
+            #     #$inv_array->[$y][$x]->{symbol} = ' ';
+            #     $inv_array->[$y][$x]->{color} = '';
+            # }
+            # if ($y == $y_bound_inv) {
+            #     $inv_array->[$y][$x]{symbol} = '─';
+            #     $inv_array->[$y][$x]{color} = '';
+            # }
+            # if ($x == $x_bound_bag and $y == $y_bound_inv) {
+            #     $inv_array->[$y][$x]{symbol} = '┴';
+            #     $inv_array->[$y][$x]{color} = '';
+            # }
         }
     }
 

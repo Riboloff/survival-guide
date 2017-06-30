@@ -97,6 +97,17 @@ sub get_size {
     return $size;
 }
 
+sub get_size_without_frame {
+    my $coords = shift;
+
+    my $size = [
+        $coords->[$RD][$Y] - $coords->[$LT][$Y] - 2,
+        $coords->[$RD][$X] - $coords->[$LT][$X] - 2
+    ];
+
+    return $size;
+}
+
 sub init_array {
     my $area = shift;
     my $size_area = shift;
@@ -224,6 +235,46 @@ sub get_frame {
     pop(@$array);
     pop(@{$array->[0]});
     pop(@{$array->[0]});
+
+    overlay_arrays_simple($array_frame, $array, [1, 1] );
+    return $array_frame;
+}
+
+sub get_frame_tmp {
+    my $array = shift;
+
+    my $array_frame = [];
+    my $size_array_frame_y = scalar( @$array ) + 2;
+    my $size_array_frame_x = scalar( @{$array->[0]} + 2 );
+
+    for (my $y = 0; $y < $size_array_frame_y; $y++) {
+        for (my $x = 0; $x < $size_array_frame_x; $x++) {
+            if ($x == 0 and $y == 0) {
+                $array_frame->[$y][$x]->{symbol} = '╭';
+                $array_frame->[$y][$x]{color} = '';
+            }
+            elsif ($x == 0 and $y == $size_array_frame_y - 1) {
+                $array_frame->[$y][$x]->{symbol} = '╰';
+                $array_frame->[$y][$x]{color} = '';
+            }
+            elsif ($x == $size_array_frame_x - 1 and $y == 0) {
+                $array_frame->[$y][$x]->{symbol} = '╮';
+                $array_frame->[$y][$x]{color} = '';
+            }
+            elsif ($x == $size_array_frame_x - 1 and $y == $size_array_frame_y - 1) {
+                $array_frame->[$y][$x]->{symbol} = '╯';
+                $array_frame->[$y][$x]{color} = '';
+            }
+            elsif ($y == 0 or $y == $size_array_frame_y - 1) {
+                $array_frame->[$y][$x]->{symbol} = '─';
+                $array_frame->[$y][$x]->{color} = '';
+            }
+            elsif ($x == 0 or $x == $size_array_frame_x - 1) {
+                $array_frame->[$y][$x]->{symbol} = '│';
+                $array_frame->[$y][$x]{color} = '';
+            }
+        }
+    }
 
     overlay_arrays_simple($array_frame, $array, [1, 1] );
     return $array_frame;

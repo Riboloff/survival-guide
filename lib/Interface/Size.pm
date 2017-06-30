@@ -263,6 +263,7 @@ sub set_size_all_block {
     $Interface->{inv}{size} = $size_area_inv;
     $Interface->{inv}{bag}{size} = $size_area_bag;
     $Interface->{inv}{harness}{size} = $size_area_harness;
+    $Interface->{inv}{desc_item}{size} = $size_area_desc_item;
     $Interface->{looting}{size} = $size_area_looting;
     $Interface->{looting}{bag}{size} = $size_area_bag;
     $Interface->{looting}{loot_list}{size} = $size_area_loot_list;

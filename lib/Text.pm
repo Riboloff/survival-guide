@@ -33,9 +33,14 @@ sub new {
 sub inition {
     my $self = shift;
     my $size_area_text = shift;
+    my $without_frame = shift;
 
     my $size_y = $size_area_text->[$RD][$Y] - $size_area_text->[$LT][$Y];
     my $size_x = $size_area_text->[$RD][$X] - $size_area_text->[$LT][$X];
+    if (!$without_frame) {
+        $size_y -= 2,
+        $size_x -= 2,
+    }
 
     my $array = [[]];
     for (my $y = 0; $y < $size_y; $y++) {
@@ -54,7 +59,6 @@ sub get_text_array {
     my $size_x = $size->[$X];
 
     my $array = [@{$self->{array}}];
-
     my @new_lines = ();
     for my $line (split(/\n/, $self->{text})) {
         my $parse_text = _parse_color($line);
@@ -92,6 +96,7 @@ sub get_text_array {
         }
     }
 
+    $self->{array} = $array;
     return $array;
 }
 
@@ -147,7 +152,7 @@ sub top {
 
     my $scroll_lines = @{$self->{array}};
     my $size_area_text = $self->{size_area_text}[$RD][$Y] - $self->{size_area_text}[$LT][$Y] - 2;
-    if ($self->{scroll} + $size_area_text > $scroll_lines) {
+    if ($self->{scroll} < $scroll_lines - $size_area_text) {
         $self->{scroll}++;
     }
 }
