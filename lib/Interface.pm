@@ -24,6 +24,7 @@ use Interface::Inv;
 use Interface::Looting;
 use Interface::Size;
 use Interface::Needs;
+use Interface::Craft;
 
 sub new {
     my $self = shift;
@@ -84,6 +85,10 @@ sub new {
         },
         needs => {
             size => [],
+        },
+        craft => {
+            size => [],
+            obj => undef,
         }
     };
 
@@ -186,6 +191,8 @@ sub _process_block {
         Interface::Looting::process_block($self);
     } elsif ($block eq 'needs') {
         Interface::Needs::process_block($self);
+    } elsif ($block eq 'craft') {
+        Interface::Craft::process_block($self);
     }
 }
 

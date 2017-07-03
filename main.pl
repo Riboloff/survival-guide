@@ -15,6 +15,7 @@ use Logger qw(dmp);
 use Choouser;
 use Inv;
 use Character;
+use Craft;
 
 my $map = Map->new('squa');
 #my $map = Map->new('main');
@@ -73,10 +74,17 @@ while() {
             $chooser->{block_name} = 'action';
             $chooser->{position}{action} = 0;
             $process_block->{objects} = 1;
-        } elsif ($show_block eq 'looting') {
+        } 
+        elsif ($show_block eq 'looting') {
             if ($chooser->{block_name} ne 'loot_list') {
                 $chooser->{block_name} = 'loot_list';
                 $process_block->{looting} = 1;
+            }
+        } 
+        elsif ($show_block eq 'craft') {
+            if ($chooser->{block_name} ne 'craft_place') {
+                $chooser->{block_name} = 'craft_place';
+                $process_block->{craft} = 1;
             }
         }
     }
@@ -86,10 +94,17 @@ while() {
             $chooser->{block_name} = 'list_obj';
             $chooser->{position}{action} = 0;
             $process_block->{objects} = 1;
-        } elsif ($show_block eq 'looting') {
+        } 
+        elsif ($show_block eq 'looting') {
             if ($chooser->{block_name} ne 'bag') {
                 $chooser->{block_name} = 'bag';
                 $process_block->{looting} = 1;
+            }
+        }
+        elsif ($show_block eq 'craft') {
+            if ($chooser->{block_name} ne 'craft_bag') {
+                $chooser->{block_name} = 'craft_bag';
+                $process_block->{craft} = 1;
             }
         }
     }
@@ -109,8 +124,12 @@ while() {
     if ($key =~ /^[><]$/) {
         my $show_block = $interface->get_main_block_show();
         if ($show_block eq 'looting') {
-            _move_item($key, $chooser, $interface);
+            _move_item_looting($key, $chooser, $interface);
             $process_block->{looting} = 1;
+        }
+        elsif ($show_block eq 'craft') {
+            _move_item_craft($key, $chooser, $interface);
+            $process_block->{craft} = 1;
         }
     }
     if ($key =~ /^[-]$/) {
@@ -128,6 +147,14 @@ while() {
             my $block = $chooser->{block_name};
             $process_block->{$block} = 1;
             _delete_item($chooser, $item);
+        }
+    }
+    if ($key =~ /^[cC]$/) {
+        if ($interface->get_main_block_show() ne 'craft') {
+            my $craft = Craft->new($interface->{inv}{obj}{bag});
+            $interface->{craft}{obj} = $craft;
+            $chooser->{block_name} = 'craft_bag';
+            $process_block->{craft} = 1;
         }
     }
 }
@@ -249,7 +276,7 @@ sub _move_chooser {
     return;
 }
 
-sub _move_item {
+sub _move_item_looting {
     my $key = shift;
     my $chooser = shift;
     my $interface = shift;
@@ -272,6 +299,31 @@ sub _move_item {
 
     }
 
+    return;
+}
+
+sub _move_item_craft {
+    my $key = shift;
+    my $chooser = shift;
+    my $interface = shift;
+
+    my $craft = $interface->{craft}{obj};
+
+    my $bag = $craft->get_bag();
+    my $list_items = $craft->get_list_items();
+
+    if ($key eq '>' and $chooser->{block_name} eq 'craft_bag') {
+        my $chooser_position_craft_bag = $chooser->{position}{craft_bag};
+        my ($item) = splice(@{$bag->{items}}, $chooser_position_craft_bag, 1);
+        push(@$list_items, $item);
+
+    }
+    elsif ($key eq '<' and $chooser->{block_name} eq 'craft_place') {
+        my $chooser_position_craft_place = $chooser->{position}{craft_place};
+        my ($item) = splice(@$list_items,, $chooser_position_craft_place, 1);
+        push(@{$bag->{items}}, $item);
+
+    }
     return;
 }
 
