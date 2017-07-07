@@ -16,6 +16,7 @@ use Choouser;
 use Inv;
 use Character;
 use Craft;
+use CraftTable;
 
 my $map = Map->new('squa');
 #my $map = Map->new('main');

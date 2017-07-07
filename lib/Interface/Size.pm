@@ -271,7 +271,7 @@ sub set_size_all_block {
     $Interface->{craft}{size} = $size_area_looting;
     $Interface->{craft}{bag}{size} = $size_area_bag;
     $Interface->{craft}{place}{size} = $size_area_loot_list;
-    $Interface->{craft}{desc_craft}{size} = $size_area_desc_item;
+    $Interface->{craft}{result_item}{size} = $size_area_desc_item;
     $Interface->{needs}{size} = $size_area_needs;
 
     return;

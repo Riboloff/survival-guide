@@ -169,10 +169,6 @@ sub init_looting {
         for my $x (0 .. $x_bound_looting - 1) {
             $looting_array->[$y][$x]{symbol} = ' ';
             $looting_array->[$y][$x]{color} = '';
-            #if ($x == $x_bound_bag) {
-            #    $looting_array->[$y][$x]{symbol} = 'ǁ';
-            #    $looting_array->[$y][$x]{color} = '';
-            #}
         }
     }
 

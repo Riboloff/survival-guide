@@ -31,7 +31,6 @@ $hchar--;
 
 our $size_term = [$hchar, $wchar];
 
-
 our $item_dir = 'proto/items/';
 our $text_objects_dir = 'text/objects/';
 
@@ -39,6 +38,7 @@ our $items_id = {
     1 => 'medicine_box',
     2 => 'bread',
     3 => 'water',
+    4 => 'soft_bread',
 };
 
 our $objects_id = {
@@ -58,6 +58,7 @@ use constant LOCKPICK => 3;
 use constant MEDICINE_BOX => 1;
 use constant BREAD => 2;
 use constant WATER => 3;
+use constant SOFT_BREAD => 4;
 
 use constant SHELF => 1;
 

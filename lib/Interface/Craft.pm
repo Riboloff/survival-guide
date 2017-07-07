@@ -22,8 +22,8 @@ sub process_bag {
     my $bag_array = Interface::Utils::init_array($area, $size_area);
 
     my $chooser = $interface->{chooser};
-    $chooser->{list}{bag} = $list_items;
-    my $chooser_position = $chooser->get_position('bag');
+    $chooser->{list}{craft_bag} = $list_items;
+    my $chooser_position = $chooser->get_position('craft_bag');
     $chooser_position = Utils::clamp($chooser_position, 0, $#$list_items);
     $chooser->set_position('craft_bag', $chooser_position);
 
@@ -47,7 +47,7 @@ sub process_bag {
     return $bag_frame_array;
 }
 
-sub process_craft_items {
+sub process_craft_place {
     my $interface = shift;
 
     my $area = $interface->{craft}{place}{size};
@@ -60,6 +60,7 @@ sub process_craft_items {
     my @craft_items_name_list = map {$_->get_name} @$craft_items_list;
 
     my $chooser = $interface->{chooser};
+    $chooser->{list}{craft_place} = $craft_items_list;
     my $chooser_position = $chooser->get_position('craft_place');
     $chooser_position = Utils::clamp($chooser_position, 0, $#craft_items_name_list);
     $chooser->set_position('craft_place', $chooser_position);
@@ -95,26 +96,24 @@ sub process_craft_items {
     return $craft_items_frame_array;
 }
 
-sub process_desc_item {
+sub process_result_item {
     my $interface = shift;
 
-    my $chooser = $interface->{chooser};
-    my $chooser_block_name = $chooser->{block_name};
-    my $position_chooser = $chooser->{position}{$chooser_block_name};
-    my $item = $chooser->{list}{$chooser_block_name}[$position_chooser];
-
-    if (!defined $item) {
-        return [];
-    }
-
-    my $text = $item->get_desc(); 
-    my $area = $interface->{looting}{desc_item}{size};
+    my $craft = $interface->{craft}{obj};
+    my $items = $craft->create_preview() || [];
+    my $area = $interface->{craft}{result_item}{size};
     my $size_area = Interface::Utils::get_size($area);
-    $text->inition($area, 1);
-    my $text_array = $text->get_text_array($size_area);
-    my $text_frame_array = Interface::Utils::get_frame($text_array);
+    my $result_array = Interface::Utils::init_array($area, $size_area);
+    my $args = {
+        list => $items,
+        array => $result_array,
+        chooser_position => 999,
+        size_area => $size_area,
+    };
+    $result_array = Interface::Utils::list_to_array_symbols($args);
+    my $result_frame_array = Interface::Utils::get_frame($result_array);
 
-    return $text_frame_array;
+    return $result_frame_array;
 }
 
 sub process_block {
@@ -125,30 +124,30 @@ sub process_block {
     my $craft_array = init_craft($interface->{craft});
     my $main_array = $interface->{data_print};
 
+    my $craft_items_array = process_craft_place($interface);
     my $bag_array = process_bag($interface);
-    my $craft_items_array = process_craft_items($interface);
-    my $desc_item = [];#process_desc_item($interface);
+    my $result_item = process_result_item($interface);
 
     my $offset_bag = [
-        $interface->{inv}{bag}{size}[$LT][$Y],
-        $interface->{inv}{bag}{size}[$LT][$X]
+        $interface->{craft}{bag}{size}[$LT][$Y],
+        $interface->{craft}{bag}{size}[$LT][$X]
     ];
     my $offset_craft_items = [
         $interface->{craft}{place}{size}[$LT][$Y],
         $interface->{craft}{place}{size}[$LT][$X]
     ];
-    my $offset_desc_item = [
-        $interface->{craft}{desc_craft}{size}[$LT][$Y],
-        $interface->{craft}{desc_craft}{size}[$LT][$X]
-    ];
     my $offset_craft = [
         $interface->{craft}{size}[$LT][$Y],
         $interface->{craft}{size}[$LT][$X]
     ];
+    my $offset_result_item = [
+        $interface->{craft}{result_item}{size}[$LT][$Y],
+        $interface->{craft}{result_item}{size}[$LT][$X]
+    ];
 
     Interface::Utils::overlay_arrays_simple($craft_array, $bag_array, $offset_bag);
     Interface::Utils::overlay_arrays_simple($craft_array, $craft_items_array, $offset_craft_items);
-    #Interface::Utils::overlay_arrays_simple($craft_array, $desc_item, $offset_desc_item);
+    Interface::Utils::overlay_arrays_simple($craft_array, $result_item, $offset_result_item);
 
     Interface::Utils::overlay_arrays_simple($main_array, $craft_array, $offset_craft);
 }

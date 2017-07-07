@@ -1,0 +1,11 @@
+{
+    "ru": {
+        "name": "Мягкий хлеб",
+        "desc": "Пол буханки размегченного хлеба."
+    },
+
+    "en": {
+        "name": "Soft bread",
+        "desc": "Slice of soft bread."
+    }
+}

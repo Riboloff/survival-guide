@@ -159,6 +159,13 @@ sub print {
             ) {
                 $block = 'objects';
             }
+            elsif (
+                   $block eq 'craft_bag'
+                or $block eq 'craft_place'
+                or $block eq 'craft_result'
+            ) {
+                $block = 'craft';
+            }
 
             $self->_process_block($block);
             $self->_get_screen_diff($block);
@@ -200,6 +207,7 @@ sub _get_screen_diff {
     my $self = shift;
     my $block = shift;
 
+    dmp($block);
     my $bound_lt = $self->{$block}{size}[$LT];
     my $bound_rd = $self->{$block}{size}[$RD];
 

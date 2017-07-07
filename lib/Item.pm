@@ -9,12 +9,27 @@ use lib qw(lib);
 use Consts;
 use Logger qw(dmp);
 use ReadFile;
+use Language;
+use Text;
 
 my $id_inc = 0;
 
 sub new {
     my ($self, $name, $desc, $proto_id) = @_;
 
+    if (!$name or !$desc) {
+        my $hash = Language::get_text($proto_id, 'items');
+        if (!$name) {
+            $name = $hash->{name};
+        }
+        if (!$desc) {
+            my $desc = Text->new(undef, $hash->{desc});
+        }
+    }
+
+    if (!$desc) {
+
+    }
     my $id = create_new_id();
     my $item = {
         'id'         => $id,
@@ -38,6 +53,12 @@ sub get_name {
     my $self = shift;
 
     return $self->{name};
+}
+
+sub get_proto_id {
+    my $self = shift;
+
+    return $self->{proto_id};
 }
 
 sub get_type {

@@ -6,10 +6,10 @@ use warnings;
 use utf8;
 
 use lib qw(lib);
-use Consts;
 use Logger qw(dmp);
-use ReadFile;
 use Storable qw(dclone);
+use CraftTable;
+use Item;
 
 sub new {
     my $self = shift;
@@ -50,6 +50,28 @@ sub clean_items {
     my $self = shift;
 
     $self->{list_items} = [];
+}
+
+sub create_preview {
+    my $self = shift;
+    if (! scalar @{$self->{list_items}}) {
+        return [];
+    }
+    my @proto_ids = map{ $_->get_proto_id() } @{$self->{list_items}};
+    my $key_craft_table = join('_', sort  @proto_ids);
+
+    my $preview_item_ids = [];
+    if (exists $CraftTable::craft_table{$key_craft_table}) {
+        $preview_item_ids = $CraftTable::craft_table{$key_craft_table};
+
+    }
+    my $preview_items = [];
+    for my $ids (@$preview_item_ids) {
+        my $item = Item->new(undef,undef,$ids);
+        push(@$preview_items, $item->get_name());
+    }
+
+    return $preview_items;
 }
 
 1;
