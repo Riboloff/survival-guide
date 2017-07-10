@@ -18,6 +18,7 @@ sub new {
             loot_list => 0,
             craft_place => 0,
             craft_bag => 0,
+            craft_result => 0,
         },
         block_name => 'list_obj',
         list => {},

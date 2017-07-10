@@ -207,7 +207,6 @@ sub _get_screen_diff {
     my $self = shift;
     my $block = shift;
 
-    dmp($block);
     my $bound_lt = $self->{$block}{size}[$LT];
     my $bound_rd = $self->{$block}{size}[$RD];
 

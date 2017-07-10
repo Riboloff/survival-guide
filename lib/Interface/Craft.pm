@@ -67,14 +67,20 @@ sub process_craft_place {
 
     if ($chooser->{block_name} ne 'craft_place') {
         my $craft = $interface->{craft}{obj};
-        my $bag = $craft->get_bag;
-        my $list_items = $bag->{'items'};
+        my $list_items = [];
+        if ($chooser->{block_name} eq 'craft_bag') {
+            my $bag = $craft->get_bag;
+            $list_items = $bag->{'items'};
+        } elsif ($chooser->{block_name} eq 'craft_result') {
+            $list_items = $craft->get_craft_result();
+        }
         if (scalar @$list_items) {
             $chooser_position = 999;
         } else {
             $chooser->{block_name} = 'craft_place';
         }
     }
+
     if (
         $chooser->{block_name} eq 'craft_place'
         and !@craft_items_name_list
@@ -99,16 +105,29 @@ sub process_craft_place {
 sub process_result_item {
     my $interface = shift;
 
+
     my $craft = $interface->{craft}{obj};
     my $items = $craft->create_preview() || [];
     my $area = $interface->{craft}{result_item}{size};
     my $size_area = Interface::Utils::get_size($area);
     my $result_array = Interface::Utils::init_array($area, $size_area);
+
+    my $chooser = $interface->{chooser};
+    $chooser->{list}{craft_result} = $items;
+    my $chooser_position = $chooser->get_position('craft_result');
+    $chooser_position = Utils::clamp($chooser_position, 0, $#$items);
+    $chooser->set_position('craft_result', $chooser_position);
+
+    my @color_chooser = qw/blue/;
+    if ($chooser->{block_name} eq 'craft_result') {
+        push(@color_chooser, 'on_green');
+    }
     my $args = {
         list => $items,
         array => $result_array,
-        chooser_position => 999,
+        chooser_position => $chooser_position,
         size_area => $size_area,
+        color_chooser => join(',', @color_chooser),
     };
     $result_array = Interface::Utils::list_to_array_symbols($args);
     my $result_frame_array = Interface::Utils::get_frame($result_array);

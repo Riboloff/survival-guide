@@ -19,6 +19,7 @@ sub new {
     my $craft = {
         'list_items' => [],
         'bag' => $bag_virt,
+        'craft_result' => [],
     };
 
     bless($craft, $self);
@@ -30,6 +31,12 @@ sub get_list_items {
     my $self = shift;
 
     return $self->{list_items};
+}
+
+sub get_craft_result {
+    my $self = shift;
+
+    return $self->{craft_result};
 }
 
 sub get_bag {
@@ -70,7 +77,7 @@ sub create_preview {
         my $item = Item->new(undef,undef,$ids);
         push(@$preview_items, $item->get_name());
     }
-
+    $self->{craft_result} = $preview_items;
     return $preview_items;
 }
 

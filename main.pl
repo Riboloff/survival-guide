@@ -75,16 +75,20 @@ while() {
             $chooser->{block_name} = 'action';
             $chooser->{position}{action} = 0;
             $process_block->{objects} = 1;
-        } 
+        }
         elsif ($show_block eq 'looting') {
             if ($chooser->{block_name} ne 'loot_list') {
                 $chooser->{block_name} = 'loot_list';
                 $process_block->{looting} = 1;
             }
-        } 
+        }
         elsif ($show_block eq 'craft') {
-            if ($chooser->{block_name} ne 'craft_place') {
+            if ($chooser->{block_name} eq 'craft_bag') {
                 $chooser->{block_name} = 'craft_place';
+                $process_block->{craft} = 1;
+            }
+            elsif ($chooser->{block_name} eq 'craft_place') {
+                $chooser->{block_name} = 'craft_result';
                 $process_block->{craft} = 1;
             }
         }
@@ -95,7 +99,7 @@ while() {
             $chooser->{block_name} = 'list_obj';
             $chooser->{position}{action} = 0;
             $process_block->{objects} = 1;
-        } 
+        }
         elsif ($show_block eq 'looting') {
             if ($chooser->{block_name} ne 'bag') {
                 $chooser->{block_name} = 'bag';
@@ -141,7 +145,11 @@ while() {
     }
     if ($key =~ /^[eE]$/) {
         my $obj = $chooser->get_target_object();
-        if ($obj and $obj->get_type eq 'item') {
+        if (
+            $interface->get_main_block_show() ne 'craft'
+            and $obj
+            and $obj->get_type eq 'item'
+        ) {
             my $item = $obj;
             $item->used($character);
             $process_block->{needs} = 1;
