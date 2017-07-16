@@ -1,5 +1,7 @@
 {
     "proto_id": 3,
-    "add_hp": 1,
-    "add_water": 15
+    "used": {
+        "add_hp": 5,
+        "add_water": 25
+    }
 }

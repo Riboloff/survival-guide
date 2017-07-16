@@ -192,8 +192,23 @@ sub _enter {
            $process_block->{looting} = 1;
         }
         if ($chooser->{list}{action}[$position]->get_proto_id() == Consts::WATCH) {
+           #TODO добавить описание
            $process_block->{text} = 1;
         }
+    }
+    elsif ($chooser->{block_name} eq 'craft_result') {
+        my $position = $chooser->get_position();
+        my $item = $chooser->{list}{craft_result}[$position];
+        my $inv = $interface->{inv}{obj};
+        $inv->add_bag_item($item);
+        my $items_in_craft_place = $chooser->{list}{craft_place};
+        my @ids_rm_item = map {$_->{id}} @$items_in_craft_place;
+        for my $id_item (@ids_rm_item) {
+            $inv->rm_bag_item($id_item);
+        }
+        $interface->{craft}{obj} = Craft->new($interface->{inv}{obj}{bag});
+
+        $process_block->{craft} = 1;
     }
 }
 

@@ -51,6 +51,29 @@ sub new {
     return $inv;
 }
 
+sub add_bag_item {
+    my $self = shift;
+    my $item = shift;
+
+    push(@{$self->{bag}{items}}, $item);
+}
+
+sub rm_bag_item {
+    my $self = shift;
+    my $item_id = shift;
+
+    my $items_bag = $self->get_all_items_bag();
+    for (my $i=0; $i < @$items_bag; ++$i ) {
+        my $item = $items_bag->[$i];
+        if ($item->{id} eq $item_id) {
+            splice(@$items_bag, $i, 1);
+            last;
+        }
+    }
+
+    return;
+}
+
 sub get_all_items_bag {
     my $self = shift;
 

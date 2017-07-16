@@ -122,8 +122,9 @@ sub process_result_item {
     if ($chooser->{block_name} eq 'craft_result') {
         push(@color_chooser, 'on_green');
     }
+    my @items_name = map {$_->get_name} @$items;
     my $args = {
-        list => $items,
+        list => \@items_name,
         array => $result_array,
         chooser_position => $chooser_position,
         size_area => $size_area,

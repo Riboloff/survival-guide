@@ -75,7 +75,8 @@ sub create_preview {
     my $preview_items = [];
     for my $ids (@$preview_item_ids) {
         my $item = Item->new(undef,undef,$ids);
-        push(@$preview_items, $item->get_name());
+        #push(@$preview_items, $item->get_name());
+        push(@$preview_items, $item);
     }
     $self->{craft_result} = $preview_items;
     return $preview_items;

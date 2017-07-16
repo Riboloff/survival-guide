@@ -1,0 +1,8 @@
+{
+    "proto_id": 4,
+    "used": {
+        "add_hp": 10,
+        "add_food": 15,
+        "add_water": 30
+    }
+}

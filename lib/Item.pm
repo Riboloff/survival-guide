@@ -23,13 +23,11 @@ sub new {
             $name = $hash->{name};
         }
         if (!$desc) {
-            my $desc = Text->new(undef, $hash->{desc});
+            $desc = Text->new(undef, $hash->{desc});
+
         }
     }
 
-    if (!$desc) {
-
-    }
     my $id = create_new_id();
     my $item = {
         'id'         => $id,
@@ -77,19 +75,29 @@ sub used {
     my $self = shift;
     my $char = shift;
 
-    my $proto_id = $self->{proto_id};
-    if ($proto_id == Consts::MEDICINE_BOX) {
-        $char->get_health->add_hp(10);
+    for my $used_key (keys %{$self->{used}}) {
+        my $used_value = $self->{used}{$used_key};
+        if ($used_key eq 'add_hp') {
+            $char->get_health->add_hp($used_value);
+        }
+        elsif ($used_key eq 'add_water') {
+            $char->get_thirst->add_water($used_value);
+        }
+        elsif ($used_key eq 'add_food') {
+            $char->get_hunger->add_food($used_value);
+        }
+        elsif ($used_key eq 'sub_hp') {
+            $char->get_health->sub_hp($used_value);
+        }
+        elsif ($used_key eq 'sub_water') {
+            $char->get_thirst->sub_water($used_value);
+        }
+        elsif ($used_key eq 'sub_food') {
+            $char->get_hunger->sub_food($used_value);
+        }
     }
-    elsif ($proto_id == Consts::BREAD) {
-        $char->get_health->add_hp(3);
-        $char->get_hunger->add_food(15);
-        $char->get_thirst->sub_water(5);
-    }
-    elsif ($proto_id == Consts::WATER) {
-        $char->get_health->add_hp(1);
-        $char->get_thirst->add_water(15);
-    }
+
+    return;
 }
 
 sub get_proto_feature {
