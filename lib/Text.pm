@@ -9,7 +9,7 @@ use JSON;
 
 use lib qw(lib);
 use Logger qw(dmp);
-use Consts; 
+use Consts;
 use Language;
 
 sub new {
@@ -28,6 +28,15 @@ sub new {
     };
 
     return (bless $hash, $self);
+}
+
+sub add_text {
+    my $self = shift;
+    my $text = shift;
+
+    $self->{text} .= "\n" . $text;
+
+    return;
 }
 
 sub inition {

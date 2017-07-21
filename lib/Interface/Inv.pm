@@ -7,6 +7,7 @@ use utf8;
 use Logger qw(dmp);
 use Consts;
 use Interface::Utils;
+use utf8;
 
 sub process_bag {
     my $interface = shift;
@@ -35,7 +36,8 @@ sub process_bag {
         size_area => $size_area,
     };
     $bag_array = Interface::Utils::list_to_array_symbols($args);
-    my $bag_frame_array = Interface::Utils::get_frame($bag_array);
+    my $title = Language::get_title_block('bag');
+    my $bag_frame_array = Interface::Utils::get_frame($bag_array, $title);
 
     return $bag_frame_array;
 }
@@ -73,8 +75,9 @@ sub process_harness {
         chooser_position => 999,
         size_area => $size_area,
     };
+    my $title = Language::get_title_block('harness');
     $harness_array = Interface::Utils::list_to_array_symbols($args);
-    my $harness_frame_array = Interface::Utils::get_frame($harness_array);
+    my $harness_frame_array = Interface::Utils::get_frame($harness_array, $title);
     return $harness_frame_array;
 }
 
@@ -90,12 +93,13 @@ sub process_desc_item {
         return [];
     }
 
-    my $text = $item->get_desc(); 
+    my $text = $item->get_desc();
     my $area = $interface->{looting}{desc_item}{size};
     my $size_area = Interface::Utils::get_size($area);
     $text->inition($area, 1);
     my $text_array = $text->get_text_array($size_area);
-    my $text_frame_array = Interface::Utils::get_frame($text_array);
+    my $title = Language::get_title_block('desc_item');
+    my $text_frame_array = Interface::Utils::get_frame($text_array, $title);
 
     return $text_frame_array;
 }

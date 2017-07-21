@@ -41,8 +41,8 @@ sub process_bag {
         color_chooser => $color_chooser,
     };
     $bag_array = Interface::Utils::list_to_array_symbols($args);
-    my $tmp = @{$bag_array->[0]};
-    my $bag_frame_array = Interface::Utils::get_frame($bag_array);
+    my $title = Language::get_title_block('bag');
+    my $bag_frame_array = Interface::Utils::get_frame($bag_array, $title);
 
     return $bag_frame_array;
 }
@@ -97,7 +97,8 @@ sub process_craft_place {
     };
 
     $craft_items_array = Interface::Utils::list_to_array_symbols($args);
-    my $craft_items_frame_array = Interface::Utils::get_frame($craft_items_array);
+    my $title = Language::get_title_block('craft_place');
+    my $craft_items_frame_array = Interface::Utils::get_frame($craft_items_array, $title);
 
     return $craft_items_frame_array;
 }
@@ -131,7 +132,8 @@ sub process_result_item {
         color_chooser => join(',', @color_chooser),
     };
     $result_array = Interface::Utils::list_to_array_symbols($args);
-    my $result_frame_array = Interface::Utils::get_frame($result_array);
+    my $title = Language::get_title_block('craft_result');
+    my $result_frame_array = Interface::Utils::get_frame($result_array, $title);
 
     return $result_frame_array;
 }

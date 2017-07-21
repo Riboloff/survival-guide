@@ -17,11 +17,18 @@ sub new {
 
     my $health = {
         'hp' => $start_hp,
+        'time_dec_one'  => 5,
     };
 
     bless($health, $self);
 
     return $health;
+}
+
+sub get_time_dec_one {
+    my $self = shift;
+
+    return $self->{time_dec_one};
 }
 
 sub get_hp {

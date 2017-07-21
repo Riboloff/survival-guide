@@ -40,8 +40,8 @@ sub process_bag {
         color_chooser => $color_chooser,
     };
     $bag_array = Interface::Utils::list_to_array_symbols($args);
-    my $tmp = @{$bag_array->[0]};
-    my $bag_frame_array = Interface::Utils::get_frame($bag_array);
+    my $title = Language::get_title_block('bag');
+    my $bag_frame_array = Interface::Utils::get_frame($bag_array, $title);
 
     return $bag_frame_array;
 }
@@ -89,8 +89,9 @@ sub process_loot_list {
         color_chooser => $color_chooser,
     };
 
+    my $title = Language::get_title_block('loot_list');
     $loot_array = Interface::Utils::list_to_array_symbols($args);
-    my $loot_frame_array = Interface::Utils::get_frame($loot_array);
+    my $loot_frame_array = Interface::Utils::get_frame($loot_array, $title);
 
     return $loot_frame_array;
 }
@@ -104,6 +105,7 @@ sub process_desc_item {
     my $item = $chooser->{list}{$chooser_block_name}[$position_chooser];
 
     if (!defined $item) {
+        #TODO: Пропадает блок целиком вместе с рамкой
         return [];
     }
 
@@ -112,7 +114,8 @@ sub process_desc_item {
     my $size_area = Interface::Utils::get_size($area);
     $text->inition($area, 1);
     my $text_array = $text->get_text_array($size_area);
-    my $text_frame_array = Interface::Utils::get_frame($text_array);
+    my $title = Language::get_title_block('desc_item');
+    my $text_frame_array = Interface::Utils::get_frame($text_array, $title);
 
     return $text_frame_array;
 }

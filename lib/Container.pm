@@ -7,7 +7,7 @@ use utf8;
 my $id_inc = 0;
 
 sub new {
-    my ($self, $name, $items, $actions, $proto_id) = @_;
+    my ($self, $name, $items, $actions, $desc, $proto_id) = @_;
 
     my $id = create_new_id();
 
@@ -18,6 +18,7 @@ sub new {
         'actions' => $actions,
         'type' => 'container',
         'proto_id' => $proto_id,
+        'desc'     => $desc,
     };
 
     bless($container, $self);

@@ -11,6 +11,7 @@ use Logger qw(dmp);
 use ReadFile;
 
 my $lang = 'ru'; #TODO пока хардкод.
+my $tilte_blocks = _get_title_blocks();
 
 sub get_text {
     my $id = shift;
@@ -39,6 +40,19 @@ sub read_json_file_lang {
     my $hash = ReadFile::read_json_file($path);
 
     return $hash->{$lang};
+}
+
+sub _get_title_blocks {
+    my $path = $Consts::text_interface_dir . '/' . 'title';
+
+    return read_json_file_lang($path);
+}
+
+sub get_title_block {
+    my $block_name = shift;
+
+
+    return $tilte_blocks->{$block_name};
 }
 
 1;

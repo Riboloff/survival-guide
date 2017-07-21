@@ -39,7 +39,8 @@ sub process_list_obj {
         color_chooser => $color_chooser,
     };
     $list_obj_array = Interface::Utils::list_to_array_symbols($args);
-    my $list_obj_frame_array = Interface::Utils::get_frame($list_obj_array);
+    my $title = Language::get_title_block('object');
+    my $list_obj_frame_array = Interface::Utils::get_frame($list_obj_array, $title);
 
     return $list_obj_frame_array;
 }
@@ -47,7 +48,7 @@ sub process_list_obj {
 sub process_actions {
     my $interface = shift;
 
-    my $chooser = $interface->{chooser}; 
+    my $chooser = $interface->{chooser};
     my $list_obj = $chooser->{list}{list_obj};
     my $position_list_obj = $chooser->{position}{list_obj};
     my $obj = $list_obj->[$position_list_obj];
@@ -77,7 +78,8 @@ sub process_actions {
     };
 
     $action_array = Interface::Utils::list_to_array_symbols($args);
-    my $action_frame_array = Interface::Utils::get_frame($action_array);
+    my $title = Language::get_title_block('action');
+    my $action_frame_array = Interface::Utils::get_frame($action_array, $title);
 
     return $action_frame_array;
 }
@@ -88,8 +90,8 @@ sub process_block {
     my $objects_array = init_objects($interface->{objects});
     my $main_array = $interface->{data_print};
 
-    my $list_obj_array = process_list_obj($interface); 
-    my $actions_array = process_actions($interface); 
+    my $list_obj_array = process_list_obj($interface);
+    my $actions_array = process_actions($interface);
 
     my $offset_list_obj = [
         $interface->{objects}{list_obj}{size}[$LT][$Y] - $interface->{objects}{size}[$LT][$Y],

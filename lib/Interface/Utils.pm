@@ -192,36 +192,61 @@ sub one_line_to_array_symbols {
 
 sub get_frame {
     my $array = shift;
+    my $title = shift || '';
 
     my $array_frame = [];
     my $size_array_frame_y = scalar( @$array );
     my $size_array_frame_x = scalar( @{$array->[0]} );
 
+    my $color = 'dark';
+
+    my $start_symbol_title = 0;
+    my @title_array = ();
+    if ($title) {
+        @title_array = split(//, $title);
+        unless (@title_array > $size_array_frame_x + 2) {
+            $start_symbol_title = int($size_array_frame_x / 2 - @title_array / 2);
+        }
+    }
     for (my $y = 0; $y < $size_array_frame_y; $y++) {
         for (my $x = 0; $x < $size_array_frame_x; $x++) {
             if ($x == 0 and $y == 0) {
                 $array_frame->[$y][$x]->{symbol} = '╭';
-                $array_frame->[$y][$x]{color} = '';
+                $array_frame->[$y][$x]{color} = $color;
             }
             elsif ($x == 0 and $y == $size_array_frame_y - 1) {
                 $array_frame->[$y][$x]->{symbol} = '╰';
-                $array_frame->[$y][$x]{color} = '';
+                $array_frame->[$y][$x]{color} = $color;
             }
             elsif ($x == $size_array_frame_x - 1 and $y == 0) {
                 $array_frame->[$y][$x]->{symbol} = '╮';
-                $array_frame->[$y][$x]{color} = '';
+                $array_frame->[$y][$x]{color} = $color;
             }
             elsif ($x == $size_array_frame_x - 1 and $y == $size_array_frame_y - 1) {
                 $array_frame->[$y][$x]->{symbol} = '╯';
-                $array_frame->[$y][$x]{color} = '';
+                $array_frame->[$y][$x]{color} = $color;
             }
-            elsif ($y == 0 or $y == $size_array_frame_y - 1) {
+            elsif ($y == 0) {
+                if (
+                    $title
+                    and $start_symbol_title <= $x
+                    and ($x - $start_symbol_title) < @title_array
+                ) {
+                    my $symbol = $title_array[$x - $start_symbol_title];
+                    $array_frame->[$y][$x]->{symbol} = $symbol;
+                    $array_frame->[$y][$x]->{color} = 'dark green';
+                } else {
+                    $array_frame->[$y][$x]->{symbol} = '─';
+                    $array_frame->[$y][$x]->{color} = $color;
+                }
+            }
+            elsif ($y == $size_array_frame_y - 1) {
                 $array_frame->[$y][$x]->{symbol} = '─';
-                $array_frame->[$y][$x]->{color} = '';
+                $array_frame->[$y][$x]->{color} = $color;
             }
             elsif ($x == 0 or $x == $size_array_frame_x - 1) {
                 $array_frame->[$y][$x]->{symbol} = '│';
-                $array_frame->[$y][$x]{color} = '';
+                $array_frame->[$y][$x]{color} = $color;
             }
             else {
                 $array_frame->[$y][$x]{symbol} = $array->[$y][$x]{symbol};
@@ -240,8 +265,14 @@ sub get_frame {
     return $array_frame;
 }
 
+#get_frame и get_frame_tmp
+#Первый делает рамку из входного массива
+#Второй оборачивает входной массив в рамку
+#TODO сделать нормальные названия
 sub get_frame_tmp {
     my $array = shift;
+
+    my $color = 'dark';
 
     my $array_frame = [];
     my $size_array_frame_y = scalar( @$array ) + 2;
@@ -251,27 +282,27 @@ sub get_frame_tmp {
         for (my $x = 0; $x < $size_array_frame_x; $x++) {
             if ($x == 0 and $y == 0) {
                 $array_frame->[$y][$x]->{symbol} = '╭';
-                $array_frame->[$y][$x]{color} = '';
+                $array_frame->[$y][$x]{color} = $color;
             }
             elsif ($x == 0 and $y == $size_array_frame_y - 1) {
                 $array_frame->[$y][$x]->{symbol} = '╰';
-                $array_frame->[$y][$x]{color} = '';
+                $array_frame->[$y][$x]{color} = $color;
             }
             elsif ($x == $size_array_frame_x - 1 and $y == 0) {
                 $array_frame->[$y][$x]->{symbol} = '╮';
-                $array_frame->[$y][$x]{color} = '';
+                $array_frame->[$y][$x]{color} = $color;
             }
             elsif ($x == $size_array_frame_x - 1 and $y == $size_array_frame_y - 1) {
                 $array_frame->[$y][$x]->{symbol} = '╯';
-                $array_frame->[$y][$x]{color} = '';
+                $array_frame->[$y][$x]{color} = $color;
             }
             elsif ($y == 0 or $y == $size_array_frame_y - 1) {
                 $array_frame->[$y][$x]->{symbol} = '─';
-                $array_frame->[$y][$x]->{color} = '';
+                $array_frame->[$y][$x]->{color} = $color;
             }
             elsif ($x == 0 or $x == $size_array_frame_x - 1) {
                 $array_frame->[$y][$x]->{symbol} = '│';
-                $array_frame->[$y][$x]{color} = '';
+                $array_frame->[$y][$x]{color} = $color;
             }
         }
     }

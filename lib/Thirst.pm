@@ -17,11 +17,18 @@ sub new {
 
     my $thirst = {
         'water' => $start_water,
+        'time_dec_one'  => 3,
     };
 
     bless($thirst, $self);
 
     return $thirst;
+}
+
+sub get_time_dec_one {
+    my $self = shift;
+
+    return $self->{time_dec_one};
 }
 
 sub get_water {

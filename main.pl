@@ -17,9 +17,9 @@ use Inv;
 use Character;
 use Craft;
 use CraftTable;
+use Utils;
 
 my $map = Map->new('squa');
-#my $map = Map->new('main');
 my $start_coord = [10, 18];
 my $character = Character->new($start_coord);
 
@@ -31,16 +31,17 @@ my $inv = Inv->new();
 my $interface = Interface->new($map, $character, $text_obj, $chooser, $inv);
 $text_obj->set_size_area_text($interface->{text});
 my $process_block = {};
+my $time = 0;
 
-while() {
 
+while(1) {
+
+    ReadMode('normal');
     $interface->print($process_block);
 
     $process_block = {};
     ReadMode('cbreak');
     my $key = ReadKey(0);
-    # my $key = ReadKey(-1);
-    #ReadMode('normal');
 
     if (is_change_term_size()) {
         $interface->set_size_all_block();
@@ -51,9 +52,15 @@ while() {
     if ($key eq "\n") { #Enter заменить на нормальный сигнал
         _enter();
     }
+    if ($key =~ /`/) {
+        ReadMode('normal');
+        exit(0);
+    }
     if ($key =~ /^[dDaAwWsS]$/) {
         if ($interface->get_main_block_show() eq 'map') {
             _move($key);
+            _change_time();
+            $process_block->{needs} = 1;
             $process_block->{map} = 1;
             $process_block->{objects} = 1;
             $chooser->reset_position();
@@ -119,10 +126,7 @@ while() {
             $chooser->{position}{inv} = 0;
             $process_block->{inv} = 1;
         } else {
-            $interface->clean_after_itself('inv');
-            $chooser->{block_name} = 'list_obj';
-            $chooser->{position}{inv} = 0;
-            $process_block->{all} = 1;
+            _close_block('inv');
             next;
         }
     }
@@ -164,8 +168,20 @@ while() {
             $interface->{craft}{obj} = $craft;
             $chooser->{block_name} = 'craft_bag';
             $process_block->{craft} = 1;
+        } else {
+            _close_block('craft');
+            next;
         }
     }
+}
+
+sub _close_block {
+    my $block_name = shift;
+
+    $interface->clean_after_itself($block_name);
+    $chooser->{block_name} = 'list_obj';
+    $chooser->{position}{inv} = 0;
+    $process_block->{all} = 1;
 }
 
 sub _delete_item {
@@ -192,8 +208,14 @@ sub _enter {
            $process_block->{looting} = 1;
         }
         if ($chooser->{list}{action}[$position]->get_proto_id() == Consts::WATCH) {
-           #TODO добавить описание
-           $process_block->{text} = 1;
+            #TODO добавить описание
+            my $pos = $chooser->{position}{list_obj};
+            my $description = $chooser->{list}{list_obj}[$pos]{desc};
+            my $lines = Utils::split_text($description);
+            $description = Utils::get_random_line($lines);
+            my $text_obj = $interface->{text}{obj};
+            $text_obj->add_text($description);
+            $process_block->{text} = 1;
         }
     }
     elsif ($chooser->{block_name} eq 'craft_result') {
@@ -366,4 +388,27 @@ sub is_change_term_size {
     }
 
     return;
+}
+
+sub _change_time {
+    $time++;
+
+    if ($time % $character->get_thirst->get_time_dec_one() == 0) {
+        $character->get_thirst->sub_water('1');
+    }
+
+    if ($time % $character->get_hunger->get_time_dec_one() == 0) {
+        $character->get_hunger->sub_food('1');
+    }
+
+    if ($character->get_hunger->get_food()  == 0
+        and $time % $character->get_health->get_time_dec_one() == 0
+    ) {
+        $character->get_health->sub_hp('1');
+    }
+    if ($character->get_thirst->get_water() == 0
+        and $time % $character->get_health->get_time_dec_one() == 0
+    ) {
+        $character->get_health->sub_hp('1');
+    }
 }

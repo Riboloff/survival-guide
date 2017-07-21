@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use List::Util qw(min max);
+use Logger qw(dmp);
 use lib qw(lib);
 
 sub clamp {
@@ -16,4 +17,21 @@ sub clamp {
 
     return $number;
 }
+
+sub split_text {
+    my $text = shift;
+
+    my @texts = split(/\|\|/, $text);
+
+    return \@texts;
+}
+
+sub get_random_line {
+    my $lines = shift;
+
+    my $pos = int rand(@$lines);
+
+    return $lines->[$pos];
+}
+
 1;

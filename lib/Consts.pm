@@ -33,6 +33,7 @@ our $size_term = [$hchar, $wchar];
 
 our $item_dir = 'proto/items/';
 our $text_objects_dir = 'text/objects/';
+our $text_interface_dir = 'text/interface';
 
 our $items_id = {
     1 => 'medicine_box',

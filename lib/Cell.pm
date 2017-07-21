@@ -38,7 +38,7 @@ sub new {
        my $actions_id = $conf->{actions_id};
        my $actions = _get_actions($actions_id);
        my $items = _get_items($items_id);
-       $cell->{obj} = Container->new($name, $items, $actions);
+       $cell->{obj} = Container->new($name, $items, $actions, $desc);
     }
     if ($icon =~ /[-|+]/) {
         $cell->{blocker} = 1;

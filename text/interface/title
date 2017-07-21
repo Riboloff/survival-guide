@@ -1,0 +1,24 @@
+{
+    "ru": {
+        "bag": " Сумка ",
+        "harness": " Одежда ",
+        "desc_item": " Описание предмета ",
+        "action": " Действие ",
+        "object": " Объекты рядом", 
+        "loot_list": " Можно взять ",
+        "craft_place": " Верстак ",
+        "craft_result": " Результат крафта "
+    },
+
+    "en": {
+        "bag": "bag",
+        "harness": " harness ",
+        "desc_item": " Desc item ",
+        "action": "Action ",
+        "object": " Object close ", 
+        "loot_list": " Можно взять ",
+        "loot_list": " Loot_list ",
+        "craft_place": " Workbench ",
+        "craft_result": " Craft result "
+    }
+}
