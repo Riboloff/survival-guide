@@ -22,7 +22,6 @@ sub split_text {
     my $text = shift;
 
     my @texts = split(/\|\|/, $text);
-
     return \@texts;
 }
 

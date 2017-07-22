@@ -1,11 +1,13 @@
 {
     "ru": {
         "name": "Черствый хлеб",
-        "desc": "Пол буханки черствого черного хлеба."
+        "desc": "Пол буханки черствого черного хлеба.",
+        "use": "Вы съели черствый хлеб."
     },
 
     "en": {
         "name": "Stale bread",
-        "desc": "Slice of bread."
+        "desc": "Slice of bread.",
+        "use": "You have eaten stale bread"
     }
 }

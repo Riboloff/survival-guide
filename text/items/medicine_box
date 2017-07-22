@@ -1,11 +1,13 @@
 {
     "ru": {
         "name": "аптечка",
-        "desc": "Это аптечка первой помощи."
+        "desc": "Это аптечка первой помощи.",
+        "use": "Вы использовали аптечку||Здоровье прибавилось||Вы чувствуете себя лучше"
     },
 
     "en": {
         "name": "medicine_box",
-        "desc": "This first aid kit."
+        "desc": "This first aid kit.",
+        "use": "use medicine box"
     }
 }

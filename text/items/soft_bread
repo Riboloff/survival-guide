@@ -1,11 +1,14 @@
 {
     "ru": {
         "name": "Мягкий хлеб",
-        "desc": "Пол буханки размегченного хлеба."
+        "desc": "Пол буханки размегченного хлеба.",
+        "use": "Вкусный хлеб"
     },
 
     "en": {
         "name": "Soft bread",
-        "desc": "Slice of soft bread."
+        "desc": "Slice of soft bread.",
+        "use": "used Soft bread"
+
     }
 }

@@ -3,13 +3,17 @@ package Container;
 use strict;
 use warnings;
 use utf8;
-
+use Logger qw(dmp);
 my $id_inc = 0;
 
 sub new {
-    my ($self, $name, $items, $actions, $desc, $proto_id) = @_;
+    my ($self, $proto_id, $actions, $items) = @_;
 
     my $id = create_new_id();
+
+    my $obj_text = Language::get_text($proto_id, 'objects');
+    my $name = $obj_text->{name};
+    my $desc = Utils::split_text($obj_text->{desc});
 
     my $container = {
         'id' => $id,
@@ -22,7 +26,7 @@ sub new {
     };
 
     bless($container, $self);
-    
+
     return $container;
 }
 
@@ -52,8 +56,7 @@ sub get_items {
 
 sub get_desc {
     my $self = shift;
-
-    return $self->{desc};
+    return Utils::get_random_line($self->{desc});
 }
 
 sub create_new_id {

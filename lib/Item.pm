@@ -15,19 +15,12 @@ use Text;
 my $id_inc = 0;
 
 sub new {
-    my ($self, $name, $desc, $proto_id) = @_;
+    my ($self, $proto_id) = @_;
 
-    if (!$name or !$desc) {
-        my $hash = Language::get_text($proto_id, 'items');
-        if (!$name) {
-            $name = $hash->{name};
-        }
-        if (!$desc) {
-            $desc = Text->new(undef, $hash->{desc});
-
-        }
-    }
-
+    my $text_hash = Language::get_text($proto_id, 'items');
+    my $name = $text_hash->{name};
+    my $use_text = $text_hash->{use};
+    my $desc = Text->new(undef, $text_hash->{desc});
     my $id = create_new_id();
     my $item = {
         'id'         => $id,
@@ -37,6 +30,7 @@ sub new {
         'proto_id'   => $proto_id,
     };
     get_proto_feature($item);
+    $item->{used}{text} = Utils::split_text($use_text);
 
     bless($item, $self);
 
@@ -74,6 +68,7 @@ sub get_desc {
 sub used {
     my $self = shift;
     my $char = shift;
+    my $text_obj = shift;
 
     for my $used_key (keys %{$self->{used}}) {
         my $used_value = $self->{used}{$used_key};
@@ -94,6 +89,11 @@ sub used {
         }
         elsif ($used_key eq 'sub_food') {
             $char->get_hunger->sub_food($used_value);
+        }
+        elsif ($used_key eq 'text') {
+            if ($used_value) {
+                $text_obj->add_text(Utils::get_random_line($used_value));
+            }
         }
     }
 

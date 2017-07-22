@@ -31,14 +31,11 @@ sub new {
        $cell->{blocker} = $conf->{blocker} || 1;
 
        $cell->{name_id} = $conf->{name_id};
-       my $obj_text = Language::get_text($cell->{name_id}, 'objects');
-       my $name = $obj_text->{name}; 
-       my $desc = $obj_text->{desc};
-       my $items_id = $conf->{items_id};
        my $actions_id = $conf->{actions_id};
        my $actions = _get_actions($actions_id);
+       my $items_id = $conf->{items_id};
        my $items = _get_items($items_id);
-       $cell->{obj} = Container->new($name, $items, $actions, $desc);
+       $cell->{obj} = Container->new($cell->{name_id}, $actions, $items);
     }
     if ($icon =~ /[-|+]/) {
         $cell->{blocker} = 1;
@@ -69,30 +66,12 @@ sub get_obj {
     return $self->{obj};
 }
 
-sub _create_items_for_test {
-    my $count = shift;
-
-    my $items = [];
-    for (0 .. $count) {
-        my $name = 'предмет' . int(rand(10));
-        my $file_name = 'desc_item';
-        $file_name .=  int(rand(3)) + 1;
-        my $desc = Text->new($file_name);
-        push(@$items, Item->new($name, $desc));
-    }
-
-    return $items;
-}
-
 sub _get_items {
     my $items_id = shift;
 
     my $items = [];
     for my $id (@$items_id) {
-        my $hash = Language::get_text($id, 'items');
-        my $desc = Text->new(undef, $hash->{desc});
-        my $name = $hash->{name};
-        push(@$items, Item->new($name, $desc, $id));
+        push(@$items, Item->new($id));
     }
 
     return $items;

@@ -42,6 +42,7 @@ while(1) {
     $process_block = {};
     ReadMode('cbreak');
     my $key = ReadKey(0);
+    ReadMode('normal');
 
     if (is_change_term_size()) {
         $interface->set_size_all_block();
@@ -155,10 +156,11 @@ while(1) {
             and $obj->get_type eq 'item'
         ) {
             my $item = $obj;
-            $item->used($character);
+            $item->used($character, $interface->{text}{obj});
             $process_block->{needs} = 1;
             my $block = $chooser->{block_name};
             $process_block->{$block} = 1;
+            $process_block->{text} = 1;
             _delete_item($chooser, $item);
         }
     }
@@ -208,11 +210,9 @@ sub _enter {
            $process_block->{looting} = 1;
         }
         if ($chooser->{list}{action}[$position]->get_proto_id() == Consts::WATCH) {
-            #TODO добавить описание
             my $pos = $chooser->{position}{list_obj};
-            my $description = $chooser->{list}{list_obj}[$pos]{desc};
-            my $lines = Utils::split_text($description);
-            $description = Utils::get_random_line($lines);
+            my $obj = $chooser->{list}{list_obj}[$pos];
+            my $description = $obj->get_desc();
             my $text_obj = $interface->{text}{obj};
             $text_obj->add_text($description);
             $process_block->{text} = 1;

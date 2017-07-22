@@ -108,7 +108,6 @@ sub process_desc_item {
         #TODO: Пропадает блок целиком вместе с рамкой
         return [];
     }
-
     my $text = $item->get_desc(); 
     my $area = $interface->{looting}{desc_item}{size};
     my $size_area = Interface::Utils::get_size($area);

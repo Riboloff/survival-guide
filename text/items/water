@@ -1,11 +1,13 @@
 {
     "ru": {
         "name": "Чистая вода",
-        "desc": "[c=blue]Чистая вода[/c]. Можно пить"
+        "desc": "[c=blue]Чистая вода[/c]. Можно пить",
+        "use": "Вы выпили чистую воду"
     },
 
     "en": {
         "name": "Water",
-        "desc": "Water"
+        "desc": "Water",
+        "use": "use water"
     }
 }
