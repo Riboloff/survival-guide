@@ -1,0 +1,19 @@
+{
+    "ru": {
+        "health": "Здоровье",
+        "hunger": "Сытость",
+        "thirst": "Жажда",
+        "temp_norm": "Нормально",
+        "temp_cold": "Холодно",
+        "temp_hot": "Жарко"
+    },
+
+    "en": {
+        "health": "health",
+        "hunger": "hunger",
+        "thirst": "thirst",
+        "temp_norm": "Norm",
+        "temp_cold": "Cold",
+        "temp_hot": "Hot"
+    }
+}

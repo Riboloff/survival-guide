@@ -4,17 +4,17 @@
         "harness": " Одежда ",
         "desc_item": " Описание предмета ",
         "action": " Действие ",
-        "object": " Объекты рядом", 
+        "object": " Объекты рядом ", 
         "loot_list": " Можно взять ",
         "craft_place": " Верстак ",
         "craft_result": " Результат крафта "
     },
 
     "en": {
-        "bag": "bag",
+        "bag": " bag ",
         "harness": " harness ",
         "desc_item": " Desc item ",
-        "action": "Action ",
+        "action": " Action ",
         "object": " Object close ", 
         "loot_list": " Можно взять ",
         "loot_list": " Loot_list ",
