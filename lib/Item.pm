@@ -72,6 +72,13 @@ sub get_slot {
     return $self->{slot};
 }
 
+sub get_warm {
+    my $self = shift;
+
+    return unless exists $self->{warm};
+    return $self->{warm};
+}
+
 sub used {
     my $self = shift;
 

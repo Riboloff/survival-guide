@@ -186,7 +186,7 @@ sub _used_item {
         }
         elsif ($item->get_type() eq 'equipment') {
             my $equip = $interface->get_inv->get_equipment;
-            $equip->clothe_item($item, $interface->get_text());
+            $equip->clothe_item($item, $character, $interface->get_text());
         } else {
             return;
         }

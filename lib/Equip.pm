@@ -50,6 +50,7 @@ sub new {
 sub clothe_item {
     my $self = shift;
     my $item = shift;
+    my $char = shift;
     my $text = shift;
 
     if ($item->get_type ne 'equipment') {
@@ -62,6 +63,8 @@ sub clothe_item {
 
     $bag->put_item($item);
     $text->add_text(Utils::get_random_line($item->{used}{text}));
+    my $warn = $item->get_warm();
+    $char->get_temp()->add_bonus_equip($warn);
 }
 
 sub get_all_items {

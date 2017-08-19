@@ -17,9 +17,8 @@ sub new {
         'bonus_equip' => 0,
         'equip' => $equip,
     };
-
     bless($temp, $self);
-
+    $temp->_calcul_bonus_equip();
     return $temp;
 }
 
@@ -29,7 +28,7 @@ sub get_temp_result {
     $self->_calcul_bonus_equip();
     #$self->_calcul_bonus_temp_out();
 
-    return $self->{temp_out} - $self->{bonus_equip};
+    return $self->{temp_out} + $self->{bonus_equip};
 }
 
 sub _calcul_bonus_equip {
@@ -38,6 +37,23 @@ sub _calcul_bonus_equip {
     my $equip = $self->{equip};
     my $items = $equip->get_all_items();
 
+    my $warm = 0;
+    for my $item (@$items) {
+        $warm += $item->get_warm();
+    }
+
+    $self->{bonus_equip} = $warm;
+
+    return;
+}
+
+sub add_bonus_equip {
+    my $self = shift;
+    my $bonus = shift;
+
+    $self->{bonus_equip} += $bonus;
+
+    return;
 }
 
 1;

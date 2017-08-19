@@ -120,9 +120,9 @@ sub thirst_line {
 sub temp_line {
     my $interface = shift;
 
-
-    my $thirst_percent = $interface->{character}->get_temp->get_temp_result();
-    my $temp_percent = 50;#$interface->{character}->get_thirst->get_water();
+    my $temp = $interface->{character}->get_temp->get_temp_result();
+    my $temp_percent = int ($temp * 100 / 36.6);
+    #my $temp_percent = 50;#$interface->{character}->get_thirst->get_water();
     my $area = [
         [
             $interface->{needs}{size}[$LT][$Y],
@@ -140,7 +140,7 @@ sub temp_line {
     if ($temp_percent < 40) {
         $key_text = 'temp_cold';
     }
-    elsif ($temp_percent > 60) {
+    elsif ($temp_percent > 80) {
         $key_text = 'temp_hot';
     }
     my $text = Language::get_needs($key_text);
