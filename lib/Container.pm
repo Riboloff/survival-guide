@@ -7,7 +7,7 @@ use Logger qw(dmp);
 my $id_inc = 0;
 
 sub new {
-    my ($self, $proto_id, $actions, $items) = @_;
+    my ($self, $proto_id, $actions, $items_id) = @_;
 
     my $id = create_new_id();
 
@@ -17,7 +17,7 @@ sub new {
 
     my $container = {
         'id' => $id,
-        'items' => $items,
+        'bag' => Bag->new($items_id),
         'name' => $name,
         'actions' => $actions,
         'type' => 'container',
@@ -48,10 +48,10 @@ sub get_actions {
     return $self->{actions};
 }
 
-sub get_items {
+sub get_bag {
     my $self = shift;
 
-    return $self->{items};
+    return $self->{bag};
 }
 
 sub get_desc {

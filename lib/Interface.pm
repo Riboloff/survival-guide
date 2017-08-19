@@ -67,7 +67,7 @@ sub new {
             bag => {
                 size => [],
             },
-            harness => {
+            equipment => {
                 size => [],
             },
         },
@@ -248,16 +248,52 @@ sub clean_after_itself {
     }
 }
 
-sub get_main_block_show {
+sub get_main_block_show_name {
     my $self = shift;
 
     return $self->{main_block_show};
+}
+
+sub get_block_obj {
+    my $self = shift;
+    my $name = shift;
+
+    if ($self->get_main_block_show_name eq $name) {
+        return $self->{$name}{obj};
+    }
+    else {
+        return $self->{$self->get_main_block_show_name}{$name}{obj};
+    }
 }
 
 sub set_size_all_block {
     my $self = shift;
 
     Interface::Size::set_size_all_block($self);
+}
+
+sub get_inv {
+    my $self = shift;
+
+    return $self->{inv}{obj};
+}
+
+sub get_list_obj {
+    my $self = shift;
+
+    return $self->{objects}{list_obj};
+}
+
+sub get_craft {
+    my $self = shift;
+
+    return $self->{craft}{obj};
+}
+
+sub get_text {
+    my $self = shift;
+
+    return $self->{text}{obj};
 }
 
 1;

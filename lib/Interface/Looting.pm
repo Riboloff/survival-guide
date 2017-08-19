@@ -12,26 +12,27 @@ use Utils;
 sub process_bag {
     my $interface = shift;
 
-    my $inv = $interface->{inv}{obj};
-
-    my $list_items = $inv->get_all_items_bag();
     my $area = $interface->{looting}{bag}{size};
     my $size_area = Interface::Utils::get_size($area);
 
-    my $bag_array = Interface::Utils::init_array($area, $size_area);
+    my $bag_array = Interface::Utils::init_array($size_area);
+
+    my $bag = $interface->get_inv->get_bag();
+    my $items_list = $bag->get_all_items();
 
     my $chooser = $interface->{chooser};
-    $chooser->{list}{bag} = $list_items;
+    $chooser->{list}{bag} = $items_list;
+    $chooser->{bag}{bag} = $bag;
+
     my $chooser_position = $chooser->get_position('bag');
-    $chooser_position = Utils::clamp($chooser_position, 0, $#$list_items);
+    $chooser_position = Utils::clamp($chooser_position, 0, $#$items_list);
     $chooser->set_position('bag', $chooser_position);
 
     my $color_chooser = 'on_green';
     if ($chooser->{block_name} ne 'bag') {
         $chooser_position = 999;
     }
-
-    my @list_items_name = map {$_->get_name} @$list_items;
+    my @list_items_name = map {$_->{item}->get_name() . ' (' . $_->{count} . ')'} @$items_list;
     my $args = {
         list => \@list_items_name,
         array => $bag_array,
@@ -51,25 +52,26 @@ sub process_loot_list {
 
     my $area = $interface->{looting}{loot_list}{size};
     my $size_area = Interface::Utils::get_size($area);
-
-    my $loot_array = Interface::Utils::init_array($area, $size_area);
+    my $loot_array = Interface::Utils::init_array($size_area);
 
     my $chooser = $interface->{chooser};
     my $position_list_obj = $chooser->{position}{list_obj};
     my $container = $chooser->{list}{list_obj}[$position_list_obj];
-    my $items = $container->get_items();
-    my @loots = map {$_->get_name()} @$items;
+    my $bag = $container->get_bag;
+    my $items_list = $bag->get_all_items();
 
-    $chooser->{list}{loot_list} = $items;
+    my @list_items_name = map {$_->{item}->get_name() . ' (' . $_->{count} . ')'} @$items_list;
+    $chooser->{list}{loot_list} = $items_list;
+    $chooser->{bag}{loot_list} = $bag;
 
     my $chooser_position = $chooser->get_position('loot_list');
-    $chooser_position = Utils::clamp($chooser_position, 0, $#loots);
+    $chooser_position = Utils::clamp($chooser_position, 0, $#$items_list);
     $chooser->set_position('loot_list', $chooser_position);
 
     my $color_chooser = 'on_green';
 
     if ($chooser->{block_name} ne 'loot_list') {
-        if (scalar @{$interface->{inv}{obj}->get_all_items_bag()}) {
+        if (scalar @{$interface->get_inv()->get_bag()->get_all_items()}) {
             $chooser_position = 999;
         } else {
             $chooser->{block_name} = 'loot_list';
@@ -77,12 +79,12 @@ sub process_loot_list {
     } 
     if (
         $chooser->{block_name} eq 'loot_list'
-        and !@loots
+        and !@$items_list
     ) {
         $chooser->{block_name} = 'bag';
     }
     my $args = {
-        list => \@loots,
+        list => \@list_items_name,
         array => $loot_array,
         chooser_position => $chooser_position,
         size_area => $size_area,
@@ -103,12 +105,12 @@ sub process_desc_item {
     my $chooser_block_name = $chooser->{block_name};
     my $position_chooser = $chooser->{position}{$chooser_block_name};
     my $item = $chooser->{list}{$chooser_block_name}[$position_chooser];
-
     if (!defined $item) {
         #TODO: Пропадает блок целиком вместе с рамкой
         return [];
     }
-    my $text = $item->get_desc(); 
+
+    my $text = $item->{item}->get_desc(); 
     my $area = $interface->{looting}{desc_item}{size};
     my $size_area = Interface::Utils::get_size($area);
     $text->inition($area, 1);

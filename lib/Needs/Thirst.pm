@@ -1,15 +1,11 @@
-package Thirst;
+package Needs::Thirst;
 
 use strict;
 use warnings;
 use utf8;
 
 use lib qw/lib/;
-use Item;
-use Consts;
-use Language;
 use Logger qw(dmp);
-use Utils;
 
 sub new {
     my $self = shift;

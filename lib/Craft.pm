@@ -2,7 +2,6 @@ package Craft;
 
 use strict;
 use warnings;
-
 use utf8;
 
 use lib qw(lib);
@@ -10,6 +9,7 @@ use Logger qw(dmp);
 use Storable qw(dclone);
 use CraftTable;
 use Item;
+use Bag;
 
 sub new {
     my $self = shift;
@@ -17,9 +17,9 @@ sub new {
 
     my $bag_virt = dclone($bag_real);
     my $craft = {
-        'list_items' => [],
-        'bag' => $bag_virt,
-        'craft_result' => [],
+        'craft_place_bag' => Bag->new(),
+        'inv_bag' => $bag_virt,
+        'craft_result_bag' => Bag->new(),
     };
 
     bless($craft, $self);
@@ -27,58 +27,70 @@ sub new {
     return $craft;
 }
 
-sub get_list_items {
+sub get_craft_place_bag {
     my $self = shift;
 
-    return $self->{list_items};
+    return $self->{craft_place_bag};
 }
 
-sub get_craft_result {
+sub get_craft_result_bag {
     my $self = shift;
 
-    return $self->{craft_result};
+    return $self->{craft_result_bag};
 }
 
-sub get_bag {
+sub get_inv_bag {
     my $self = shift;
 
-    return $self->{bag};
+    return $self->{inv_bag};
 }
 
+#Не используется :(
 sub add_items {
     my $self = shift;
     my $positin_item = shift;
 
     my ($item) = splice(@{$self->{inv}}, $positin_item, 1);
-    push(@{$self->{list_items}}, $item);
+    push(@{$self->{items_in_craft_place}}, $item);
 }
 
-sub clean_items {
+#Не используется :(
+sub clean_craft_place {
     my $self = shift;
 
-    $self->{list_items} = [];
+    $self->{items_in_craft_place} = {};
 }
 
 sub create_preview {
     my $self = shift;
-    if (! scalar @{$self->{list_items}}) {
+
+    my $items = $self->get_craft_place_bag->get_items_hash(); 
+    if (! %$items) {
         return [];
     }
-    my @proto_ids = map{ $_->get_proto_id() } @{$self->{list_items}};
+    my @proto_ids = keys %{ $items || {} };
     my $key_craft_table = join('_', sort  @proto_ids);
 
-    my $preview_item_ids = [];
+    my $preview_item_id;
     if (exists $CraftTable::craft_table{$key_craft_table}) {
-        $preview_item_ids = $CraftTable::craft_table{$key_craft_table};
+        my $preview_hash = $CraftTable::craft_table{$key_craft_table};
+        for my $ingredient (keys %{$preview_hash->{count}}) {
+            my $count_need = $preview_hash->{count}{$ingredient};
+            my $count  = $items->{$ingredient}{count};
+            if ($count < $count_need) {
+                return [];
+            }
+        }
+        $preview_item_id = $preview_hash->{result};
+    }
+    my $result_bag = $self->get_craft_result_bag;
+    $result_bag->clean();
+    if ($preview_item_id) {
+        my $item = Item->new($preview_item_id);
+        $result_bag->put_item($item);
+    }
 
-    }
-    my $preview_items = [];
-    for my $ids (@$preview_item_ids) {
-        my $item = Item->new($ids);
-        push(@$preview_items, $item);
-    }
-    $self->{craft_result} = $preview_items;
-    return $preview_items;
+    return $result_bag->get_all_items();
 }
 
 1;

@@ -1,7 +1,7 @@
 {
     "ru": {
         "bag": " Сумка ",
-        "harness": " Одежда ",
+        "equipment": " Снаряжение ",
         "desc_item": " Описание предмета ",
         "action": " Действие ",
         "object": " Объекты рядом ", 
@@ -12,7 +12,7 @@
 
     "en": {
         "bag": " bag ",
-        "harness": " harness ",
+        "equipment": " equipment ",
         "desc_item": " Desc item ",
         "action": " Action ",
         "object": " Object close ", 

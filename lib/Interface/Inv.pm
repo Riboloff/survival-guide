@@ -13,22 +13,25 @@ sub process_bag {
     my $interface = shift;
 
     my $main_array = $interface->{data_print};
-    my $inv = $interface->{inv}{obj};
 
-    my $list_items = $inv->get_all_items_bag();
     my $area = $interface->{inv}{bag}{size};
     my $size_area = Interface::Utils::get_size($area);
 
-    my $bag_array = Interface::Utils::init_array($area, $size_area);
+    my $bag_array = Interface::Utils::init_array($size_area);
 
     my $chooser = $interface->{chooser};
-    $chooser->{list}{inv} = $list_items;
     my $chooser_position = 0;
     if ($chooser->{block_name} eq 'inv') {
         $chooser_position = $chooser->get_position('inv');
     }
 
-    my @list_items_name = map {$_->get_name} @$list_items;
+    my $bag = $interface->get_inv->get_bag();
+    my $items_list = $bag->get_all_items();
+    $chooser_position = Utils::clamp($chooser_position, 0, $#$items_list);
+    $chooser->set_position('inv', $chooser_position);
+    $chooser->{list}{inv} = $items_list;
+    $chooser->{bag}{inv} = $bag;
+    my @list_items_name = map {$_->{item}->get_name() . ' (' . $_->{count} . ')'} @$items_list;
     my $args = {
         list => \@list_items_name,
         array => $bag_array,
@@ -42,43 +45,43 @@ sub process_bag {
     return $bag_frame_array;
 }
 
-sub process_harness {
+sub process_equipment {
     my $interface = shift;
 
     my $main_array = $interface->{data_print};
-    my $inv = $interface->{inv}{obj};
 
-    my $area = $interface->{inv}{harness}{size};
+    my $area = $interface->{inv}{equipment}{size};
     my $size_area = Interface::Utils::get_size($area);
 
-    my $harness = $inv->get_harness();
-    my $harness_array = Interface::Utils::init_array($area, $size_area);
+    my $inv = $interface->get_inv();
+    my $equipment = $inv->get_equipment();
+    my $equipment_array = Interface::Utils::init_array($size_area);
 
-    my $list_harness = [];
+    my $list_equipment = [];
 
-    my @sort_keys_harness = sort {
-                                $harness->{$a}{number} <=> $harness->{$b}{number}
-                            } keys %$harness;
+    my @sort_keys_equipment = sort {
+                                $equipment->{$a}{number} <=> $equipment->{$b}{number}
+                            } keys %$equipment;
 
-    for my $body_p (@sort_keys_harness) {
-        my $name = $harness->{$body_p}{name};
-        my $items = join(', ', @{$harness->{$body_p}{items}});
-        my $number = $harness->{$body_p}{number};
+    for my $body_p (@sort_keys_equipment) {
+        my $name = $equipment->{$body_p}{name};
+        my $items = join(', ', map {$_->{item}->get_name} @{$equipment->{$body_p}{bag}->get_all_items});
+        my $number = $equipment->{$body_p}{number};
 
         my $str = join(' | ', ($number, $name, $items));
-        push(@$list_harness, $str);
+        push(@$list_equipment, $str);
     }
 
     my $args = {
-        list => $list_harness,
-        array => $harness_array,
+        list => $list_equipment,
+        array => $equipment_array,
         chooser_position => 999,
         size_area => $size_area,
     };
-    my $title = Language::get_title_block('harness');
-    $harness_array = Interface::Utils::list_to_array_symbols($args);
-    my $harness_frame_array = Interface::Utils::get_frame($harness_array, $title);
-    return $harness_frame_array;
+    my $title = Language::get_title_block('equipment');
+    $equipment_array = Interface::Utils::list_to_array_symbols($args);
+    my $equipment_frame_array = Interface::Utils::get_frame($equipment_array, $title);
+    return $equipment_frame_array;
 }
 
 sub process_desc_item {
@@ -87,7 +90,7 @@ sub process_desc_item {
     my $chooser = $interface->{chooser};
     my $chooser_block_name = $chooser->{block_name};
     my $position_chooser = $chooser->{position}{$chooser_block_name};
-    my $item = $chooser->{list}{$chooser_block_name}[$position_chooser];
+    my $item = $chooser->{list}{$chooser_block_name}[$position_chooser]{item};
 
     if (!defined $item) {
         return [];
@@ -114,16 +117,16 @@ sub process_block {
     my $main_array = $interface->{data_print};
 
     my $bag_array = process_bag($interface);
-    my $harness_array = process_harness($interface);
+    my $equipment_array = process_equipment($interface);
     my $desc_array = process_desc_item($interface);
 
     my $offset_bag = [
         $interface->{inv}{bag}{size}[$LT][$Y],
         $interface->{inv}{bag}{size}[$LT][$X]
     ];
-    my $offset_harness = [
-        $interface->{inv}{harness}{size}[$LT][$Y],
-        $interface->{inv}{harness}{size}[$LT][$X]
+    my $offset_equipment = [
+        $interface->{inv}{equipment}{size}[$LT][$Y],
+        $interface->{inv}{equipment}{size}[$LT][$X]
     ];
     my $offset_desc_item = [
         $interface->{inv}{desc_item}{size}[$LT][$Y],
@@ -135,7 +138,7 @@ sub process_block {
     ];
 
     Interface::Utils::overlay_arrays_simple($inv_array, $bag_array, $offset_bag);
-    Interface::Utils::overlay_arrays_simple($inv_array, $harness_array, $offset_harness);
+    Interface::Utils::overlay_arrays_simple($inv_array, $equipment_array, $offset_equipment);
     Interface::Utils::overlay_arrays_simple($inv_array, $desc_array, $offset_desc_item);
 
     Interface::Utils::overlay_arrays_simple($main_array, $inv_array, $offset);

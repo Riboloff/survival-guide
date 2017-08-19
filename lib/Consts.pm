@@ -40,6 +40,7 @@ our $items_id = {
     2 => 'bread',
     3 => 'water',
     4 => 'soft_bread',
+    5 => 'cap',
 };
 
 our $objects_id = {
@@ -52,15 +53,21 @@ our $actions_id = {
     3 => 'lockpick',
 };
 
-use constant OPEN     => 1;
-use constant WATCH    => 2;
-use constant LOCKPICK => 3;
+use constant {
+    #Actions:
+    OPEN     => 1,
+    WATCH    => 2,
+    LOCKPICK => 3,
 
-use constant MEDICINE_BOX => 1;
-use constant BREAD => 2;
-use constant WATER => 3;
-use constant SOFT_BREAD => 4;
+    #Items:
+    MEDICINE_BOX => 1,
+    BREAD => 2,
+    WATER => 3,
+    SOFT_BREAD => 4,
+    CAP => 5,
 
-use constant SHELF => 1;
+    #Objects:
+    SHELF => 1,
+};
 
 1;

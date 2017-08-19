@@ -109,12 +109,12 @@ sub get_size_without_frame {
 }
 
 sub init_array {
-    my $area = shift;
+    #my $area = shift;
     my $size_area = shift;
 
-    if (!$size_area) {
-        $size_area = get_size($area);
-    }
+    #if (!$size_area) {
+    #    $size_area = get_size($area);
+    #}
 
     my $action_array = [];
     for (my $y = 0; $y < $size_area->[$Y]; $y++) {
@@ -146,7 +146,6 @@ sub list_to_array_symbols {
         my $color = '';
         if ($chooser_position == $y) {
             $color = $color_chooser;
-            #for (my $x = 0; $x <= $size_area->[$X]; $x++) {
             for (my $x = 0; $x < $size_area->[$X]; $x++) {
                 $array->[$y][$x]{'color'} = $color;
             }

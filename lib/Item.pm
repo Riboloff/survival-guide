@@ -23,11 +23,12 @@ sub new {
     my $desc = Text->new(undef, $text_hash->{desc});
     my $id = create_new_id();
     my $item = {
-        'id'         => $id,
-        'name'       => $name,
-        'desc'       => $desc,
-        'type'       => 'item',
-        'proto_id'   => $proto_id,
+        'id'       => $id,
+        'name'     => $name,
+        'desc'     => $desc,
+        'proto_id' => $proto_id,
+        'used'     => {},
+        'type'     => '',
     };
     get_proto_feature($item);
     $item->{used}{text} = Utils::split_text($use_text);
@@ -65,7 +66,24 @@ sub get_desc {
     return $self->{desc};
 }
 
+sub get_slot {
+    my $self = shift;
+
+    return $self->{slot};
+}
+
 sub used {
+    my $self = shift;
+
+    if (
+           $self->get_type() eq 'food'
+        or $self->get_type() eq 'medicine'
+    ) {
+        $self->used_food(@_);
+    }
+}
+
+sub used_food {
     my $self = shift;
     my $char = shift;
     my $text_obj = shift;

@@ -140,25 +140,25 @@ sub get_size_area_bag {
     return $size_area_bag;
 }
 
-sub get_size_area_harness {
+sub get_size_area_equipment {
     my $size_interface = shift;
     my $size_area_inv  = shift;
     my $size_area_bag  = shift;
 
-    my $size_area_harness = [];
+    my $size_area_equipment = [];
 
-    $size_area_harness->[$LT] = [
+    $size_area_equipment->[$LT] = [
         $size_area_bag->[$LT][$Y],
         #$size_area_bag->[$RD][$X]+1
         $size_area_bag->[$RD][$X]
     ];
     my $size_bag = Interface::Utils::get_size($size_area_bag);
-    $size_area_harness->[$RD] = [
+    $size_area_equipment->[$RD] = [
         $size_area_bag->[$RD][$Y],
         $size_area_bag->[$RD][$X] + $size_bag->[$X],
     ];
 
-    return $size_area_harness;
+    return $size_area_equipment;
 }
 
 sub get_size_area_loot_list {
@@ -248,7 +248,7 @@ sub set_size_all_block {
     my $size_area_objects = get_size_area_objects($size_area_list_obj, $size_area_action);
     my $size_area_inv = get_size_area_inv($size_interface, $size_area_map);
     my $size_area_bag = get_size_area_bag($size_interface, $size_area_inv);
-    my $size_area_harness = get_size_area_harness($size_interface, $size_area_inv, $size_area_bag);
+    my $size_area_equipment = get_size_area_equipment($size_interface, $size_area_inv, $size_area_bag);
     my $size_area_loot_list = get_size_area_loot_list($size_interface, $size_area_bag);
     my $size_area_looting = get_size_area_looting($size_area_inv);
     my $size_area_desc_item = get_size_area_desc_item($size_area_looting, $size_area_loot_list);
@@ -262,7 +262,7 @@ sub set_size_all_block {
     $Interface->{objects}{action}{size} = $size_area_action;
     $Interface->{inv}{size} = $size_area_inv;
     $Interface->{inv}{bag}{size} = $size_area_bag;
-    $Interface->{inv}{harness}{size} = $size_area_harness;
+    $Interface->{inv}{equipment}{size} = $size_area_equipment;
     $Interface->{inv}{desc_item}{size} = $size_area_desc_item;
     $Interface->{looting}{size} = $size_area_looting;
     $Interface->{looting}{bag}{size} = $size_area_bag;

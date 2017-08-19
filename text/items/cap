@@ -1,0 +1,13 @@
+{
+    "ru": {
+        "name": "Кепка",
+        "desc": "Кепка с козырьком",
+        "use": "Вы одели кепку на голову"
+    },
+
+    "en": {
+        "name": "Cap",
+        "desc": "This is cap",
+        "use": "You put the cap on his head"
+    }
+}

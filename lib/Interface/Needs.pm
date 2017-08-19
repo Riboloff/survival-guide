@@ -25,7 +25,7 @@ sub health_line {
     ];
     my $size_area = Interface::Utils::get_size($area);
 
-    my $health_line_array = Interface::Utils::init_array($area, $size_area);
+    my $health_line_array = Interface::Utils::init_array($size_area);
     my $text = Language::get_needs('health');
     my $line = [" $text $helth_percent%"];
 
@@ -61,7 +61,7 @@ sub hunger_line {
     ];
     my $size_area = Interface::Utils::get_size($area);
 
-    my $hunger_line_array = Interface::Utils::init_array($area, $size_area);
+    my $hunger_line_array = Interface::Utils::init_array($size_area);
     my $text = Language::get_needs('hunger');
     my $line = [" $text $hunger_percent%"];
 
@@ -97,7 +97,7 @@ sub thirst_line {
     ];
     my $size_area = Interface::Utils::get_size($area);
 
-    my $thirst_line_array = Interface::Utils::init_array($area, $size_area);
+    my $thirst_line_array = Interface::Utils::init_array($size_area);
     my $text = Language::get_needs('thirst');
     my $line = [" $text $thirst_percent%"];
 
@@ -120,6 +120,8 @@ sub thirst_line {
 sub temp_line {
     my $interface = shift;
 
+
+    my $thirst_percent = $interface->{character}->get_temp->get_temp_result();
     my $temp_percent = 50;#$interface->{character}->get_thirst->get_water();
     my $area = [
         [
@@ -133,7 +135,7 @@ sub temp_line {
     ];
     my $size_area = Interface::Utils::get_size($area);
 
-    my $temp_line_array = Interface::Utils::init_array($area, $size_area);
+    my $temp_line_array = Interface::Utils::init_array($size_area);
     my $key_text = 'temp_norm';
     if ($temp_percent < 40) {
         $key_text = 'temp_cold';

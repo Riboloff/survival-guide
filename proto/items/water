@@ -3,5 +3,6 @@
     "used": {
         "add_hp": 5,
         "add_water": 25
-    }
+    },
+    "type": "food" 
 }

@@ -35,6 +35,7 @@ sub add_text {
     my $text = shift;
 
     $self->{text} .= "\n" . $text;
+    $self->{scroll} = 0;
 
     return;
 }
@@ -58,16 +59,20 @@ sub inition {
         }
     }
     $self->{array} = $array;
+
+    return $self;
 }
 
 sub get_text_array {
     my $self = shift;
     my $size = shift;
+    my $ones = shift;
 
     my $size_y = $size->[$Y];
     my $size_x = $size->[$X];
 
     my $array = [@{$self->{array}}];
+    #my $array = $self->{array};
     my @new_lines = ();
     for my $line (split(/\n/, $self->{text})) {
         my $parse_text = _parse_color($line);
@@ -106,6 +111,7 @@ sub get_text_array {
     }
 
     $self->{array} = $array;
+
     return $array;
 }
 

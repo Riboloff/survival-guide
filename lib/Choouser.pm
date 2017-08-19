@@ -22,6 +22,7 @@ sub new {
         },
         block_name => 'list_obj',
         list => {},
+        bag => {}
     };
 
     return (bless $hash, $self);
@@ -44,6 +45,11 @@ sub top {
         $self->{position}{$block_name}--;
     }
 }
+sub get_block_name {
+    my $self = shift;
+
+    return $self->{block_name};
+}
 
 sub get_position {
     my $self = shift;
@@ -51,6 +57,14 @@ sub get_position {
 
     return $self->{position}{$block_name};
 }
+
+sub get_bag {
+    my $self = shift;
+    my $block_name = shift || $self->{block_name};
+
+    return $self->{bag}{$block_name};
+}
+
 sub set_position {
     my $self = shift;
     my $block_name = shift;

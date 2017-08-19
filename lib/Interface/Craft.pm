@@ -12,29 +12,27 @@ use Utils;
 sub process_bag {
     my $interface = shift;
 
-    my $craft = $interface->{craft}{obj};
+    my $bag = $interface->get_craft->get_inv_bag();
+    my $items_list = $bag->get_all_items();
 
-    my $bag = $craft->get_bag;
-    my $list_items = $bag->{'items'};
     my $area = $interface->{craft}{bag}{size};
     my $size_area = Interface::Utils::get_size($area);
-
-    my $bag_array = Interface::Utils::init_array($area, $size_area);
+    my $bag_array = Interface::Utils::init_array($size_area);
 
     my $chooser = $interface->{chooser};
-    $chooser->{list}{craft_bag} = $list_items;
+    $chooser->{list}{craft_bag} = $items_list;
     my $chooser_position = $chooser->get_position('craft_bag');
-    $chooser_position = Utils::clamp($chooser_position, 0, $#$list_items);
+    $chooser_position = Utils::clamp($chooser_position, 0, $#$items_list);
     $chooser->set_position('craft_bag', $chooser_position);
 
     my $color_chooser = 'on_green';
     if ($chooser->{block_name} ne 'craft_bag') {
         $chooser_position = 999;
     }
+    my @items_list_name = map {$_->{item}->get_name() . ' (' . $_->{count} . ')'} @$items_list;
 
-    my @list_items_name = map {$_->get_name} @$list_items;
     my $args = {
-        list => \@list_items_name,
+        list => \@items_list_name,
         array => $bag_array,
         chooser_position => $chooser_position,
         size_area => $size_area,
@@ -52,27 +50,27 @@ sub process_craft_place {
 
     my $area = $interface->{craft}{place}{size};
     my $size_area = Interface::Utils::get_size($area);
+    my $craft_items_array = Interface::Utils::init_array($size_area);
 
-    my $craft_items_array = Interface::Utils::init_array($area, $size_area);
+    my $bag = $interface->get_craft->get_craft_place_bag();
+    my $items_in_place_list = $bag->get_all_items();
 
-    my $craft = $interface->{craft}{obj};
-    my $craft_items_list = $craft->get_list_items();
-    my @craft_items_name_list = map {$_->get_name} @$craft_items_list;
+    my @list_items_name = map {$_->{item}->get_name() . ' (' . $_->{count} . ')'} @$items_in_place_list;
 
     my $chooser = $interface->{chooser};
-    $chooser->{list}{craft_place} = $craft_items_list;
+    $chooser->{list}{craft_place} = $items_in_place_list;
     my $chooser_position = $chooser->get_position('craft_place');
-    $chooser_position = Utils::clamp($chooser_position, 0, $#craft_items_name_list);
+    $chooser_position = Utils::clamp($chooser_position, 0, $#$items_in_place_list);
     $chooser->set_position('craft_place', $chooser_position);
 
     if ($chooser->{block_name} ne 'craft_place') {
-        my $craft = $interface->{craft}{obj};
+        my $craft = $interface->get_craft();
         my $list_items = [];
         if ($chooser->{block_name} eq 'craft_bag') {
-            my $bag = $craft->get_bag;
-            $list_items = $bag->{'items'};
+            my $bag = $craft->get_inv_bag();
+            $list_items = $bag->get_all_items();
         } elsif ($chooser->{block_name} eq 'craft_result') {
-            $list_items = $craft->get_craft_result();
+            $list_items = $craft->get_craft_result_bag->get_all_items();
         }
         if (scalar @$list_items) {
             $chooser_position = 999;
@@ -83,13 +81,13 @@ sub process_craft_place {
 
     if (
         $chooser->{block_name} eq 'craft_place'
-        and !@craft_items_name_list
+        and !@list_items_name
     ) {
         $chooser->{block_name} = 'craft_bag';
     }
 
     my $args = {
-        list => \@craft_items_name_list,
+        list => \@list_items_name,
         array => $craft_items_array,
         chooser_position => $chooser_position,
         size_area => $size_area,
@@ -107,25 +105,24 @@ sub process_result_item {
     my $interface = shift;
 
 
-    my $craft = $interface->{craft}{obj};
-    my $items = $craft->create_preview() || [];
     my $area = $interface->{craft}{result_item}{size};
     my $size_area = Interface::Utils::get_size($area);
-    my $result_array = Interface::Utils::init_array($area, $size_area);
+    my $result_array = Interface::Utils::init_array($size_area);
 
+    my $items_list = $interface->get_craft->create_preview();
     my $chooser = $interface->{chooser};
-    $chooser->{list}{craft_result} = $items;
+    $chooser->{list}{craft_result} = $items_list;
     my $chooser_position = $chooser->get_position('craft_result');
-    $chooser_position = Utils::clamp($chooser_position, 0, $#$items);
+    $chooser_position = Utils::clamp($chooser_position, 0, $#$items_list);
     $chooser->set_position('craft_result', $chooser_position);
 
     my @color_chooser = qw/blue/;
     if ($chooser->{block_name} eq 'craft_result') {
         push(@color_chooser, 'on_green');
     }
-    my @items_name = map {$_->get_name} @$items;
+    my @items_list_name = map {$_->{item}->get_name() . ' (' . $_->{count} . ')'} @$items_list;
     my $args = {
-        list => \@items_name,
+        list => \@items_list_name,
         array => $result_array,
         chooser_position => $chooser_position,
         size_area => $size_area,

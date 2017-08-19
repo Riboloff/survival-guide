@@ -6,9 +6,11 @@ use utf8;
 
 use lib qw/lib/;
 use Container;
-use Health;
-use Hunger;
-use Thirst;
+use Inv;
+use Needs::Health;
+use Needs::Hunger;
+use Needs::Thirst;
+use Needs::Temp;
 
 sub new {
     my $self = shift;
@@ -17,20 +19,31 @@ sub new {
     my $start_hp = '23';
     my $start_food = '32';
     my $start_water = '42';
+    my $start_temp = '22';
 
+    my $inv = Inv->new();
+    my $equip = $inv->get_equipment();
     my $character = {
         coord => $start_coord,
         symbol => 'A',
+        inv => $inv,
         needs => {
-            health => Health->new($start_hp),
-            hunger => Hunger->new($start_food),
-            thirst => Thirst->new($start_water),
+            health => Needs::Health->new($start_hp),
+            hunger => Needs::Hunger->new($start_food),
+            thirst => Needs::Thirst->new($start_water),
+            temp => Needs::Temp->new($start_temp, $equip),
         }
     };
 
     bless($character, $self);
 
     return $character;
+}
+
+sub get_inv {
+    my $self = shift;
+
+    return $self->{inv};
 }
 
 sub get_coord {
@@ -55,6 +68,12 @@ sub get_thirst {
     my $self = shift;
 
     return $self->{needs}{thirst};
+}
+
+sub get_temp {
+    my $self = shift;
+
+    return $self->{needs}{temp};
 }
 
 1;

@@ -2,5 +2,6 @@
     "proto_id": 1,
     "used": {
         "add_hp": 10
-    }
+    },
+    "type": "medicine" 
 }

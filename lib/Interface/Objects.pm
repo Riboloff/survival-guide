@@ -17,8 +17,7 @@ sub process_list_obj {
 
     my $area = $interface->{objects}{list_obj}{size};
     my $size_area = Interface::Utils::get_size($area);
-
-    my $list_obj_array = Interface::Utils::init_array($area);
+    my $list_obj_array = Interface::Utils::init_array($size_area);
 
     my $list_obj = [@$containers];
     my $chooser = $interface->{chooser};
@@ -59,7 +58,7 @@ sub process_actions {
     my $area = $interface->{objects}{action}{size};
     my $size_area = Interface::Utils::get_size($area);
 
-    my $action_array = Interface::Utils::init_array($area);
+    my $action_array = Interface::Utils::init_array($size_area);
 
     my $chooser_position = 0;
     my $color_chooser = 'on_green';
