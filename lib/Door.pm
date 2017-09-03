@@ -1,4 +1,4 @@
-package Container;
+package Door;
 
 use strict;
 use warnings;
@@ -7,27 +7,30 @@ use Logger qw(dmp);
 my $id_inc = 0;
 
 sub new {
-    my ($self, $proto_id, $actions, $items_id) = @_;
-
-    my $id = create_new_id();
+    my ($self, $proto_id, $actions, $coord) = @_;
 
     my $obj_text = Language::get_text($proto_id, 'objects');
     my $name = $obj_text->{name};
     my $desc = Utils::split_text($obj_text->{desc});
 
-    my $container = {
-        'id' => $id,
-        'bag' => Bag->new($items_id),
+    my $door = {
         'name' => $name,
         'actions' => $actions,
-        'type' => 'container',
+        'type' => 'door',
         'proto_id' => $proto_id,
         'desc'     => $desc,
+        'coord' => $coord,
     };
 
-    bless($container, $self);
+    bless($door, $self);
 
-    return $container;
+    return $door;
+}
+
+sub get_cord {
+    my $self = shift;
+
+    return $self->{coord};
 }
 
 sub get_name {
@@ -48,19 +51,9 @@ sub get_actions {
     return $self->{actions};
 }
 
-sub get_bag {
-    my $self = shift;
-
-    return $self->{bag};
-}
-
 sub get_desc {
     my $self = shift;
     return Utils::get_random_line($self->{desc});
-}
-
-sub create_new_id {
-    return $id_inc++;
 }
 
 1;

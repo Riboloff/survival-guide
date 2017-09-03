@@ -103,6 +103,14 @@ sub put_item {
 
     return;
 }
+sub get_count_item {
+    my $self = shift;
+    my $proto_id = shift;
 
+    if (!exists $self->{items}{$proto_id}) {
+        return 0;
+    }
+    return $self->{items}{$proto_id}{count};
+}
 
 1;

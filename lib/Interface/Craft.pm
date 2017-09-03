@@ -12,10 +12,10 @@ use Utils;
 sub process_bag {
     my $interface = shift;
 
-    my $bag = $interface->get_craft->get_inv_bag();
+    my $bag = $interface->get_craft_obj->get_inv_bag();
     my $items_list = $bag->get_all_items();
 
-    my $area = $interface->{craft}{bag}{size};
+    my $area = $interface->get_craft_bag->{size};
     my $size_area = Interface::Utils::get_size($area);
     my $bag_array = Interface::Utils::init_array($size_area);
 
@@ -48,11 +48,11 @@ sub process_bag {
 sub process_craft_place {
     my $interface = shift;
 
-    my $area = $interface->{craft}{place}{size};
+    my $area = $interface->get_craft_place->{size};
     my $size_area = Interface::Utils::get_size($area);
     my $craft_items_array = Interface::Utils::init_array($size_area);
 
-    my $bag = $interface->get_craft->get_craft_place_bag();
+    my $bag = $interface->get_craft_obj->get_craft_place_bag();
     my $items_in_place_list = $bag->get_all_items();
 
     my @list_items_name = map {$_->{item}->get_name() . ' (' . $_->{count} . ')'} @$items_in_place_list;
@@ -64,7 +64,7 @@ sub process_craft_place {
     $chooser->set_position('craft_place', $chooser_position);
 
     if ($chooser->{block_name} ne 'craft_place') {
-        my $craft = $interface->get_craft();
+        my $craft = $interface->get_craft_obj();
         my $list_items = [];
         if ($chooser->{block_name} eq 'craft_bag') {
             my $bag = $craft->get_inv_bag();
@@ -105,11 +105,11 @@ sub process_result_item {
     my $interface = shift;
 
 
-    my $area = $interface->{craft}{result_item}{size};
+    my $area = $interface->get_craft_result->{size};
     my $size_area = Interface::Utils::get_size($area);
     my $result_array = Interface::Utils::init_array($size_area);
 
-    my $items_list = $interface->get_craft->create_preview();
+    my $items_list = $interface->get_craft_obj->create_preview();
     my $chooser = $interface->{chooser};
     $chooser->{list}{craft_result} = $items_list;
     my $chooser_position = $chooser->get_position('craft_result');
@@ -148,20 +148,20 @@ sub process_block {
     my $result_item = process_result_item($interface);
 
     my $offset_bag = [
-        $interface->{craft}{bag}{size}[$LT][$Y],
-        $interface->{craft}{bag}{size}[$LT][$X]
+        $interface->get_craft_bag->{size}[$LT][$Y],
+        $interface->get_craft_bag->{size}[$LT][$X]
     ];
     my $offset_craft_items = [
-        $interface->{craft}{place}{size}[$LT][$Y],
-        $interface->{craft}{place}{size}[$LT][$X]
+        $interface->get_craft_place->{size}[$LT][$Y],
+        $interface->get_craft_place->{size}[$LT][$X]
     ];
     my $offset_craft = [
-        $interface->{craft}{size}[$LT][$Y],
-        $interface->{craft}{size}[$LT][$X]
+        $interface->get_craft->{size}[$LT][$Y],
+        $interface->get_craft->{size}[$LT][$X]
     ];
     my $offset_result_item = [
-        $interface->{craft}{result_item}{size}[$LT][$Y],
-        $interface->{craft}{result_item}{size}[$LT][$X]
+        $interface->get_craft_result->{size}[$LT][$Y],
+        $interface->get_craft_result->{size}[$LT][$X]
     ];
 
     Interface::Utils::overlay_arrays_simple($craft_array, $bag_array, $offset_bag);

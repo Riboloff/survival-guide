@@ -6,6 +6,7 @@ use warnings;
 use Consts;
 use Interface::Utils;
 use List::Util qw(min);
+use Logger qw(dmp);
 
 sub process_block {
     my $interface = shift;
@@ -18,7 +19,12 @@ sub process_block {
     my $size_area_map = $interface->{map}{size}[$RD]; 
 
     if (Interface::Utils::is_object_into_area($size_area_map, $map_array)) {
-        Interface::Utils::overlay_arrays_simple($main_array, $map_array, Interface::Utils::get_offset($size_area_map, $map_array));
+
+        my $offset = Interface::Utils::get_offset($size_area_map, $map_array);
+
+        $interface->{map}{size_data} = Interface::Utils::get_size_data($offset, $map_array);
+
+        Interface::Utils::overlay_arrays_simple($main_array, $map_array, $offset);
     } else {
         my $main_hero_coord = $character->{coord};
        

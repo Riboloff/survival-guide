@@ -87,14 +87,14 @@ sub _placement_character {
 }
 
 #В области с радиусом 1, найти все контейнеры
-sub get_container_nigh {
+sub get_objects_nigh {
     my $self = shift;
     my $character = shift;
     my $radius = shift || 1; #Если радиус сделать больше единицы, то лутать можно будет через стены.
 
     my $coord = $character->get_coord();
     my $map = $self->{map};
-    my $containers = [];
+    my $objects = [];
     my $cells = [];
     my $left_top = [
         ($coord->[$Y]-$radius > 0) ? $coord->[$Y]-$radius : 0,
@@ -107,14 +107,27 @@ sub get_container_nigh {
     ];
     for (my $y=$left_top->[$Y]; $y <= $right_down->[$Y]; $y++) {
         for (my $x=$left_top->[$X]; $x <= $right_down->[$X]; $x++) {
-            if ($map->[$y][$x]->get_type() eq 'Container') {
+            my $type = $map->[$y][$x]->get_type();
+            if (
+                    $type eq 'Container'
+                 or $type eq 'Door'
+            ) {
                 my $container = $map->[$y][$x]->get_obj();
-                push(@$containers, $container);
+                push(@$objects, $container);
             }
         }
     }
 
-    return $containers;
+    return $objects;
+}
+
+sub get_cell {
+    my $self = shift;
+    my $coord = shift;
+
+    my $y = $coord->[$Y];
+    my $x = $coord->[$X];
+    return $self->{map}->[$y][$x];
 }
 
 1;

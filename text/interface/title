@@ -1,21 +1,21 @@
 {
     "ru": {
-        "bag": " Сумка ",
+        "inv_bag": " Сумка ",
         "equipment": " Снаряжение ",
         "desc_item": " Описание предмета ",
         "action": " Действие ",
-        "object": " Объекты рядом ", 
+        "list_obj": " Объекты рядом ", 
         "loot_list": " Можно взять ",
         "craft_place": " Верстак ",
         "craft_result": " Результат крафта "
     },
 
     "en": {
-        "bag": " bag ",
+        "inv_bag": " bag ",
         "equipment": " equipment ",
         "desc_item": " Desc item ",
         "action": " Action ",
-        "object": " Object close ", 
+        "list_obj": " Object close ", 
         "loot_list": " Можно взять ",
         "loot_list": " Loot_list ",
         "craft_place": " Workbench ",

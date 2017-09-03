@@ -6,6 +6,7 @@ use utf8;
 
 use lib qw/lib/;
 use Container;
+use Door;
 use Item;
 use Action;
 use Consts;
@@ -16,9 +17,9 @@ sub new {
     my $self = shift;
     my $icon = shift || '';
     my $conf = shift;
-    my $cord = shift;
+    my $coord = shift;
 
-
+    $coord = [split(/,/, $coord)];
     my $cell = {
         'icon' => $icon,
         'blocker' => 0,
@@ -36,6 +37,16 @@ sub new {
        my $items_id = $conf->{items_id};
        $cell->{obj} = Container->new($cell->{name_id}, $actions, $items_id);
     }
+    elsif ($icon eq 'D' and (ref $conf eq 'HASH') ) {
+       $cell->{icon} = $conf->{icon};
+       $cell->{type} = $conf->{type};
+       $cell->{blocker} = $conf->{blocker} || 1;
+       $cell->{name_id} = $conf->{name_id};
+       my $actions_id = $conf->{actions_id};
+       my $actions = _get_actions($actions_id);
+       $cell->{obj} = Door->new($cell->{name_id}, $actions, $coord);
+    }
+
     if ($icon =~ /[-|+]/) {
         $cell->{blocker} = 1;
         $cell->{type} = 'wall';

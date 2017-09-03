@@ -10,9 +10,9 @@ use Logger qw(dmp);
 use Consts;
 
 our %craft_table_local = (
-    Consts::SOFT_BREAD => {
-        Consts::BREAD => 1,
-        Consts::WATER => 1,
+    Consts::IT_SOFT_BREAD => {
+        Consts::IT_BREAD => 1,
+        Consts::IT_WATER => 1,
     },
 );
 

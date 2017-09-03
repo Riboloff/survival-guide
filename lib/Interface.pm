@@ -27,7 +27,7 @@ use Interface::Needs;
 use Interface::Craft;
 
 sub new {
-    my $self = shift;
+    my $class = shift;
     my $map = shift;
     my $character = shift;
     my $text_obj = shift;
@@ -52,11 +52,14 @@ sub new {
             size => [],
         },
         objects => {
-            list_obj => {
-                size => [],
-            },
-            action => {
-                size => [],
+            sub_block => {
+                list_obj => {
+                    size => [],
+                    array_area => [],
+                },
+                action => {
+                    size => [],
+                },
             },
             size => [],
         },
@@ -64,23 +67,30 @@ sub new {
         inv => {
             obj => $inv,
             size => [],
-            bag => {
-                size => [],
-            },
-            equipment => {
-                size => [],
-            },
+            sub_block => {
+                inv_bag => {
+                    size => [],
+                },
+                equipment => {
+                    size => [],
+                },
+                desc_item => {
+                    size => [],
+                },
+            }
         },
         looting => {
             size => [],
-            bag => {
-                size => [],
-            },
-            loot_list => {
-                size => [],
-            },
-            desc_item => {
-                size => [],
+            sub_block => {
+                looting_bag => {
+                    size => [],
+                },
+                loot_list => {
+                    size => [],
+                },
+                desc_item => {
+                    size => [],
+                },
             },
         },
         needs => {
@@ -94,11 +104,14 @@ sub new {
 
     set_size_all_block($hash);
 
+
     $hash->{data_print} = _data_print_init($hash->{size}, $hash->{map}{size});
 
     $text_obj->inition($hash->{text}{size});
 
-    return bless($hash, $self);
+    my $self = bless($hash, $class);
+    $self->initial();
+    return $self;
 }
 
 sub _data_print_init {
@@ -134,29 +147,22 @@ sub print {
         $self->{old_data_print} = dclone($array);
         Printer::print_all($array);
     } else {
+        #TODO: Тут хрен. Дочернии и родительские блоки в перемешку!
+        #Если процессим родительский, то дочернии нужно пропускать!
         for my $block (keys %$process_block) {
-            if (
-                   $block eq 'loot_list'
-                or $block eq 'bag'
-            ) {
-                $block = 'looting';
-            }
-            elsif (
-                   $block eq 'list_obj'
-                or $block eq 'action'
-            ) {
-                $block = 'objects';
-            }
-            elsif (
-                   $block eq 'craft_bag'
-                or $block eq 'craft_place'
-                or $block eq 'craft_result'
-            ) {
-                $block = 'craft';
-            }
+            my $parent_block = $self->get_parent_block_name($block) || $block;
 
-            $self->_process_block($block);
-            $self->_get_screen_diff($block);
+            $self->_process_block($parent_block);
+            #TODO Существуют случаи, когда нужно процессить не каждый дочерний, а родительский целиком.
+            #При первом открытии нового окна(инвинтарь, крафт).
+            #if (my $sub_blocks_names = @{$self->get_sub_blocks_name($parent_block)}) {
+            #    for my $sub_block_name (@{$self->get_sub_blocks_name($parent_block)}) {
+            #        $self->_get_screen_diff($sub_block_name);
+            #    }
+            #}
+            #else {
+                $self->_get_screen_diff($parent_block);
+                #}
         }
         Printer::print_diff($self->{diff});
         $self->{diff} = {};
@@ -195,11 +201,18 @@ sub _get_screen_diff {
     my $self = shift;
     my $block = shift;
 
-    my $bound_lt = $self->{$block}{size}[$LT];
-    my $bound_rd = $self->{$block}{size}[$RD];
+    my $bound_lt = [];
+    my $bound_rd = [];
 
+    my $block_data = $self->get_block($block);
+
+    $bound_lt = $block_data->{size}[$LT];
+    $bound_rd = $block_data->{size}[$RD];
+    if (exists $block_data->{size_data}) {
+        $bound_lt = $block_data->{size_data}[$LT];
+        $bound_rd = $block_data->{size_data}[$RD];
+    }
     my $array = $self->{data_print};
-
     my $diff = {};
     my $old_data_print = $self->{old_data_print};
     for (my $y = $bound_lt->[$Y]; $y < $bound_rd->[$Y]; $y++) {
@@ -254,18 +267,6 @@ sub get_main_block_show_name {
     return $self->{main_block_show};
 }
 
-sub get_block_obj {
-    my $self = shift;
-    my $name = shift;
-
-    if ($self->get_main_block_show_name eq $name) {
-        return $self->{$name}{obj};
-    }
-    else {
-        return $self->{$self->get_main_block_show_name}{$name}{obj};
-    }
-}
-
 sub set_size_all_block {
     my $self = shift;
 
@@ -275,25 +276,198 @@ sub set_size_all_block {
 sub get_inv {
     my $self = shift;
 
+    return $self->{inv};
+}
+
+sub get_inv_obj {
+    my $self = shift;
+
     return $self->{inv}{obj};
+}
+
+sub get_inv_bag {
+    my $self = shift;
+
+    return $self->{inv}{sub_block}{inv_bag};
+}
+
+sub get_inv_desc_item {
+    my $self = shift;
+
+    return $self->{inv}{sub_block}{desc_item};
+}
+
+sub get_equipment {
+    my $self = shift;
+
+    return $self->{inv}{sub_block}{equipment};
 }
 
 sub get_list_obj {
     my $self = shift;
 
-    return $self->{objects}{list_obj};
+    return $self->{objects}{sub_block}{list_obj};
 }
 
-sub get_craft {
+sub get_action {
+    my $self = shift;
+
+    return $self->{objects}{sub_block}{action};
+}
+
+sub get_craft_obj {
     my $self = shift;
 
     return $self->{craft}{obj};
 }
 
+sub get_craft {
+    my $self = shift;
+
+    return $self->{craft};
+}
+
+sub get_craft_bag {
+    my $self = shift;
+
+    return $self->{craft}{sub_block}{bag};
+}
+
+sub get_craft_place {
+    my $self = shift;
+
+    return $self->{craft}{sub_block}{place};
+}
+
+sub get_craft_result {
+    my $self = shift;
+
+    return $self->{craft}{sub_block}{result};
+}
+
+sub get_needs {
+    my $self = shift;
+
+    return $self->{needs};
+}
+
 sub get_text {
     my $self = shift;
 
+    return $self->{text};
+}
+
+sub get_text_obj {
+    my $self = shift;
+
     return $self->{text}{obj};
+}
+
+sub get_objects {
+    my $self = shift;
+
+    return $self->{objects};
+}
+
+sub get_map {
+    my $self = shift;
+
+    return $self->{map};
+}
+
+sub get_map_obj {
+    my $self = shift;
+
+    return $self->{map}{obj};
+}
+
+sub get_looting {
+    my $self = shift;
+
+    return $self->{looting};
+}
+
+sub get_loot_list {
+    my $self = shift;
+
+    return $self->{looting}{sub_block}{loot_list};
+}
+
+sub get_looting_bag {
+    my $self = shift;
+
+    return $self->{looting}{sub_block}{looting_bag};
+}
+
+sub get_looting_desc_item {
+    my $self = shift;
+
+    return $self->{looting}{sub_block}{desc_item};
+}
+
+sub initial {
+    my $self = shift;
+
+    my $name = 'list_obj';
+    for my $block_name (qw/list_obj action objects inv_bag needs/) {
+        my $block = $self->get_block($block_name);
+        my $title = Language::get_title_block($block_name) || '';
+        Interface::Utils::init_array_area($block, $title);
+    }
+}
+
+sub get_block {
+    my $self  = shift;
+    my $block_name = shift;
+
+    my $block_obj;
+    return unless $block_name;
+    my $method_name = 'get_' . $block_name;
+    eval{ $block_obj = $self->$method_name};
+    return $block_obj;
+
+    return $block_obj;
+}
+
+sub get_sub_blocks_name {
+    my $self = shift;
+    my $parent_block_name = shift;
+
+    return [keys %{$self->{$parent_block_name}{sub_block}}];
+}
+
+sub get_parent_block_name {
+    my $self = shift;
+    my $block_name = shift;
+
+    my $parent_block_name = '';
+    if (
+           $block_name eq 'loot_list'
+        or $block_name eq 'looting_bag'
+    ) {
+        $parent_block_name = 'looting';
+    }
+    elsif (
+           $block_name eq 'list_obj'
+        or $block_name eq 'action'
+    ) {
+        $parent_block_name = 'objects';
+    }
+    elsif (
+           $block_name eq 'inv_bag'
+        or $block_name eq 'equipment'
+    ) {
+        $parent_block_name = 'inv';
+    }
+    elsif (
+           $block_name eq 'craft_bag'
+        or $block_name eq 'craft_place'
+        or $block_name eq 'craft_result'
+    ) {
+        $parent_block_name = 'craft';
+    }
+
+    return $parent_block_name;
 }
 
 1;

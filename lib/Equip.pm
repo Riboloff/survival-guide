@@ -9,6 +9,7 @@ use Container;
 use Cell;
 use Bag;
 use Consts;
+use Logger qw(dmp);
 
 sub new {
     my $self = shift;
@@ -58,13 +59,17 @@ sub clothe_item {
     }
 
     my $slot = $item->get_slot();
-
+    
     my $bag = $self->{$slot}{bag};
-
+    if ($bag->get_count_item($item->get_proto_id) >= 2) {
+        return;
+    }
     $bag->put_item($item);
     $text->add_text(Utils::get_random_line($item->{used}{text}));
     my $warn = $item->get_warm();
     $char->get_temp()->add_bonus_equip($warn);
+
+    return 1;
 }
 
 sub get_all_items {
@@ -73,7 +78,12 @@ sub get_all_items {
     my $items = [];
     for my $slot (keys %$self) {
         my $bag = $self->{$slot}{bag};
-        my @items_slot = map {$_->{item}} @{$bag->get_all_items()};
+        my @items_slot = ();
+        for my $item_count (@{$bag->get_all_items()}) {
+            for (1 .. $item_count->{count}) {
+                push(@items_slot, $item_count->{item});
+            }
+        }
         push @$items, @items_slot;
     }
 

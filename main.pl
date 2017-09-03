@@ -10,7 +10,7 @@ use lib qw/lib/;
 use Map;
 use Text;
 use Interface;
-use Consts qw($X $Y);
+use Consts;
 use Logger qw(dmp);
 use Choouser;
 use Inv;
@@ -90,6 +90,12 @@ while(1) {
                 $process_block->{looting} = 1;
             }
         }
+        elsif ($show_block eq 'inv') {
+            if($chooser->{block_name} eq 'inv_bag') {
+                $chooser->{block_name} = 'equipment';
+                $process_block->{inv} = 1;
+            }
+        }
         elsif ($show_block eq 'craft') {
             if ($chooser->{block_name} eq 'craft_bag') {
                 $chooser->{block_name} = 'craft_place';
@@ -108,9 +114,13 @@ while(1) {
             $chooser->{position}{action} = 0;
             $process_block->{objects} = 1;
         }
+        elsif ($chooser->{block_name} eq 'equipment') {
+            $chooser->{block_name} = 'inv_bag';
+            $process_block->{inv} = 1;
+        }
         elsif ($show_block eq 'looting') {
-            if ($chooser->{block_name} ne 'bag') {
-                $chooser->{block_name} = 'bag';
+            if ($chooser->{block_name} ne 'looting_bag') {
+                $chooser->{block_name} = 'looting_bag';
                 $process_block->{looting} = 1;
             }
         }
@@ -127,8 +137,8 @@ while(1) {
     }
     if ($key =~ /^[Ii]$/) {
         if ($interface->get_main_block_show_name() ne 'inv') {
-            $chooser->{block_name} = 'inv';
-            $chooser->{position}{inv} = 0;
+            $chooser->{block_name} = 'inv_bag';
+            $chooser->{position}{inv_bag} = 0;
             $process_block->{inv} = 1;
         } else {
             _close_block('inv');
@@ -182,11 +192,14 @@ sub _used_item {
                $item->get_type() eq 'food'
             or $item->get_type() eq 'medicine'
         ) {
-            $item->used($character, $interface->get_text());
+            $item->used($character, $interface->get_text_obj());
         }
         elsif ($item->get_type() eq 'equipment') {
-            my $equip = $interface->get_inv->get_equipment;
-            $equip->clothe_item($item, $character, $interface->get_text());
+            my $equip = $interface->get_inv_obj->get_equipment;
+            if (!$equip->clothe_item($item, $character, $interface->get_text_obj())) {
+               return;
+            }
+            #$process_block->{equipment} = 1;
         } else {
             return;
         }
@@ -195,7 +208,8 @@ sub _used_item {
         $bag->splice_item($item->get_proto_id());
 
         my $block_name = $chooser->get_block_name();
-        $process_block->{$block_name} = 1;
+        my $parent_block_name = $interface->get_parent_block_name($block_name);
+        $process_block->{ $parent_block_name || $block_name } = 1;
         $process_block->{needs} = 1;
         $process_block->{text}  = 1;
     }
@@ -213,13 +227,24 @@ sub _close_block {
 sub _enter {
     if ($chooser->{block_name} eq 'action') {
         my $position = $chooser->get_position();
-        if ($chooser->{list}{action}[$position]->get_proto_id() == Consts::OPEN) {
-           $chooser->{position}{loot_list} = 0;
-           $chooser->{position}{bag} = 0;
-           $chooser->{block_name} = 'loot_list';
-           $process_block->{looting} = 1;
+        if ($chooser->{list}{action}[$position]->get_proto_id() == AC_OPEN) {
+            my $pos = $chooser->{position}{list_obj};
+            my $obj = $chooser->{list}{list_obj}[$pos];
+            if ($obj->get_type eq 'container') {
+                $chooser->{position}{loot_list} = 0;
+                $chooser->{position}{bag} = 0;
+                $chooser->{block_name} = 'loot_list';
+                $process_block->{looting} = 1;
+            }
+            elsif($obj->get_type eq 'door') {
+                my $map = $interface->get_map_obj();
+                my $cell = $map->get_cell($obj->get_cord());
+                $cell->{blocker} = 0;
+                $cell->{icon} = 'O';
+                $process_block->{map} = 1;
+            }
         }
-        if ($chooser->{list}{action}[$position]->get_proto_id() == Consts::WATCH) {
+        if ($chooser->{list}{action}[$position]->get_proto_id() == AC_WATCH) {
             my $pos = $chooser->{position}{list_obj};
             my $obj = $chooser->{list}{list_obj}[$pos];
             my $description = $obj->get_desc();
@@ -231,8 +256,8 @@ sub _enter {
     elsif ($chooser->{block_name} eq 'craft_result') {
         my $position = $chooser->get_position();
         my $item = $chooser->{list}{craft_result}[$position]->{item};
-        my $bag_inv = $interface->get_inv->get_bag();
-        my $bag_craft_result = $interface->get_craft->get_craft_result_bag();
+        my $bag_inv = $interface->get_inv_obj->get_bag();
+        my $bag_craft_result = $interface->get_craft_obj->get_craft_result_bag();
         _move_item_between_bag($bag_inv, '<', $bag_craft_result, $item);
 
         my $list_ingr_proto_id = $CraftTable::craft_table_local{$item->get_proto_id()};
@@ -361,7 +386,7 @@ sub _move_item_looting {
     my $chooser = shift;
     my $interface = shift;
 
-    my $bag_inv = $interface->get_inv->get_bag();
+    my $bag_inv = $interface->get_inv_obj->get_bag();
 
     my $chooser_position_list_obj = $chooser->{position}{list_obj};
     my $container = $chooser->{list}{list_obj}[$chooser_position_list_obj];
@@ -370,10 +395,9 @@ sub _move_item_looting {
     my $block_name = $chooser->get_block_name();
     my $chooser_position = $chooser->get_position();
     my $item = $chooser->{list}{$block_name}[$chooser_position]->{item};
-    dmp($block_name);
     if (
-            $block_name eq 'bag'       and $key eq '>'
-         or $block_name eq 'loot_list' and $key eq '<'
+            $block_name eq 'looting_bag' and $key eq '>'
+         or $block_name eq 'loot_list'   and $key eq '<'
     ) {
         _move_item_between_bag($bag_inv, $key, $bag_cont, $item);
     }
@@ -386,7 +410,7 @@ sub _move_item_craft {
     my $chooser = shift;
     my $interface = shift;
 
-    my $craft = $interface->get_craft();
+    my $craft = $interface->get_craft_obj();
 
     my $bag_inv   = $craft->get_inv_bag();
     my $bag_place = $craft->get_craft_place_bag();
@@ -395,7 +419,6 @@ sub _move_item_craft {
     my $chooser_position = $chooser->get_position();
     my $item = $chooser->{list}{$block_name}[$chooser_position]->{item};
 
-    dmp($block_name);
     if (
             $block_name eq 'craft_bag'   and $key eq '>'
          or $block_name eq 'craft_place' and $key eq '<'

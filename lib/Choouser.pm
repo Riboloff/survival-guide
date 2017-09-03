@@ -12,17 +12,19 @@ sub new {
 
     my $hash = {
         position => {
-            action => 0,
-            list_obj => 0,
-            bag => 0,
-            loot_list => 0,
-            craft_place => 0,
-            craft_bag => 0,
+            action       => 0,
+            list_obj     => 0,
+            inv_bag      => 0,
+            equipment    => 0,
+            loot_list    => 0,
+            looting_bag  => 0,
+            craft_place  => 0,
+            craft_bag    => 0,
             craft_result => 0,
         },
         block_name => 'list_obj',
         list => {},
-        bag => {}
+        bag  => {},
     };
 
     return (bless $hash, $self);
@@ -45,6 +47,7 @@ sub top {
         $self->{position}{$block_name}--;
     }
 }
+
 sub get_block_name {
     my $self = shift;
 

@@ -7,19 +7,18 @@ use utf8;
 use Consts;
 use Interface::Utils;
 use Logger qw(dmp dmp_array);
+use Storable qw(dclone);
 
 sub process_list_obj {
     my $interface = shift;
 
     my $map = $interface->{map}{obj};
     my $character = $interface->{character};
-    my $containers = $map->get_container_nigh($character);
+    my $objects = $map->get_objects_nigh($character);
 
-    my $area = $interface->{objects}{list_obj}{size};
-    my $size_area = Interface::Utils::get_size($area);
-    my $list_obj_array = Interface::Utils::init_array($size_area);
+    my $list_obj_array = dclone($interface->get_list_obj->{array_area});
 
-    my $list_obj = [@$containers];
+    my $list_obj = [@$objects];
     my $chooser = $interface->{chooser};
     $chooser->{list}{list_obj} = $list_obj;
     my @list = map {$_->get_name()} @$list_obj;
@@ -34,14 +33,13 @@ sub process_list_obj {
         list => \@list,
         array => $list_obj_array,
         chooser_position => $chooser_position,
-        size_area => $size_area,
+        size_area_frame => $interface->get_list_obj->{size_area_frame},
         color_chooser => $color_chooser,
     };
-    $list_obj_array = Interface::Utils::list_to_array_symbols($args);
-    my $title = Language::get_title_block('object');
-    my $list_obj_frame_array = Interface::Utils::get_frame($list_obj_array, $title);
 
-    return $list_obj_frame_array;
+    $list_obj_array = Interface::Utils::list_to_array_symbols_frame($args);
+  
+    return $list_obj_array;
 }
 
 sub process_actions {
@@ -55,10 +53,7 @@ sub process_actions {
 
     $chooser->{list}{action} = $list_actions;
 
-    my $area = $interface->{objects}{action}{size};
-    my $size_area = Interface::Utils::get_size($area);
-
-    my $action_array = Interface::Utils::init_array($size_area);
+    my $action_array = dclone($interface->get_action->{array_area});
 
     my $chooser_position = 0;
     my $color_chooser = 'on_green';
@@ -72,79 +67,53 @@ sub process_actions {
         list => \@list,
         array => $action_array,
         chooser_position => $chooser_position,
-        size_area => $size_area,
+        size_area_frame => $interface->get_action->{size_area_frame},
         color_chooser => $color_chooser,
     };
 
-    $action_array = Interface::Utils::list_to_array_symbols($args);
-    my $title = Language::get_title_block('action');
-    my $action_frame_array = Interface::Utils::get_frame($action_array, $title);
+    $action_array = Interface::Utils::list_to_array_symbols_frame($args);
 
-    return $action_frame_array;
+    return $action_array;
 }
 
 sub process_block {
     my $interface = shift;
 
-    my $objects_array = init_objects($interface->{objects});
+    my $objects_array = $interface->get_objects->{array_area};
     my $main_array = $interface->{data_print};
 
     my $list_obj_array = process_list_obj($interface);
-    my $actions_array = process_actions($interface);
+    my $actions_array  = process_actions ($interface);
 
     my $offset_list_obj = [
-        $interface->{objects}{list_obj}{size}[$LT][$Y] - $interface->{objects}{size}[$LT][$Y],
-        $interface->{objects}{list_obj}{size}[$LT][$X] - $interface->{objects}{size}[$LT][$X]
+        $interface->get_list_obj->{size}[$LT][$Y] - $interface->get_objects->{size}[$LT][$Y],
+        $interface->get_list_obj->{size}[$LT][$X] - $interface->get_objects->{size}[$LT][$X]
     ];
     my $offset_actions = [
-        $interface->{objects}{action}{size}[$LT][$Y] - $interface->{objects}{size}[$LT][$Y],
-        $interface->{objects}{action}{size}[$LT][$X] - $interface->{objects}{size}[$LT][$X]
+        $interface->get_action->{size}[$LT][$Y] - $interface->get_objects->{size}[$LT][$Y],
+        $interface->get_action->{size}[$LT][$X] - $interface->get_objects->{size}[$LT][$X]
     ];
     my $offset_objects = [
-        $interface->{objects}{size}[$LT][$Y],
-        $interface->{objects}{size}[$LT][$X]
+        $interface->get_objects->{size}[$LT][$Y],
+        $interface->get_objects->{size}[$LT][$X]
     ];
+
+    my $offset_data_actions = [
+        $offset_objects->[$Y] + $offset_actions->[$Y],
+        $offset_objects->[$X] + $offset_actions->[$X]
+    ];
+    $interface->get_action->{size_data} = Interface::Utils::get_size_data($offset_data_actions, $actions_array);
+
+    my $offset_data_list_obj = [
+        $offset_objects->[$Y] + $offset_list_obj->[$Y],
+        $offset_objects->[$X] + $offset_list_obj->[$X]
+    ];
+    $interface->get_list_obj->{size_data} = Interface::Utils::get_size_data($offset_data_list_obj, $list_obj_array);
+
     Interface::Utils::overlay_arrays_simple($objects_array, $list_obj_array, $offset_list_obj);
     Interface::Utils::overlay_arrays_simple($objects_array, $actions_array, $offset_actions);
 
     Interface::Utils::overlay_arrays_simple($main_array, $objects_array, $offset_objects);
-}
-
-sub init_objects {
-    my $objects = shift;
-
-    my $objects_array = [];
-
-    my $size_objects = Interface::Utils::get_size($objects->{size});
-    my $size_objects_y = $size_objects->[$Y];
-    my $size_objects_x = $size_objects->[$X];
-
-    my $size_list_obj = Interface::Utils::get_size($objects->{list_obj}{size});
-    my $size_list_obj_y = $size_list_obj->[$Y];
-    my $size_list_obj_x = $size_list_obj->[$X];
-
-    for my $y (0 .. $size_objects_y) {
-        #for my $x (0 .. $size_objects_x - 1) {
-        for my $x (0 .. $size_objects_x) {
-            $objects_array->[$y][$x]{symbol} = ' ';
-            $objects_array->[$y][$x]{color} = '';
-            #if ($x == $size_list_obj_x) {
-            #    $objects_array->[$y][$x]{symbol} = '│';
-            #    $objects_array->[$y][$x]{color} = '';
-            #}
-            #if ($y == $size_objects_y) {
-            #    $objects_array->[$y][$x]{symbol} = '─';
-            #    $objects_array->[$y][$x]{color} = '';
-            #}
-            #if ($x == $size_list_obj_x and $y == $size_objects_y) {
-            #    $objects_array->[$y][$x]{symbol} = '┴';
-            #    $objects_array->[$y][$x]{color} = '';
-            #}
-
-        }
-    }
-
-    return $objects_array;
 }
 
 1;

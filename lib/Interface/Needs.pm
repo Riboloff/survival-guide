@@ -20,7 +20,7 @@ sub health_line {
         ],
         [
             $interface->{needs}{size}[$LT][$Y] + 1,
-            $interface->{needs}{size}[$RD][$X]
+            $interface->{needs}{size}[$RD][$X] - 2
         ]
     ];
     my $size_area = Interface::Utils::get_size($area);
@@ -56,7 +56,7 @@ sub hunger_line {
         ],
         [
             $interface->{needs}{size}[$LT][$Y] + 1,
-            $interface->{needs}{size}[$RD][$X]
+            $interface->{needs}{size}[$RD][$X] - 2
         ]
     ];
     my $size_area = Interface::Utils::get_size($area);
@@ -92,7 +92,7 @@ sub thirst_line {
         ],
         [
             $interface->{needs}{size}[$LT][$Y] + 1,
-            $interface->{needs}{size}[$RD][$X]
+            $interface->{needs}{size}[$RD][$X] - 2
         ]
     ];
     my $size_area = Interface::Utils::get_size($area);
@@ -130,7 +130,7 @@ sub temp_line {
         ],
         [
             $interface->{needs}{size}[$LT][$Y] + 1,
-            $interface->{needs}{size}[$RD][$X]
+            $interface->{needs}{size}[$RD][$X] - 2
         ]
     ];
     my $size_area = Interface::Utils::get_size($area);
@@ -166,18 +166,19 @@ sub temp_line {
 sub process_block {
     my $interface = shift;
 
-    my $needs_array = init_needs($interface->{needs});
+    #my $needs_array = init_needs($interface->{needs});
+    my $needs_array = $interface->{needs}{array_area}; 
     my $main_array = $interface->{data_print};
 
     my $health_line_array = health_line($interface); 
     my $hunger_line_array = hunger_line($interface); 
     my $thirst_line_array = thirst_line($interface); 
-    my $temp_line_array   =   temp_line($interface); 
+    my $temp_line_array   = temp_line($interface); 
 
-    my $offset_health_line = [0, 0];
-    my $offset_hunger_line = [2, 0];
-    my $offset_thirst_line = [4, 0];
-    my   $offset_temp_line = [6, 0];
+    my $offset_health_line = [1, 1];
+    my $offset_hunger_line = [3, 1];
+    my $offset_thirst_line = [5, 1];
+    my   $offset_temp_line = [7, 1];
 
     my $offset_needs = [
         $interface->{needs}{size}[$LT][$Y],
@@ -186,30 +187,9 @@ sub process_block {
     Interface::Utils::overlay_arrays_simple($needs_array, $health_line_array, $offset_health_line);
     Interface::Utils::overlay_arrays_simple($needs_array, $hunger_line_array, $offset_hunger_line);
     Interface::Utils::overlay_arrays_simple($needs_array, $thirst_line_array, $offset_thirst_line);
-    Interface::Utils::overlay_arrays_simple($needs_array,   $temp_line_array,   $offset_temp_line);
-    my $needs_frame_array = Interface::Utils::get_frame($needs_array);
+    Interface::Utils::overlay_arrays_simple($needs_array, $temp_line_array,   $offset_temp_line);
 
-    Interface::Utils::overlay_arrays_simple($main_array, $needs_frame_array, $offset_needs);
-}
-
-sub init_needs {
-    my $needs = shift;
-
-    my $needs_array = [];
-
-    my $size_needs = Interface::Utils::get_size($needs->{size});
-    my $size_needs_y = $size_needs->[$Y];
-    my $size_needs_x = $size_needs->[$X];
-
-
-    for my $y (0 .. $size_needs_y - 1) {
-        for my $x (0 .. $size_needs_x - 1) {
-            $needs_array->[$y][$x]{symbol} = ' ';
-            $needs_array->[$y][$x]{color} = '';
-        }
-    }
-
-    return $needs_array;
+    Interface::Utils::overlay_arrays_simple($main_array, $needs_array, $offset_needs);
 }
 
 1;

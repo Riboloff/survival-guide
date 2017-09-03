@@ -109,12 +109,7 @@ sub get_size_without_frame {
 }
 
 sub init_array {
-    #my $area = shift;
     my $size_area = shift;
-
-    #if (!$size_area) {
-    #    $size_area = get_size($area);
-    #}
 
     my $action_array = [];
     for (my $y = 0; $y < $size_area->[$Y]; $y++) {
@@ -129,6 +124,35 @@ sub init_array {
     }
 
     return $action_array;
+}
+
+sub init_array_area {
+    my $obj   = shift;
+    my $title = shift;
+
+    my $area = $obj->{size};
+    my $size_area = $obj->{size_area} = Interface::Utils::get_size($area);
+    $obj->{size_area_frame} = [
+        $obj->{size_area}[$Y] - 2,
+        $obj->{size_area}[$X] - 2,
+    ];
+
+    my $array = [];
+    for (my $y = 0; $y < $size_area->[$Y]; $y++) {
+        for (my $x = 0; $x < $size_area->[$X]; $x++) {
+            my $symbol = ' ';
+            my $color = '';
+            $array->[$y][$x] = {
+               'color' => $color,
+               'symbol' => $symbol,
+            }
+        }
+    }
+
+    $array = Interface::Utils::get_frame($array, $title);
+    $obj->{array_area} = $array;
+
+    return $array;
 }
 
 sub list_to_array_symbols {
@@ -154,6 +178,34 @@ sub list_to_array_symbols {
         my $bound = min(scalar @symbols, $size_area->[$X]);
         for (my $x=0; $x < $bound; $x++) {
             $array->[$y][$x]{symbol} = $symbols[$x];
+        }
+    }
+
+    return $array;
+}
+
+sub list_to_array_symbols_frame {
+    my $args = shift;
+
+    my $list = $args->{list};
+    my $array = $args->{array};
+    my $chooser_position = $args->{chooser_position} || 0;
+    my $size_area = $args->{size_area_frame};
+    my $color_chooser =  $args->{color_chooser} || 'on_green';
+
+    for (my $y=0; $y < @$list; $y++) {
+        my @symbols = split( //, $list->[$y]);
+        my $color = '';
+        if ($chooser_position == $y) {
+            $color = $color_chooser;
+            for (my $x = 0; $x < $size_area->[$X]; $x++) {
+                $array->[$y+1][$x+1]{'color'} = $color;
+            }
+        }
+
+        my $bound = min(scalar @symbols, $size_area->[$X]);
+        for (my $x=0; $x < $bound; $x++) {
+            $array->[$y+1][$x+1]{symbol} = $symbols[$x];
         }
     }
 
@@ -308,6 +360,20 @@ sub get_frame_tmp {
 
     overlay_arrays_simple($array_frame, $array, [1, 1] );
     return $array_frame;
+}
+
+sub get_size_data {
+    my $offset = shift;
+    my $array_data = shift;
+
+    my $size_data;
+    $size_data->[$LT] =  $offset;
+    $size_data->[$RD] = [
+        $offset->[$Y] + scalar @{$array_data},
+        $offset->[$X] + scalar @{$array_data->[0]},
+    ];
+
+    return $size_data;
 }
 
 1;

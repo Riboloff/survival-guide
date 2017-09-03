@@ -1,0 +1,13 @@
+{
+    "ru": {
+        "name": "Меховая шапка",
+        "desc": "Теплая шапка на меху",
+        "use": "Вы одели меховую шапку на голову"
+    },
+
+    "en": {
+        "name": "Fur cap",
+        "desc": "This is fur cap",
+        "use": "You put the fur cap on his head"
+    }
+}
