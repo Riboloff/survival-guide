@@ -16,7 +16,7 @@ use base qw(Exporter);
         '$item_dir',
         '$text_objects_dir',
         '$items_id', '$objects_id', '$actions_id',
-        (grep {$_ =~ /^(AC|OB|IT)_/} keys %{__PACKAGE__ . '::'}),
+        (grep {$_ =~ /^(AC|OB|IT|ICON)_/} keys %{__PACKAGE__ . '::'}),
     );
 }
 our $X = 1;
@@ -56,6 +56,7 @@ our $actions_id = {
     eval AC_OPEN     => 'open',
     eval AC_WATCH    => 'watch',
     eval AC_LOCKPICK => 'lockpick',
+    eval AC_CLOSE    => 'close',
 };
 
 use constant {
@@ -63,6 +64,7 @@ use constant {
     AC_OPEN     => 1,
     AC_WATCH    => 2,
     AC_LOCKPICK => 3,
+    AC_CLOSE    => 4,
 
     #Items:
     IT_MEDICINE_BOX => 1,
@@ -75,6 +77,10 @@ use constant {
     #Objects:
     OB_SHELF => 1,
     OB_DOOR  => 2,
+
+    #Icon
+    ICON_CLOSE_DOOR => 'X',
+    ICON_OPEN_DOOR  => 'O',
 };
 
 1;

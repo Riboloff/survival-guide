@@ -8,17 +8,21 @@ use utf8;
 my $id_inc = 0;
 
 sub new {
-    my ($self, $name, $proto_id) = @_;
+    #my ($self, $name, $proto_id) = @_;
+    my ($self, $proto_id) = @_;
 
-    my $container = {
+    my $hash = Language::get_text($proto_id, 'actions');
+    my $name = $hash->{name};
+                    
+    my $action = {
         'name' => $name,
         'type' => 'action',
         'proto_id' => $proto_id,
     };
 
-    bless($container, $self);
+    bless($action, $self);
     
-    return $container;
+    return $action;
 }
 
 sub get_name {

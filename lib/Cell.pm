@@ -27,7 +27,7 @@ sub new {
         'obj' => '',
     };
     if ($icon eq 'C' and (ref $conf eq 'HASH') ) {
-       $cell->{icon} = $conf->{icon};
+       $icon = $cell->{icon} = $conf->{icon};
        $cell->{type} = $conf->{type};
        $cell->{blocker} = $conf->{blocker} || 1;
 
@@ -35,16 +35,16 @@ sub new {
        my $actions_id = $conf->{actions_id};
        my $actions = _get_actions($actions_id);
        my $items_id = $conf->{items_id};
-       $cell->{obj} = Container->new($cell->{name_id}, $actions, $items_id);
+       $cell->{obj} = Container->new($icon, $cell->{name_id}, $actions, $items_id);
     }
     elsif ($icon eq 'D' and (ref $conf eq 'HASH') ) {
-       $cell->{icon} = $conf->{icon};
+       $icon = $cell->{icon} = $conf->{icon};
        $cell->{type} = $conf->{type};
        $cell->{blocker} = $conf->{blocker} || 1;
        $cell->{name_id} = $conf->{name_id};
        my $actions_id = $conf->{actions_id};
        my $actions = _get_actions($actions_id);
-       $cell->{obj} = Door->new($cell->{name_id}, $actions, $coord);
+       $cell->{obj} = Door->new($icon, $cell->{name_id}, $actions, $coord, $cell->{blocker});
     }
 
     if ($icon =~ /[-|+]/) {
@@ -60,7 +60,12 @@ sub new {
 sub get_icon {
     my $self = shift;
 
-    return $self->{icon};
+    if ($self->{obj} and exists $self->{obj}{icon}) {
+        return $self->{obj}->get_icon();
+    }
+    else {
+        return $self->{icon};
+    }
 }
 
 
@@ -92,12 +97,20 @@ sub _get_actions {
 
     my $actions = [];
     for my $id (@$actions_id) {
-        my $hash = Language::get_text($id, 'actions');
-        my $name = $hash->{name};
-        push(@$actions, Action->new($name, $id));
+        push(@$actions, Action->new($id));
     }
 
     return $actions;
+}
+
+sub get_blocker {
+    my $self = shift;
+    
+    if ($self->{obj} and exists $self->{obj}{blocker}) {
+        return $self->{obj}{blocker};
+    } else {
+        return $self->{blocker};
+    }
 }
 
 1;

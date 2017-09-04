@@ -53,22 +53,31 @@ sub get_map_static {
 
     my $map = $self->{map};
     my $map_stat = dclone($map);
-    $map_stat = _placement_character($map_stat, $character);
 
     my $map_array = [];
     for (my $y = 0; $y < @$map_stat; $y++) {
-        for(my $x = 0; $x < @{$map_stat->[$y]}; $x++) {
+        for (my $x = 0; $x < @{$map_stat->[$y]}; $x++) {
             my $print = '';
             my $cell = $map_stat->[$y][$x];
-            if ($cell->{icon} eq '') {
+           
+            my $icon = $cell->get_icon;
+            #if ($cell->get_obj) { 
+            #   $icon = $cell->get_obj->get_icon;
+            #}
+
+             
+            if ($icon eq '') {
                 $map_array->[$y][$x]->{symbol} = ' ';
                 $map_array->[$y][$x]->{color} = '';
             } else {
-                $map_array->[$y][$x]->{symbol} = $cell->{icon};
+                $map_array->[$y][$x]->{symbol} = $icon;
                 $map_array->[$y][$x]->{color} = $cell->{color} || '';
+                #$map_array->[$y][$x]->{color} = '';
             }
         }
     }
+
+    $map_array = _placement_character($map_array, $character);
 
     return $map_array;
 }
@@ -80,7 +89,7 @@ sub _placement_character {
     my $coord = $character->get_coord();
     my $y = $coord->[$Y];
     my $x = $coord->[$X];
-    $map->[$y][$x]->{icon} = $character->{symbol};
+    $map->[$y][$x]->{symbol} = $character->{symbol};
     $map->[$y][$x]->{color} = 'red';
 
     return $map;

@@ -227,7 +227,8 @@ sub _close_block {
 sub _enter {
     if ($chooser->{block_name} eq 'action') {
         my $position = $chooser->get_position();
-        if ($chooser->{list}{action}[$position]->get_proto_id() == AC_OPEN) {
+        my $action_id = $chooser->{list}{action}[$position]->get_proto_id(); 
+        if ($action_id == AC_OPEN) {
             my $pos = $chooser->{position}{list_obj};
             my $obj = $chooser->{list}{list_obj}[$pos];
             if ($obj->get_type eq 'container') {
@@ -237,20 +238,29 @@ sub _enter {
                 $process_block->{looting} = 1;
             }
             elsif($obj->get_type eq 'door') {
-                my $map = $interface->get_map_obj();
-                my $cell = $map->get_cell($obj->get_cord());
-                $cell->{blocker} = 0;
-                $cell->{icon} = 'O';
+                my $door = $obj;
+                $obj->open();
                 $process_block->{map} = 1;
+                $process_block->{objects} = 1;
             }
         }
-        if ($chooser->{list}{action}[$position]->get_proto_id() == AC_WATCH) {
+        elsif ($action_id == AC_WATCH) {
             my $pos = $chooser->{position}{list_obj};
             my $obj = $chooser->{list}{list_obj}[$pos];
             my $description = $obj->get_desc();
             my $text_obj = $interface->{text}{obj};
             $text_obj->add_text($description);
             $process_block->{text} = 1;
+        }
+        elsif ($action_id == AC_CLOSE) {
+            my $pos = $chooser->{position}{list_obj};
+            my $obj = $chooser->{list}{list_obj}[$pos];
+            if ($obj->get_type eq 'door') {
+                my $door = $obj;
+                $door->close();
+                $process_block->{map} = 1;
+                $process_block->{objects} = 1;
+            }
         }
     }
     elsif ($chooser->{block_name} eq 'craft_result') {
@@ -302,7 +312,7 @@ sub _change_coord {
 
     my $cell = $map->[$y][$x];
 
-    if ($cell->{blocker}) {
+    if ($cell->get_blocker) {
         return;
     }
 

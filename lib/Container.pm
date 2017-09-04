@@ -7,7 +7,7 @@ use Logger qw(dmp);
 my $id_inc = 0;
 
 sub new {
-    my ($self, $proto_id, $actions, $items_id) = @_;
+    my ($self, $icon, $proto_id, $actions, $items_id) = @_;
 
     my $id = create_new_id();
 
@@ -16,6 +16,7 @@ sub new {
     my $desc = Utils::split_text($obj_text->{desc});
 
     my $container = {
+        'icon' => $icon,
         'id' => $id,
         'bag' => Bag->new($items_id),
         'name' => $name,
@@ -28,6 +29,12 @@ sub new {
     bless($container, $self);
 
     return $container;
+}
+
+sub get_icon {
+    my $self = shift;
+
+    return $self->{icon};
 }
 
 sub get_name {
