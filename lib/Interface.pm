@@ -150,7 +150,7 @@ sub print {
         #TODO: Тут хрен. Дочернии и родительские блоки в перемешку!
         #Если процессим родительский, то дочернии нужно пропускать!
         for my $block (keys %$process_block) {
-            my $parent_block = $self->get_parent_block_name($block) || $block;
+            my $parent_block = get_parent_block_name($block) || $block;
 
             $self->_process_block($parent_block);
             #TODO Существуют случаи, когда нужно процессить не каждый дочерний, а родительский целиком.
@@ -252,7 +252,7 @@ sub clean_after_itself {
     my $self = shift;
     my $name = shift;
 
-    my $area = $self->{$name}{size};
+    my $area = $name ? $self->{$name}{size} : $self->{size};
     for (my $y = $area->[$LT][$Y]; $y < $area->[$RD][$Y]; $y++) {
         for (my $x = $area->[$LT][$X]; $x < $area->[$RD][$X]; $x++) {
             $self->{data_print}->[$y][$x]->{symbol} = '';
@@ -437,7 +437,6 @@ sub get_sub_blocks_name {
 }
 
 sub get_parent_block_name {
-    my $self = shift;
     my $block_name = shift;
 
     my $parent_block_name = '';

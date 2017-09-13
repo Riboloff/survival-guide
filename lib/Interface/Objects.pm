@@ -24,9 +24,13 @@ sub process_list_obj {
     my @list = map {$_->get_name()} @$list_obj;
 
     my $chooser_position = $chooser->get_position('list_obj');
+    $chooser_position = Utils::clamp($chooser_position, 0, $#$list_obj);
     my $color_chooser = 'on_green';
-    if ($chooser->{block_name} eq 'list_obj') {
-        $color_chooser = 'on_red';
+    #if ($chooser->{block_name} eq 'list_obj') {
+    #    $color_chooser = 'on_red';
+    #}
+    if ($chooser->{block_name} ne 'list_obj') {
+        $chooser_position = 999;
     }
 
     my $args = {
@@ -55,11 +59,15 @@ sub process_actions {
 
     my $action_array = dclone($interface->get_action->{array_area});
 
-    my $chooser_position = 0;
+    my $chooser_position = $chooser->get_position('action');
+    $chooser_position = Utils::clamp($chooser_position, 0, $#$list_actions);
     my $color_chooser = 'on_green';
-    if ($chooser->{block_name} eq 'action') {
-        $chooser_position = $chooser->get_position();
-        $color_chooser = 'on_red';
+    #if ($chooser->{block_name} eq 'action') {
+    #    $chooser_position = $chooser->get_position();
+    #    $color_chooser = 'on_red';
+    #}
+    if ($chooser->{block_name} ne 'action') {
+        $chooser_position = 999;
     }
 
     my @list = map {$_->get_name()} @$list_actions;

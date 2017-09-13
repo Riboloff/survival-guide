@@ -16,7 +16,7 @@ use base qw(Exporter);
         '$item_dir',
         '$text_objects_dir',
         '$items_id', '$objects_id', '$actions_id',
-        (grep {$_ =~ /^(AC|OB|IT|ICON)_/} keys %{__PACKAGE__ . '::'}),
+        (grep {$_ =~ /^(AC|OB|IT|ICON|KEYBOARD)_/} keys %{__PACKAGE__ . '::'}),
     );
 }
 our $X = 1;
@@ -81,6 +81,27 @@ use constant {
     #Icon
     ICON_CLOSE_DOOR => 'X',
     ICON_OPEN_DOOR  => 'O',
+
+    #keys ord
+    KEYBOARD_ENTER       => 1,
+    KEYBOARD_BACKQUOTE   => 2,
+    KEYBOARD_ESC         => 3,
+    KEYBOARD_MOVE_LEFT   => 4,
+    KEYBOARD_MOVE_RIGHT  => 5,
+    KEYBOARD_MOVE_DOWN   => 6,
+    KEYBOARD_MOVE_UP     => 7,
+    KEYBOARD_RIGHT       => 8,
+    KEYBOARD_LEFT        => 9,
+    KEYBOARD_UP          => 10,
+    KEYBOARD_DOWN        => 11,
+    KEYBOARD_TEXT_UP     => 12,
+    KEYBOARD_TEXT_DOWN   => 13,
+    KEYBOARD_MOVE_ITEM_RIGHT => 14,
+    KEYBOARD_MOVE_ITEM_LEFT  => 15,
+    KEYBOARD_INV => 16,
+    KEYBOARD_CRAFT => 17,
+    KEYBOARD_USED => 18,
+    KEYBOARD_MINUS => 19,
 };
 
 1;

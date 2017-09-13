@@ -39,7 +39,7 @@ sub process_bag {
         color_chooser => $color_chooser,
     };
     $bag_array = Interface::Utils::list_to_array_symbols($args);
-    my $title = Language::get_title_block('bag');
+    my $title = Language::get_title_block('inv_bag');
     my $bag_frame_array = Interface::Utils::get_frame($bag_array, $title);
 
     return $bag_frame_array;
@@ -63,19 +63,26 @@ sub process_craft_place {
     $chooser_position = Utils::clamp($chooser_position, 0, $#$items_in_place_list);
     $chooser->set_position('craft_place', $chooser_position);
 
-    if ($chooser->{block_name} ne 'craft_place') {
+    if ($chooser->{block_name} eq 'craft_bag') {
         my $craft = $interface->get_craft_obj();
         my $list_items = [];
-        if ($chooser->{block_name} eq 'craft_bag') {
-            my $bag = $craft->get_inv_bag();
-            $list_items = $bag->get_all_items();
-        } elsif ($chooser->{block_name} eq 'craft_result') {
-            $list_items = $craft->get_craft_result_bag->get_all_items();
-        }
+        my $bag = $craft->get_inv_bag();
+        $list_items = $bag->get_all_items();
         if (scalar @$list_items) {
             $chooser_position = 999;
-        } else {
-            $chooser->{block_name} = 'craft_place';
+        }
+        else {
+            $chooser->right();
+        }
+    } elsif ($chooser->{block_name} eq 'craft_result') {
+        my $craft = $interface->get_craft_obj();
+        my $list_items = [];
+        $list_items = $craft->get_craft_result_bag->get_all_items();
+        if (scalar @$list_items) {
+            $chooser_position = 999;
+        }
+        else {
+            $chooser->left();
         }
     }
 
@@ -83,9 +90,8 @@ sub process_craft_place {
         $chooser->{block_name} eq 'craft_place'
         and !@list_items_name
     ) {
-        $chooser->{block_name} = 'craft_bag';
+        $chooser->left();
     }
-
     my $args = {
         list => \@list_items_name,
         array => $craft_items_array,
@@ -103,7 +109,6 @@ sub process_craft_place {
 
 sub process_result_item {
     my $interface = shift;
-
 
     my $area = $interface->get_craft_result->{size};
     my $size_area = Interface::Utils::get_size($area);

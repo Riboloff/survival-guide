@@ -5,6 +5,8 @@ use warnings;
 use utf8;
 
 use Term::ReadKey;
+use Data::Dumper;
+use Encode;
 
 use lib qw/lib/;
 use Map;
@@ -18,6 +20,8 @@ use Character;
 use Craft;
 use CraftTable;
 use Utils;
+use Keyboard;
+
 
 my $map = Map->new('squa');
 my $start_coord = [10, 18];
@@ -33,109 +37,96 @@ $text_obj->set_size_area_text($interface->{text});
 my $process_block = {};
 my $time = 0;
 
+$SIG{INT} = sub {ReadMode('normal'); exit(0)};
+
+#my %cchars = GetControlChars();
 
 while(1) {
-
-    ReadMode('normal');
     $interface->print($process_block);
 
     $process_block = {};
     ReadMode('cbreak');
+    while( defined (my $key_tmp = ReadKey(-1) )) {};
     my $key = ReadKey(0);
-    ReadMode('normal');
 
+    my @keys = ();
+    push @keys, ord $key;
+    if (ord $key == 27) {
+        while( defined (my $key_yet = ReadKey(-1) )) {
+            push @keys, ord $key_yet;
+        }
+    }
+    #print Dumper(\@keys);
+    #next;
     if (is_change_term_size()) {
         $interface->set_size_all_block();
         $interface->{data_print} = Interface::_data_print_init($interface->{size}, $interface->{map}{size});
         $process_block->{all} = 1;
         next;
     }
-    if ($key eq "\n") { #Enter заменить на нормальный сигнал
+    my $buttom = Keyboard::get_button(@keys);
+    next unless($buttom);
+
+    if ($buttom eq KEYBOARD_ENTER) {
         _enter();
     }
-    if ($key =~ /`/) {
+    elsif ($buttom eq KEYBOARD_BACKQUOTE) {
         ReadMode('normal');
         exit(0);
     }
-    if ($key =~ /^[dDaAwWsS]$/) {
+    elsif (
+           $buttom == KEYBOARD_MOVE_LEFT
+        or $buttom == KEYBOARD_MOVE_RIGHT
+        or $buttom == KEYBOARD_MOVE_UP
+        or $buttom == KEYBOARD_MOVE_DOWN
+
+    ) {
         if ($interface->get_main_block_show_name() eq 'map') {
-            _move($key);
+            _change_coord($character, $map, $buttom);
             _change_time();
-            $process_block->{needs} = 1;
-            $process_block->{map} = 1;
+
+            $process_block->{needs}   = 1;
+            $process_block->{map}     = 1;
             $process_block->{objects} = 1;
-            $chooser->reset_position();
+
+            $chooser->reset_all_position();
         }
     }
-    if ($key =~ /^[rRfF]$/) {
+    elsif (
+           $buttom == KEYBOARD_TEXT_UP
+        or $buttom == KEYBOARD_TEXT_DOWN
+    ) {
         _scroll_text($key);
         $process_block->{text} = 1;
     }
-    if ($key =~ /^[JjKk]$/) {
-        _move_chooser($key);
+    elsif (
+           $buttom == KEYBOARD_UP
+        or $buttom == KEYBOARD_DOWN
+    ) {
+        _move_chooser($buttom);
         my $chooser_block_name = $chooser->{block_name};
         $process_block->{$chooser_block_name} = 1;
 
     }
-    if ($key =~ /^[Ll]$/) {
-        my $show_block = $interface->get_main_block_show_name();
-        if ($show_block eq 'map') {
-            $chooser->{block_name} = 'action';
-            $chooser->{position}{action} = 0;
-            $process_block->{objects} = 1;
-        }
-        elsif ($show_block eq 'looting') {
-            if ($chooser->{block_name} ne 'loot_list') {
-                $chooser->{block_name} = 'loot_list';
-                $process_block->{looting} = 1;
-            }
-        }
-        elsif ($show_block eq 'inv') {
-            if($chooser->{block_name} eq 'inv_bag') {
-                $chooser->{block_name} = 'equipment';
-                $process_block->{inv} = 1;
-            }
-        }
-        elsif ($show_block eq 'craft') {
-            if ($chooser->{block_name} eq 'craft_bag') {
-                $chooser->{block_name} = 'craft_place';
-                $process_block->{craft} = 1;
-            }
-            elsif ($chooser->{block_name} eq 'craft_place') {
-                $chooser->{block_name} = 'craft_result';
-                $process_block->{craft} = 1;
-            }
-        }
+    elsif ($buttom eq KEYBOARD_ESC) {
+        $interface->clean_after_itself('map');
+        $chooser->{block_name} = 'list_obj';
+        $process_block->{all} = 1;
     }
-    if ($key =~ /^[Hh]$/) {
+    elsif ($buttom == KEYBOARD_LEFT) {
         my $show_block = $interface->get_main_block_show_name();
-        if ($show_block eq 'map') {
-            $chooser->{block_name} = 'list_obj';
-            $chooser->{position}{action} = 0;
-            $process_block->{objects} = 1;
-        }
-        elsif ($chooser->{block_name} eq 'equipment') {
-            $chooser->{block_name} = 'inv_bag';
-            $process_block->{inv} = 1;
-        }
-        elsif ($show_block eq 'looting') {
-            if ($chooser->{block_name} ne 'looting_bag') {
-                $chooser->{block_name} = 'looting_bag';
-                $process_block->{looting} = 1;
-            }
-        }
-        elsif ($show_block eq 'craft') {
-            if ($chooser->{block_name} eq 'craft_result') {
-                $chooser->{block_name} = 'craft_place';
-                $process_block->{craft} = 1;
-            }
-            elsif ($chooser->{block_name} eq 'craft_place') {
-                $chooser->{block_name} = 'craft_bag';
-                $process_block->{craft} = 1;
-            }
-        }
+        $show_block = 'objects' if $show_block eq 'map';
+        $chooser->left();
+        $process_block->{$show_block} = 1;
+
     }
-    if ($key =~ /^[Ii]$/) {
+    elsif ($buttom == KEYBOARD_RIGHT) {
+        my $show_block = $interface->get_main_block_show_name();
+        $show_block = 'objects' if $show_block eq 'map';
+        $chooser->right();
+        $process_block->{$show_block} = 1;
+    }
+    elsif ($buttom == KEYBOARD_INV) {
         if ($interface->get_main_block_show_name() ne 'inv') {
             $chooser->{block_name} = 'inv_bag';
             $chooser->{position}{inv_bag} = 0;
@@ -145,7 +136,10 @@ while(1) {
             next;
         }
     }
-    if ($key =~ /^[><]$/) {
+    elsif (
+           $buttom == KEYBOARD_MOVE_ITEM_RIGHT
+        or $buttom == KEYBOARD_MOVE_ITEM_LEFT
+    ) {
         my $show_block = $interface->get_main_block_show_name();
         if ($show_block eq 'looting') {
             _move_item_looting($key, $chooser, $interface);
@@ -156,17 +150,16 @@ while(1) {
             $process_block->{craft} = 1;
         }
     }
-    if ($key =~ /^[-]$/) {
+    elsif ($key =~ /^[-]$/) {
        $character->get_health->sub_hp('1');
        $character->get_hunger->sub_food('2');
        $character->get_thirst->sub_water('3');
        $process_block->{needs} = 1;
     }
-    if ($key =~ /^[eE]$/) {
+    elsif ($buttom == KEYBOARD_USED) {
         _used_item();
     }
-
-    if ($key =~ /^[cC]$/) {
+    elsif ($buttom == KEYBOARD_CRAFT) {
         if ($interface->get_main_block_show_name() ne 'craft') {
             my $craft = Craft->new($interface->{inv}{obj}{bag});
             $interface->{craft}{obj} = $craft;
@@ -208,7 +201,7 @@ sub _used_item {
         $bag->splice_item($item->get_proto_id());
 
         my $block_name = $chooser->get_block_name();
-        my $parent_block_name = $interface->get_parent_block_name($block_name);
+        my $parent_block_name = Interface::get_parent_block_name($block_name);
         $process_block->{ $parent_block_name || $block_name } = 1;
         $process_block->{needs} = 1;
         $process_block->{text}  = 1;
@@ -292,19 +285,19 @@ sub _change_coord {
 
     my $map = $map_obj->{map};
 
-    if ($move eq 'right') {
+    if ($move == KEYBOARD_MOVE_RIGHT) {
         if ($x + 1 < @{$map->[$y]}) {
             $x++;
         }
-    } elsif ($move eq 'left') {
+    } elsif ($move == KEYBOARD_MOVE_LEFT) {
         if ($x > 0) {
             $x--;
         }
-    } elsif ($move eq 'top') {
+    } elsif ($move == KEYBOARD_MOVE_UP) {
         if ($y > 0) {
             $y--;
         }
-    } elsif ($move eq 'down') {
+    } elsif ($move == KEYBOARD_MOVE_DOWN) {
         if ($y + 1 < @$map) {
             $y++;
         }
@@ -318,28 +311,6 @@ sub _change_coord {
 
     $character->{coord}[$X] = $x;
     $character->{coord}[$Y] = $y;
-
-    return;
-}
-
-sub _move {
-    my $key = shift;
-
-    my $move = '';
-    if ($key =~ /^[dD]$/) {
-        $move = 'right';
-    }
-    elsif ($key =~ /^[aA]$/) {
-        $move = 'left';
-    }
-    elsif ($key =~ /^[wW]$/) {
-        $move = 'top';
-    }
-    elsif ($key =~ /^[sS]$/) {
-        $move = 'down';
-    }
-
-    _change_coord($character, $map, $move);
 
     return;
 }
@@ -358,12 +329,12 @@ sub _scroll_text {
 }
 
 sub _move_chooser {
-    my $key = shift;
+    my $buttom = shift;
 
-    if ($key =~ /^[Kk]$/) {
+    if ($buttom == KEYBOARD_UP) {
         $chooser->top();
     }
-    elsif ($key =~ /^[jJ]$/) {
+    elsif ($buttom == KEYBOARD_DOWN) {
         $chooser->down();
     }
 
