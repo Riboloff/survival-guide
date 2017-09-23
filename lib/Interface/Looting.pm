@@ -70,18 +70,18 @@ sub process_loot_list {
 
     my $color_chooser = 'on_green';
 
-    if ($chooser->{block_name} ne 'loot_list') {
+    if ($chooser->{block_name} eq 'looting_bag') {
         if (scalar @{$interface->get_inv_obj->get_bag->get_all_items()}) {
             $chooser_position = 999;
         } else {
-            $chooser->{block_name} = 'loot_list';
+            $chooser->right();
         }
     } 
     if (
         $chooser->{block_name} eq 'loot_list'
         and !@$items_list
     ) {
-        $chooser->{block_name} = 'looting_bag';
+        $chooser->left();
     }
     my $args = {
         list => \@list_items_name,

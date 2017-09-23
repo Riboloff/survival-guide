@@ -7,6 +7,7 @@ use utf8;
 use lib qw/lib/;
 use Container;
 use Door;
+use Stair;
 use Item;
 use Action;
 use Consts;
@@ -27,27 +28,36 @@ sub new {
         'obj' => '',
     };
     if ($icon eq 'C' and (ref $conf eq 'HASH') ) {
-       $icon = $cell->{icon} = $conf->{icon};
-       $cell->{type} = $conf->{type};
-       $cell->{blocker} = $conf->{blocker} || 1;
+        $icon = $cell->{icon} = $conf->{icon};
+        $cell->{type} = $conf->{type};
+        $cell->{blocker} = $conf->{blocker} || 1;
 
-       $cell->{name_id} = $conf->{name_id};
-       my $actions_id = $conf->{actions_id};
-       my $actions = _get_actions($actions_id);
-       my $items_id = $conf->{items_id};
-       $cell->{obj} = Container->new($icon, $cell->{name_id}, $actions, $items_id);
+        $cell->{name_id} = $conf->{name_id};
+        my $actions_id = $conf->{actions_id};
+        my $actions = _get_actions($actions_id);
+        my $items_id = $conf->{items_id};
+        $cell->{obj} = Container->new($icon, $cell->{name_id}, $actions, $items_id);
     }
     elsif ($icon eq 'D' and (ref $conf eq 'HASH') ) {
-       $icon = $cell->{icon} = $conf->{icon};
-       $cell->{type} = $conf->{type};
-       $cell->{blocker} = $conf->{blocker} || 1;
-       $cell->{name_id} = $conf->{name_id};
-       my $actions_id = $conf->{actions_id};
-       my $actions = _get_actions($actions_id);
-       $cell->{obj} = Door->new($icon, $cell->{name_id}, $actions, $coord, $cell->{blocker});
+        $icon = $cell->{icon} = $conf->{icon};
+        $cell->{type} = $conf->{type};
+        $cell->{blocker} = $conf->{blocker} || 1;
+        $cell->{name_id} = $conf->{name_id};
+        my $actions_id = $conf->{actions_id};
+        my $actions = _get_actions($actions_id);
+        $cell->{obj} = Door->new($icon, $cell->{name_id}, $actions, $coord, $cell->{blocker});
     }
-
-    if ($icon =~ /[-|+]/) {
+    elsif ($icon eq 'S' and (ref $conf eq 'HASH') ) {
+        $cell->{blocker} = 0;
+        $cell->{type} = $conf->{type};
+        $cell->{name_id} = $conf->{name_id};
+        my $map_name = $conf->{map_name};
+        my $coord_enter = $conf->{coord_enter};
+        my $actions_id = $conf->{actions_id};
+        my $actions = _get_actions($actions_id);
+        $cell->{obj} = Stair->new($icon, $cell->{name_id}, $map_name, $coord_enter, $actions);
+    }
+    elsif ($icon =~ /[-|+]/) {
         $cell->{blocker} = 1;
         $cell->{type} = 'wall';
     }

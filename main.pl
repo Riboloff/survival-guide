@@ -24,6 +24,7 @@ use Keyboard;
 
 
 my $map = Map->new('squa');
+#my $map = Map->new('second_map');
 my $start_coord = [10, 18];
 my $character = Character->new($start_coord);
 
@@ -82,7 +83,7 @@ while(1) {
 
     ) {
         if ($interface->get_main_block_show_name() eq 'map') {
-            _change_coord($character, $map, $buttom);
+            _change_coord($character, $interface->get_map_obj, $buttom);
             _change_time();
 
             $process_block->{needs}   = 1;
@@ -110,7 +111,7 @@ while(1) {
     }
     elsif ($buttom eq KEYBOARD_ESC) {
         $interface->clean_after_itself('map');
-        $chooser->{block_name} = 'list_obj';
+        $chooser->reset_all_position();
         $process_block->{all} = 1;
     }
     elsif ($buttom == KEYBOARD_LEFT) {
@@ -189,8 +190,14 @@ sub _used_item {
         }
         elsif ($item->get_type() eq 'equipment') {
             my $equip = $interface->get_inv_obj->get_equipment;
-            if (!$equip->clothe_item($item, $character, $interface->get_text_obj())) {
-               return;
+            if ($chooser->{block_name} ne 'equipment') {
+                if (!$equip->clothe_item($item, $character, $interface->get_text_obj())) {
+                   return;
+                }
+            } else {
+                if (!$equip->unclothe_item($item, $character, $interface->get_text_obj())) {
+                   return;
+                }
             }
             #$process_block->{equipment} = 1;
         } else {
@@ -221,16 +228,16 @@ sub _enter {
     if ($chooser->{block_name} eq 'action') {
         my $position = $chooser->get_position();
         my $action_id = $chooser->{list}{action}[$position]->get_proto_id(); 
+        my $pos = $chooser->{position}{list_obj};
+        my $obj = $chooser->{list}{list_obj}[$pos];
         if ($action_id == AC_OPEN) {
-            my $pos = $chooser->{position}{list_obj};
-            my $obj = $chooser->{list}{list_obj}[$pos];
-            if ($obj->get_type eq 'container') {
+            if ($obj->get_type eq 'Container') {
                 $chooser->{position}{loot_list} = 0;
                 $chooser->{position}{bag} = 0;
                 $chooser->{block_name} = 'loot_list';
                 $process_block->{looting} = 1;
             }
-            elsif($obj->get_type eq 'door') {
+            elsif($obj->get_type eq 'Door') {
                 my $door = $obj;
                 $obj->open();
                 $process_block->{map} = 1;
@@ -238,22 +245,28 @@ sub _enter {
             }
         }
         elsif ($action_id == AC_WATCH) {
-            my $pos = $chooser->{position}{list_obj};
-            my $obj = $chooser->{list}{list_obj}[$pos];
             my $description = $obj->get_desc();
             my $text_obj = $interface->{text}{obj};
             $text_obj->add_text($description);
             $process_block->{text} = 1;
         }
         elsif ($action_id == AC_CLOSE) {
-            my $pos = $chooser->{position}{list_obj};
-            my $obj = $chooser->{list}{list_obj}[$pos];
             if ($obj->get_type eq 'door') {
                 my $door = $obj;
                 $door->close();
                 $process_block->{map} = 1;
                 $process_block->{objects} = 1;
             }
+        }
+        elsif ($action_id == AC_DOWN or $action_id == AC_UP) {
+            $interface->{map}{obj} = Map->get_map($obj->get_map_name);
+
+            my $coord = $obj->get_coord_enter();
+            $character->{coord}[$X] = $coord->[$X];
+            $character->{coord}[$Y] = $coord->[$Y];
+
+            $interface->clean_after_itself('map');
+            $process_block->{all} = 1;
         }
     }
     elsif ($chooser->{block_name} eq 'craft_result') {
@@ -302,7 +315,6 @@ sub _change_coord {
             $y++;
         }
     }
-
     my $cell = $map->[$y][$x];
 
     if ($cell->get_blocker) {

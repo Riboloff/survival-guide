@@ -51,7 +51,7 @@ sub new {
                     ],
                 },
                 looting => {
-                    position => 0,
+                    position => 1,
                     blocks => [
                         'looting_bag',
                         'loot_list',
@@ -132,6 +132,12 @@ sub get_bag {
     my $self = shift;
     my $block_name = shift || $self->{block_name};
 
+    if ($block_name eq 'equipment') {
+        my $position = $self->{position}{$block_name};
+        my $item = $self->get_target_object->{item};
+        my $slot = $item->get_slot();
+        return $self->{bag}{$block_name}{$slot}{bag};
+    }
     return $self->{bag}{$block_name};
 }
 
@@ -149,8 +155,12 @@ sub reset_all_position {
     for my $block_name (keys %{$self->{position}}) {
         $self->{position}{$block_name} = 0;
     }
+    #TODO переписать. Брать из конфига структуру, такующе, как и при инициализации
     for my $block_name (keys %{$self->{structure}{blocks}}) {
         $self->{structure}{blocks}{$block_name}{position} = 0;
+        if ($block_name eq 'looting') {
+            $self->{structure}{blocks}{$block_name}{position} = 1;
+        }
     }
     $self->{block_name} = 'list_obj';
 }

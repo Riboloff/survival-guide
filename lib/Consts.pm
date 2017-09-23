@@ -50,6 +50,8 @@ our $items_id = {
 our $objects_id = {
     eval OB_SHELF => 'shelf',
     eval OB_DOOR  => 'door',
+    eval OB_STAIR_UP   => 'stair_up',
+    eval OB_STAIR_DOWN => 'stair_down',
 };
 
 our $actions_id = {
@@ -57,6 +59,8 @@ our $actions_id = {
     eval AC_WATCH    => 'watch',
     eval AC_LOCKPICK => 'lockpick',
     eval AC_CLOSE    => 'close',
+    eval AC_DOWN     => 'down',
+    eval AC_UP       => 'up',
 };
 
 use constant {
@@ -65,6 +69,8 @@ use constant {
     AC_WATCH    => 2,
     AC_LOCKPICK => 3,
     AC_CLOSE    => 4,
+    AC_DOWN     => 5,
+    AC_UP       => 6,
 
     #Items:
     IT_MEDICINE_BOX => 1,
@@ -77,6 +83,8 @@ use constant {
     #Objects:
     OB_SHELF => 1,
     OB_DOOR  => 2,
+    OB_STAIR_UP   => 3,
+    OB_STAIR_DOWN => 4,
 
     #Icon
     ICON_CLOSE_DOOR => 'X',

@@ -14,22 +14,21 @@ use lib qw/lib/;
 use Cell;
 use Consts qw($X $Y);
 
-#my $X = $Consts::X;
-#my $Y = $Consts::Y;
+my %maps = ();
 
 sub new {
-    my $self = shift;
+    my $class = shift;
     my $file_name = shift;
 
     my $map_txt = "";
     my $map_conf = {};
     {
         local $/;
-        open(my $in_file_map, '<:utf8' , "map/$file_name") or die();
+        open(my $in_file_map, '<:utf8' , "map/$file_name") or die("open file map: $!");
         $map_txt = <$in_file_map>;
         close($in_file_map);
 
-        open(my $in_file_map_conf, '<:utf8' , "map/$file_name.conf") or die();
+        open(my $in_file_map_conf, '<:utf8' , "map/$file_name.conf") or die("open file map conf: $!");
         my $map_conf_json = <$in_file_map_conf>;
         $map_conf = JSON::from_json($map_conf_json);
         close($in_file_map_conf);
@@ -44,7 +43,21 @@ sub new {
         }
     }
 
-    return (bless {map => $map}, $self);
+    my $self = bless {map => $map}, $class;
+    $maps{$file_name} = $self;
+
+    return $self;
+}
+
+sub get_map {
+    my $class = shift;
+    my $map_name = shift;
+
+    if (exists $maps{$map_name}) {
+        return $maps{$map_name};
+    }
+
+    $class->new($map_name);
 }
 
 sub get_map_static {
@@ -61,10 +74,6 @@ sub get_map_static {
             my $cell = $map_stat->[$y][$x];
            
             my $icon = $cell->get_icon;
-            #if ($cell->get_obj) { 
-            #   $icon = $cell->get_obj->get_icon;
-            #}
-
              
             if ($icon eq '') {
                 $map_array->[$y][$x]->{symbol} = ' ';
@@ -78,7 +87,6 @@ sub get_map_static {
     }
 
     $map_array = _placement_character($map_array, $character);
-
     return $map_array;
 }
 
@@ -120,6 +128,7 @@ sub get_objects_nigh {
             if (
                     $type eq 'Container'
                  or $type eq 'Door'
+                 or $type eq 'Stair'
             ) {
                 my $container = $map->[$y][$x]->get_obj();
                 push(@$objects, $container);

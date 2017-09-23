@@ -19,7 +19,7 @@ sub new {
         'icon' => $icon,
         'name' => $name,
         'actions' => $actions,
-        'type' => 'door',
+        'type' => 'Door',
         'proto_id' => $proto_id,
         'desc'     => $desc,
         'coord' => $coord,
@@ -37,7 +37,7 @@ sub get_icon {
     return $self->{icon};
 }
 
-sub get_cord {
+sub get_coord {
     my $self = shift;
 
     return $self->{coord};

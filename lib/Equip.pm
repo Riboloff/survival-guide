@@ -48,6 +48,13 @@ sub new {
     return $equip;
 }
 
+sub get_bag {
+    my $self = shift;
+    my $slot = shift;
+
+    return $self->{$slot}{bag};
+}
+
 sub clothe_item {
     my $self = shift;
     my $item = shift;
@@ -59,17 +66,33 @@ sub clothe_item {
     }
 
     my $slot = $item->get_slot();
-    
     my $bag = $self->{$slot}{bag};
     if ($bag->get_count_item($item->get_proto_id) >= 2) {
         return;
     }
     $bag->put_item($item);
     $text->add_text(Utils::get_random_line($item->{used}{text}));
-    my $warn = $item->get_warm();
-    $char->get_temp()->add_bonus_equip($warn);
+    #my $warn = $item->get_warm();
+    #$char->get_temp()->add_bonus_equip($warn);
 
     return 1;
+}
+
+sub unclothe_item {
+    my $self = shift;
+    my $item = shift;
+    my $char = shift;
+    my $text = shift;
+
+    if ($item->get_type ne 'equipment') {
+        return;
+    }
+    my $slot = $item->get_slot();
+    my $bag = $char->get_inv->get_bag();
+    $bag->put_item($item);
+
+    return 1;
+    
 }
 
 sub get_all_items {

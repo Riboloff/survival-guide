@@ -26,6 +26,7 @@ sub process_block {
 
         Interface::Utils::overlay_arrays_simple($main_array, $map_array, $offset);
     } else {
+        delete $interface->{map}{size_data};
         my $main_hero_coord = $character->{coord};
        
         overlay_bigmap_and_area($main_array, $map_array, $main_hero_coord, $size_area_map);

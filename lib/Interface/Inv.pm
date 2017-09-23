@@ -72,7 +72,18 @@ sub process_equipment {
     $chooser_position = Utils::clamp($chooser_position, 0, $#$list_equipment);
     $chooser->set_position('equipment', $chooser_position);
     if ($chooser->{block_name} ne 'equipment') {
-        $chooser_position = 999;
+        if (scalar @{$interface->get_inv_obj->get_bag->get_all_items()}) {
+           $chooser_position = 999;
+        }
+        else {
+            $chooser->right();
+        }
+    }
+    if (
+        $chooser->{block_name} eq 'equipment'
+        and !@$items
+    ) {
+        $chooser->left();
     }
     my $bag = $interface->get_inv_obj->get_equipment();
     $chooser->{list}{equipment} = $items;
@@ -127,8 +138,8 @@ sub process_block {
     my $inv_array = init_inv($interface->get_inv);
     my $main_array = $interface->{data_print};
 
-    my $bag_array = process_bag($interface);
     my $equipment_array = process_equipment($interface);
+    my $bag_array = process_bag($interface);
     my $desc_array = process_desc_item($interface);
 
     my $offset_bag = [

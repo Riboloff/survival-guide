@@ -1,34 +1,31 @@
-package Container;
+package Stair;
 
 use strict;
 use warnings;
 use utf8;
 use Logger qw(dmp);
-my $id_inc = 0;
 
 sub new {
-    my ($self, $icon, $proto_id, $actions, $items_id) = @_;
-
-    my $id = create_new_id();
+    my ($self, $icon, $proto_id, $map_name, $coord_enter, $actions) = @_;
 
     my $obj_text = Language::get_text($proto_id, 'objects');
     my $name = $obj_text->{name};
     my $desc = Utils::split_text($obj_text->{desc});
 
-    my $container = {
+    my $stair = {
         'icon' => $icon,
-        'id' => $id,
-        'bag' => Bag->new($items_id),
         'name' => $name,
         'actions' => $actions,
-        'type' => 'Container',
+        #'type' => 'stair',
         'proto_id' => $proto_id,
         'desc'     => $desc,
+        'map_name' => $map_name,
+        'coord_enter' => $coord_enter,
     };
 
-    bless($container, $self);
+    bless($stair, $self);
 
-    return $container;
+    return $stair;
 }
 
 sub get_icon {
@@ -43,22 +40,10 @@ sub get_name {
     return $self->{name};
 }
 
-sub get_type {
-    my $self = shift;
-
-    return $self->{type};
-}
-
 sub get_actions {
     my $self = shift;
 
     return $self->{actions};
-}
-
-sub get_bag {
-    my $self = shift;
-
-    return $self->{bag};
 }
 
 sub get_desc {
@@ -66,8 +51,16 @@ sub get_desc {
     return Utils::get_random_line($self->{desc});
 }
 
-sub create_new_id {
-    return $id_inc++;
+sub get_map_name {
+    my $self = shift;
+
+    return $self->{map_name};
+}
+
+sub get_coord_enter {
+    my $self = shift;
+
+    return $self->{coord_enter};
 }
 
 1;
