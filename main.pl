@@ -57,8 +57,6 @@ while(1) {
             push @keys, ord $key_yet;
         }
     }
-    #print Dumper(\@keys);
-    #next;
     if (is_change_term_size()) {
         $interface->set_size_all_block();
         $interface->{data_print} = Interface::_data_print_init($interface->{size}, $interface->{map}{size});
@@ -84,11 +82,13 @@ while(1) {
     ) {
         if ($interface->get_main_block_show_name() eq 'map') {
             _change_coord($character, $interface->get_map_obj, $buttom);
-            _change_time();
+            my $text_obj = $interface->get_text_obj();
+            _change_time($text_obj);
 
             $process_block->{needs}   = 1;
             $process_block->{map}     = 1;
             $process_block->{objects} = 1;
+            $process_block->{text}    = 1;
 
             $chooser->reset_all_position();
         }
@@ -227,7 +227,7 @@ sub _close_block {
 sub _enter {
     if ($chooser->{block_name} eq 'action') {
         my $position = $chooser->get_position();
-        my $action_id = $chooser->{list}{action}[$position]->get_proto_id(); 
+        my $action_id = $chooser->{list}{action}[$position]->get_proto_id();
         my $pos = $chooser->{position}{list_obj};
         my $obj = $chooser->{list}{list_obj}[$pos];
         if ($action_id == AC_OPEN) {
@@ -251,7 +251,7 @@ sub _enter {
             $process_block->{text} = 1;
         }
         elsif ($action_id == AC_CLOSE) {
-            if ($obj->get_type eq 'door') {
+            if ($obj->get_type eq 'Door') {
                 my $door = $obj;
                 $door->close();
                 $process_block->{map} = 1;
@@ -361,7 +361,7 @@ sub _move_item_between_bag {
 
     unless ($one_bag or $two_bag or $item) {
         return;
-    } 
+    }
     if ($direct eq '>') {
         $one_bag->splice_item($item->get_proto_id);
         $two_bag->put_item($item);
@@ -440,6 +440,8 @@ sub is_change_term_size {
 }
 
 sub _change_time {
+    my $text_obj = shift;
+
     $time++;
 
     if ($time % $character->get_thirst->get_time_dec_one() == 0) {
@@ -450,14 +452,27 @@ sub _change_time {
         $character->get_hunger->sub_food('1');
     }
 
-    if ($character->get_hunger->get_food()  == 0
+    if (
+        $character->get_hunger->get_food()  == 0
         and $time % $character->get_health->get_time_dec_one() == 0
     ) {
         $character->get_health->sub_hp('1');
     }
-    if ($character->get_thirst->get_water() == 0
+
+    if (
+        $character->get_thirst->get_water() == 0
         and $time % $character->get_health->get_time_dec_one() == 0
     ) {
         $character->get_health->sub_hp('1');
+    }
+    if (
+        $character->get_disease->is_bleeding
+        and $time % $character->get_disease->get_time_dec_one_bleeding() == 0
+    ) {
+        $character->get_health->sub_hp('1');
+        my $text_bleeding = Utils::get_random_line(
+                                Language::get_disease('bleeding')
+                            );
+        $text_obj->add_text($text_bleeding);
     }
 }

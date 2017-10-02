@@ -76,7 +76,7 @@ sub process_loot_list {
         } else {
             $chooser->right();
         }
-    } 
+    }
     if (
         $chooser->{block_name} eq 'loot_list'
         and !@$items_list
@@ -110,7 +110,7 @@ sub process_desc_item {
         return [];
     }
 
-    my $text = $item->{item}->get_desc(); 
+    my $text = $item->{item}->get_desc();
     my $area = $interface->get_looting_desc_item->{size};
     my $size_area = Interface::Utils::get_size($area);
     $text->inition($area, 1);
@@ -134,16 +134,16 @@ sub process_block {
     my $desc_item = process_desc_item($interface);
 
     my $offset_bag = [
-        $interface->get_inv_bag->{size}[$LT][$Y],
-        $interface->get_inv_bag->{size}[$LT][$X]
+        $interface->get_inv_bag->{size}[$LT][$Y] - $interface->get_looting->{size}[$LT][$Y],
+        $interface->get_inv_bag->{size}[$LT][$X] - $interface->get_looting->{size}[$LT][$X]
     ];
     my $offset_loot_list = [
-        $interface->get_loot_list->{size}[$LT][$Y],
-        $interface->get_loot_list->{size}[$LT][$X]
+        $interface->get_loot_list->{size}[$LT][$Y] - $interface->get_looting->{size}[$LT][$Y],
+        $interface->get_loot_list->{size}[$LT][$X] - $interface->get_looting->{size}[$LT][$X]
     ];
     my $offset_desc_item = [
-        $interface->get_looting_desc_item->{size}[$LT][$Y],
-        $interface->get_looting_desc_item->{size}[$LT][$X]
+        $interface->get_looting_desc_item->{size}[$LT][$Y] - $interface->get_looting->{size}[$LT][$Y],
+        $interface->get_looting_desc_item->{size}[$LT][$X] - $interface->get_looting->{size}[$LT][$X]
     ];
     my $offset_looting = [
         $interface->get_looting->{size}[$LT][$Y],

@@ -25,6 +25,7 @@ use Interface::Looting;
 use Interface::Size;
 use Interface::Needs;
 use Interface::Craft;
+use Interface::Head;
 
 sub new {
     my $class = shift;
@@ -164,6 +165,7 @@ sub print {
                 $self->_get_screen_diff($parent_block);
                 #}
         }
+        $self->_get_screen_diff('head');
         Printer::print_diff($self->{diff});
         $self->{diff} = {};
     }
@@ -179,21 +181,27 @@ sub _process_block {
         Interface::Text::process_block($self);
         Interface::Objects::process_block($self);
         Interface::Needs::process_block($self);
+        Interface::Head::process_block($self);
     }
     elsif ($block eq 'map') {
         Interface::Map::process_block($self);
+        Interface::Head::process_block($self);
     } elsif ($block eq 'text') {
         Interface::Text::process_block($self);
     } elsif ($block eq 'objects') {
         Interface::Objects::process_block($self);
     } elsif ($block eq 'inv') {
         Interface::Inv::process_block($self);
+        Interface::Head::process_block($self);
     } elsif ($block eq 'looting') {
         Interface::Looting::process_block($self);
     } elsif ($block eq 'needs') {
         Interface::Needs::process_block($self);
     } elsif ($block eq 'craft') {
         Interface::Craft::process_block($self);
+        Interface::Head::process_block($self);
+    } elsif ($block eq 'head') {
+        Interface::Head::process_block($self);
     }
 }
 
@@ -207,13 +215,17 @@ sub _get_screen_diff {
     my $block_data = $self->get_block($block);
 
     $bound_lt = $block_data->{size}[$LT];
-    $bound_rd = $block_data->{size}[$RD];
+    $bound_rd = [@{$block_data->{size}[$RD]}];
     if (exists $block_data->{size_data}) {
         $bound_lt = $block_data->{size_data}[$LT];
         $bound_rd = $block_data->{size_data}[$RD];
     }
     my $array = $self->{data_print};
     my $diff = {};
+    if ($block eq 'head') {
+        $bound_rd->[$Y]++ ;
+    }
+
     my $old_data_print = $self->{old_data_print};
     for (my $y = $bound_lt->[$Y]; $y < $bound_rd->[$Y]; $y++) {
         my $key_glob;
@@ -403,6 +415,12 @@ sub get_looting_desc_item {
     my $self = shift;
 
     return $self->{looting}{sub_block}{desc_item};
+}
+
+sub get_head {
+    my $self = shift;
+
+    return $self->{head};
 }
 
 sub initial {

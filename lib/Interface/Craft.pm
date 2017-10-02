@@ -153,20 +153,20 @@ sub process_block {
     my $result_item = process_result_item($interface);
 
     my $offset_bag = [
-        $interface->get_craft_bag->{size}[$LT][$Y],
-        $interface->get_craft_bag->{size}[$LT][$X]
+        $interface->get_craft_bag->{size}[$LT][$Y] - $interface->get_craft->{size}[$LT][$Y],
+        $interface->get_craft_bag->{size}[$LT][$X] - $interface->get_craft->{size}[$LT][$X]
     ];
     my $offset_craft_items = [
-        $interface->get_craft_place->{size}[$LT][$Y],
-        $interface->get_craft_place->{size}[$LT][$X]
+        $interface->get_craft_place->{size}[$LT][$Y] - $interface->get_craft->{size}[$LT][$Y],
+        $interface->get_craft_place->{size}[$LT][$X] - $interface->get_craft->{size}[$LT][$X]
+    ];
+    my $offset_result_item = [
+        $interface->get_craft_result->{size}[$LT][$Y] - $interface->get_craft->{size}[$LT][$Y],
+        $interface->get_craft_result->{size}[$LT][$X] - $interface->get_craft->{size}[$LT][$X]
     ];
     my $offset_craft = [
         $interface->get_craft->{size}[$LT][$Y],
         $interface->get_craft->{size}[$LT][$X]
-    ];
-    my $offset_result_item = [
-        $interface->get_craft_result->{size}[$LT][$Y],
-        $interface->get_craft_result->{size}[$LT][$X]
     ];
 
     Interface::Utils::overlay_arrays_simple($craft_array, $bag_array, $offset_bag);

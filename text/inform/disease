@@ -1,0 +1,11 @@
+{
+    "ru": {
+        "bleeding": "Вы теряете здоровье из-за кровотичения||Кровотичение. Очень больно!||Используйте бинт, чтобы остановить кровотичение.",
+        "bleeding_off": "Вы остановили кровотичение"
+    },
+
+    "en": {
+        "bleeding": "You are losting health for bleeding",
+        "bleeding_off": "You have stoped bleeding"
+    }
+}

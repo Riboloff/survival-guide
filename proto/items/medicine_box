@@ -1,7 +1,8 @@
 {
     "proto_id": 1,
     "used": {
-        "add_hp": 10
+        "add_hp": 10,
+        "deseases": [1]
     },
     "type": "medicine" 
 }

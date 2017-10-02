@@ -22,7 +22,6 @@ sub get_size_area_action {
 
     $size_area_action->[$LT] = [
         0,
-        #$size_area_list_obj->[$RD][$X] + 1
         $size_area_list_obj->[$RD][$X]
     ];
     $size_area_action->[$RD] = [
@@ -80,7 +79,6 @@ sub get_size_area_text {
     my $size_area_text = [];
 
     $size_area_text->[$LT] = [
-        #$size_area_map->[$RD][$Y] + 1,
         $size_area_map->[$RD][$Y],
         0
     ];
@@ -96,7 +94,7 @@ sub get_size_area_map {
     my $size_interface = shift;
 
     return [
-        [0,0],
+        [2, 3],
         [
             int($size_interface->[$RD][$Y] * 0.7),
             int($size_interface->[$RD][$X] * 0.7)
@@ -149,7 +147,6 @@ sub get_size_area_equipment {
 
     $size_area_equipment->[$LT] = [
         $size_area_bag->[$LT][$Y],
-        #$size_area_bag->[$RD][$X]+1
         $size_area_bag->[$RD][$X]
     ];
     my $size_bag = Interface::Utils::get_size($size_area_bag);
@@ -169,7 +166,6 @@ sub get_size_area_loot_list {
 
     $size_area_loot_list->[$LT] = [
         $size_area_bag->[$LT][$Y],
-        #$size_area_bag->[$RD][$X]+1
         $size_area_bag->[$RD][$X]
     ];
     my $size_bag = Interface::Utils::get_size($size_area_bag);
@@ -189,7 +185,6 @@ sub get_size_area_desc_item {
 
     $size_area_desc_item->[$LT] = [
         $size_area_loot_list->[$LT][$Y],
-        #$size_area_loot_list->[$RD][$X]+1
         $size_area_loot_list->[$RD][$X]
     ];
     $size_area_desc_item->[$RD] = [
@@ -225,7 +220,6 @@ sub get_size_area_needs {
 
     $size_area_needs->[$LT] = [
         $size_area_text->[$LT][$Y],
-        #$size_area_text->[$RD][$X] + 1,
         $size_area_text->[$RD][$X],
     
     ];
@@ -235,6 +229,22 @@ sub get_size_area_needs {
     ];
 
     return $size_area_needs;
+}
+
+sub get_size_area_head {
+    my $size_area_map = shift;
+
+    my $size_area_head = [];
+
+    $size_area_head->[$LT] = [
+        0, 0,
+    ];
+    $size_area_head->[$RD] = [
+        $size_area_map->[$LT][$Y] - 1,
+        $size_area_map->[$RD][$X],
+    ];
+
+    return $size_area_head;
 }
 
 sub set_size_all_block {
@@ -253,6 +263,7 @@ sub set_size_all_block {
     my $size_area_looting = get_size_area_looting($size_area_inv);
     my $size_area_desc_item = get_size_area_desc_item($size_area_looting, $size_area_loot_list);
     my $size_area_needs = get_size_area_needs($size_interface, $size_area_text);
+    my $size_area_head = get_size_area_head($size_area_map);
 
     $Interface->{size} = $size_interface;
     $Interface->{map}{size} = $size_area_map;
@@ -273,6 +284,7 @@ sub set_size_all_block {
     $Interface->{craft}{sub_block}{place}{size} = $size_area_loot_list;
     $Interface->{craft}{sub_block}{result}{size} = $size_area_desc_item;
     $Interface->{needs}{size} = $size_area_needs;
+    $Interface->{head}{size} = $size_area_head;
 
     return;
 }

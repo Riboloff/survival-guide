@@ -3,7 +3,7 @@
         "health": "Здоровье",
         "hunger": "Сытость",
         "thirst": "Жажда",
-        "temp_norm": "Нормально",
+        "temp_norm": "Комфортно",
         "temp_cold": "Холодно",
         "temp_hot": "Жарко"
     },

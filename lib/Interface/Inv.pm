@@ -13,8 +13,6 @@ use utf8;
 sub process_bag {
     my $interface = shift;
 
-    my $main_array = $interface->{data_print};
-
     my $bag_array = dclone($interface->get_inv_bag->{array_area});
 
     my $chooser = $interface->{chooser};
@@ -43,8 +41,6 @@ sub process_bag {
 
 sub process_equipment {
     my $interface = shift;
-
-    my $main_array = $interface->{data_print};
 
     my $area = $interface->get_equipment->{size};
     my $size_area = Interface::Utils::get_size($area);
@@ -143,16 +139,16 @@ sub process_block {
     my $desc_array = process_desc_item($interface);
 
     my $offset_bag = [
-        $interface->get_inv_bag->{size}[$LT][$Y],
-        $interface->get_inv_bag->{size}[$LT][$X]
+        $interface->get_inv_bag->{size}[$LT][$Y] - $interface->get_inv->{size}[$LT][$Y],
+        $interface->get_inv_bag->{size}[$LT][$X] - $interface->get_inv->{size}[$LT][$X]
     ];
     my $offset_equipment = [
-        $interface->get_equipment->{size}[$LT][$Y],
-        $interface->get_equipment->{size}[$LT][$X]
+        $interface->get_equipment->{size}[$LT][$Y] - $interface->get_inv->{size}[$LT][$Y],
+        $interface->get_equipment->{size}[$LT][$X] - $interface->get_inv->{size}[$LT][$X],
     ];
     my $offset_desc_item = [
-        $interface->get_inv_desc_item->{size}[$LT][$Y],
-        $interface->get_inv_desc_item->{size}[$LT][$X]
+        $interface->get_inv_desc_item->{size}[$LT][$Y] - $interface->get_inv->{size}[$LT][$Y],
+        $interface->get_inv_desc_item->{size}[$LT][$X] - $interface->get_inv->{size}[$LT][$X]
     ];
     my $offset = [
         $interface->get_inv->{size}[$LT][$Y],
@@ -174,8 +170,6 @@ sub init_inv {
 
     my $y_bound_inv = $inv->{size}->[$RD][$Y];
     my $x_bound_inv = $inv->{size}->[$RD][$X];
-    my $y_bound_bag = $inv->{bag}{size}->[$RD][$Y];
-    my $x_bound_bag = $inv->{bag}{size}->[$RD][$X];
 
     for my $y (0 .. $y_bound_inv) {
         for my $x (0 .. $x_bound_inv - 1) {

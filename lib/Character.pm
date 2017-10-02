@@ -11,6 +11,7 @@ use Needs::Health;
 use Needs::Hunger;
 use Needs::Thirst;
 use Needs::Temp;
+use Needs::Disease;
 
 sub new {
     my $self = shift;
@@ -28,10 +29,11 @@ sub new {
         symbol => 'A',
         inv => $inv,
         needs => {
-            health => Needs::Health->new($start_hp),
-            hunger => Needs::Hunger->new($start_food),
-            thirst => Needs::Thirst->new($start_water),
-            temp => Needs::Temp->new($start_temp, $equip),
+            health  => Needs::Health->new($start_hp),
+            hunger  => Needs::Hunger->new($start_food),
+            thirst  => Needs::Thirst->new($start_water),
+            temp    => Needs::Temp->new($start_temp, $equip),
+            disease => Needs::Disease->new(),
         }
     };
 
@@ -74,6 +76,12 @@ sub get_temp {
     my $self = shift;
 
     return $self->{needs}{temp};
+}
+
+sub get_disease {
+    my $self = shift;
+
+    return $self->{needs}{disease};
 }
 
 1;

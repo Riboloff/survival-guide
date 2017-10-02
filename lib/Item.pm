@@ -115,6 +115,15 @@ sub used_food {
         elsif ($used_key eq 'sub_food') {
             $char->get_hunger->sub_food($used_value);
         }
+        elsif ($used_key eq 'deseases') {
+            for my $desease (@$used_value) {
+                $char->get_disease->bleeding_off();
+                my $text_bleeding_off = Utils::get_random_line(
+                                            Language::get_disease('bleeding_off')
+                                        );
+                $text_obj->add_text($text_bleeding_off);
+            }
+        }
         elsif ($used_key eq 'text') {
             if ($used_value) {
                 $text_obj->add_text(Utils::get_random_line($used_value));

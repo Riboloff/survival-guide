@@ -149,7 +149,7 @@ sub init_array_area {
         }
     }
 
-    $array = Interface::Utils::get_frame($array, $title);
+    $array = get_frame($array, $title);
     $obj->{array_area} = $array;
 
     return $array;
@@ -224,7 +224,7 @@ sub one_line_to_array_symbols {
 
     my $length_text = $size_area->[$X];
     my $length_line = int ($size_area->[$X] * $color_percent/100);
-    my @symbols = split( //, $line->[0]);
+    my @symbols = split(//, $line->[0]);
     for (my $x = 0; $x < $size_area->[$X]; $x++) {
         if ($x >= $length_line) {
             $color_line = 'on_blue';
@@ -255,7 +255,7 @@ sub get_frame {
     my @title_array = ();
     if ($title) {
         @title_array = split(//, $title);
-        unless (@title_array > $size_array_frame_x + 2) {
+        if (@title_array <= $size_array_frame_x + 2) {
             $start_symbol_title = int($size_array_frame_x / 2 - @title_array / 2);
         }
     }

@@ -28,6 +28,9 @@ sub split_text {
 sub get_random_line {
     my $lines = shift;
 
+    if (ref $lines ne 'ARRAY') {
+        $lines = split_text($lines);
+    }
     my $pos = int rand(@$lines);
 
     return $lines->[$pos];

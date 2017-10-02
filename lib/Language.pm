@@ -15,6 +15,9 @@ my $lang = 'ru'; #TODO пока хардкод.
 my $tilte_blocks = _get_text_lang($Consts::text_interface_dir, 'title');
 my $needs = _get_text_lang($Consts::text_interface_dir, 'needs');
 
+print $Consts::text_inform_dir;
+my $diseases = _get_text_lang($Consts::text_inform_dir, 'disease');
+
 sub get_text {
     my $id = shift;
     my $dir = shift;
@@ -63,6 +66,12 @@ sub get_needs {
     my $block_name = shift;
 
     return $needs->{$block_name};
+}
+
+sub get_disease {
+    my $disease_name = shift;
+
+    return $diseases->{$disease_name};
 }
 
 1;
