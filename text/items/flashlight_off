@@ -1,0 +1,13 @@
+{
+    "ru": {
+        "name": "Фонарик (ВЫКЛ)",
+        "desc": "Карманный фанарик на батарейках",
+        "use": "Включили фанарик"
+    },
+
+    "en": {
+        "name": "Flashlight (OFF)",
+        "desc": "This is poket flashlight",
+        "use": "flashlight on"
+    }
+}

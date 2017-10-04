@@ -6,6 +6,7 @@ use utf8;
 
 use lib qw/lib/;
 use Cell;
+use Logger qw(dmp);
 
 sub new {
     my $self = shift;
@@ -77,7 +78,7 @@ sub put_item_proto {
 
     my $items = $self->{items};
     if (!exists $items->{$proto_id}) {
-        $items->{$proto_id}{item} = Item->new();
+        $items->{$proto_id}{item} = Item->new($proto_id);
         $items->{$proto_id}{count} = 1;
     }
     else {

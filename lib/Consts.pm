@@ -40,12 +40,14 @@ our $text_inform_dir    = 'text/inform';
 
 
 our $items_id = {
-    eval IT_MEDICINE_BOX => 'medicine_box',
-    eval IT_BREAD        => 'bread',
-    eval IT_WATER        => 'water',
-    eval IT_SOFT_BREAD   => 'soft_bread',
-    eval IT_CAP          => 'cap',
-    eval IT_FURCAP       => 'fur_cap',
+    eval IT_MEDICINE_BOX   => 'medicine_box',
+    eval IT_BREAD          => 'bread',
+    eval IT_WATER          => 'water',
+    eval IT_SOFT_BREAD     => 'soft_bread',
+    eval IT_CAP            => 'cap',
+    eval IT_FURCAP         => 'fur_cap',
+    eval IT_FLASHLIGHT_OFF => 'flashlight_off',
+    eval IT_FLASHLIGHT_ON  => 'flashlight_on',
 };
 
 our $objects_id = {
@@ -74,12 +76,14 @@ use constant {
     AC_UP       => 6,
 
     #Items:
-    IT_MEDICINE_BOX => 1,
-    IT_BREAD        => 2,
-    IT_WATER        => 3,
-    IT_SOFT_BREAD   => 4,
-    IT_CAP          => 5,
-    IT_FURCAP       => 6,
+    IT_MEDICINE_BOX   => 1,
+    IT_BREAD          => 2,
+    IT_WATER          => 3,
+    IT_SOFT_BREAD     => 4,
+    IT_CAP            => 5,
+    IT_FURCAP         => 6,
+    IT_FLASHLIGHT_OFF => 7,
+    IT_FLASHLIGHT_ON  => 8,
 
     #Objects:
     OB_SHELF => 1,

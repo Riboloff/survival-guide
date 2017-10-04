@@ -1,0 +1,7 @@
+{
+    "proto_id": 7,
+    "type": "charge",
+    "used": {
+        "inc_radius_visibility": 20
+    }
+}

@@ -7,6 +7,7 @@ use Storable qw(dclone);
 use Term::ANSIColor;
 use Term::ReadKey;
 use JSON;
+use List::Util qw(max min);
 
 use Logger qw(dmp);
 
@@ -68,26 +69,53 @@ sub get_map_static {
     my $map_stat = dclone($map);
 
     my $map_array = [];
+    my $char_coord = $character->get_coord();
+    my $radius     = $character->get_radius_visibility();
+    my $bound_map = [scalar @$map_stat, scalar @{$map_stat->[0]}];
+    my ($top_left, $rigt_down) = _get_area_around($character->get_coord(), $bound_map, $radius);
+
     for (my $y = 0; $y < @$map_stat; $y++) {
         for (my $x = 0; $x < @{$map_stat->[$y]}; $x++) {
-            my $print = '';
+            $map_array->[$y][$x]->{symbol} = ' ';
+            $map_array->[$y][$x]->{color} = '';
+        }
+    }
+    for (my $y = $top_left->[$Y]; $y < $rigt_down->[$Y]; $y++) {
+        for (my $x = $top_left->[$X]; $x < $rigt_down->[$X]; $x++) {
             my $cell = $map_stat->[$y][$x];
-           
+
             my $icon = $cell->get_icon;
-             
+
             if ($icon eq '') {
                 $map_array->[$y][$x]->{symbol} = ' ';
                 $map_array->[$y][$x]->{color} = '';
             } else {
                 $map_array->[$y][$x]->{symbol} = $icon;
                 $map_array->[$y][$x]->{color} = $cell->{color} || '';
-                #$map_array->[$y][$x]->{color} = '';
             }
         }
     }
 
     $map_array = _placement_character($map_array, $character);
+
     return $map_array;
+}
+
+sub _get_area_around {
+    my $coord    = shift;
+    my $rd_bound = shift;
+    my $radius   = shift;
+
+    my $top_left  = [0, 0];
+    my $rigt_down = [0, 0];
+
+    $top_left->[$Y] = max($coord->[$Y] - $radius, 0);
+    $top_left->[$X] = max($coord->[$X] - $radius, 0);
+
+    $rigt_down->[$Y] = min($coord->[$Y] + $radius, $rd_bound->[$Y]);
+    $rigt_down->[$X] = min($coord->[$X] + $radius, $rd_bound->[$X]);
+
+    return ($top_left, $rigt_down);
 }
 
 sub _placement_character {

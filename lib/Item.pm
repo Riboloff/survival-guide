@@ -85,6 +85,7 @@ sub used {
     if (
            $self->get_type() eq 'food'
         or $self->get_type() eq 'medicine'
+        or $self->get_type() eq 'charge'
     ) {
         $self->used_food(@_);
     }
@@ -123,6 +124,16 @@ sub used_food {
                                         );
                 $text_obj->add_text($text_bleeding_off);
             }
+        }
+        elsif ($used_key eq 'inc_radius_visibility') {
+            my $inc_radius_visibility = $used_value;
+            my $radius_visibility = $char->get_radius_visibility();
+            if ($radius_visibility < $inc_radius_visibility) {
+                $char->set_radius_visibility($inc_radius_visibility);
+            }
+        }
+        elsif ($used_key eq 'light_switch_off') {
+            $char->reset_radius_visibility();
         }
         elsif ($used_key eq 'text') {
             if ($used_value) {

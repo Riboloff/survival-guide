@@ -182,13 +182,19 @@ sub _used_item {
         and exists $obj->{item}
     ) {
         my $item = $obj->{item};
+        my $type = $item->get_type();
+        #my $bag = $chooser->get_bag();
+        #if ($type eq 'charge' and $bag ne $character->get_inv->get_bag) {
+        #    return;
+        #}
         if (
-               $item->get_type() eq 'food'
-            or $item->get_type() eq 'medicine'
+               $type eq 'food'
+            or $type eq 'medicine'
+            or $type eq 'charge'
         ) {
             $item->used($character, $interface->get_text_obj());
         }
-        elsif ($item->get_type() eq 'equipment') {
+        elsif ($type eq 'equipment') {
             my $equip = $interface->get_inv_obj->get_equipment;
             if ($chooser->{block_name} ne 'equipment') {
                 if (!$equip->clothe_item($item, $character, $interface->get_text_obj())) {
@@ -199,13 +205,20 @@ sub _used_item {
                    return;
                 }
             }
-            #$process_block->{equipment} = 1;
         } else {
             return;
         }
 
         my $bag = $chooser->get_bag();
-        $bag->splice_item($item->get_proto_id());
+        my $proto_id = $item->get_proto_id();
+        if ($proto_id eq IT_FLASHLIGHT_OFF) {
+            $character->get_inv->get_bag->put_item_proto(IT_FLASHLIGHT_ON);
+        }
+        elsif ($proto_id eq IT_FLASHLIGHT_ON) {
+            $character->get_inv->get_bag->put_item_proto(IT_FLASHLIGHT_OFF);
+        }
+
+        $bag->splice_item($proto_id);
 
         my $block_name = $chooser->get_block_name();
         my $parent_block_name = Interface::get_parent_block_name($block_name);

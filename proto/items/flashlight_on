@@ -1,0 +1,7 @@
+{
+    "proto_id": 8,
+    "type": "charge",
+    "used": {
+        "light_switch_off": 1 
+    }
+}
