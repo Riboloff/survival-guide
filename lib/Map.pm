@@ -72,33 +72,111 @@ sub get_map_static {
     my $char_coord = $character->get_coord();
     my $radius     = $character->get_radius_visibility();
     my $bound_map = [scalar @$map_stat, scalar @{$map_stat->[0]}];
-    my ($top_left, $rigt_down) = _get_area_around($character->get_coord(), $bound_map, $radius);
 
-    for (my $y = 0; $y < @$map_stat; $y++) {
-        for (my $x = 0; $x < @{$map_stat->[$y]}; $x++) {
+    for (my $y = 0; $y < $bound_map->[$Y]; $y++) {
+        for (my $x = 0; $x < $bound_map->[$X]; $x++) {
             $map_array->[$y][$x]->{symbol} = ' ';
             $map_array->[$y][$x]->{color} = '';
-        }
-    }
-    for (my $y = $top_left->[$Y]; $y < $rigt_down->[$Y]; $y++) {
-        for (my $x = $top_left->[$X]; $x < $rigt_down->[$X]; $x++) {
+
             my $cell = $map_stat->[$y][$x];
+            if (_is_into_circle($radius, $character->get_coord(), $x, $y)) {
+                my $points_in_line = _get_points_lie_in_line($char_coord, [$y,$x]);
 
-            my $icon = $cell->get_icon;
+                my $is_visible = 1;
+                for my $point (@$points_in_line) {
+                    my $point_y = $point->[$Y];
+                    my $point_x = $point->[$X];
+                    my $cell_in_line = $map_stat->[$point_y][$point_x];
 
-            if ($icon eq '') {
-                $map_array->[$y][$x]->{symbol} = ' ';
-                $map_array->[$y][$x]->{color} = '';
-            } else {
-                $map_array->[$y][$x]->{symbol} = $icon;
-                $map_array->[$y][$x]->{color} = $cell->{color} || '';
+                    if ($cell_in_line->get_blocker()) {
+                        $is_visible = 0;
+                        last;
+                    }
+                }
+                next unless $is_visible;
+
+                my $icon = $cell->get_icon;
+
+                if ($icon eq ' ') {
+                    $map_array->[$y][$x]->{symbol} = '"';
+                } else {
+                    $map_array->[$y][$x]->{symbol} = $icon;
+                    $map_array->[$y][$x]->{color} = $cell->{color} || 'green';
+                }
             }
         }
     }
-
     $map_array = _placement_character($map_array, $character);
 
     return $map_array;
+}
+
+sub _is_into_circle {
+    my $radius = shift;
+    my $coord  = shift;
+    my $x = shift;
+    my $y = shift;
+
+    my $y_center = $coord->[$Y];
+    my $x_center = $coord->[$X];
+
+    my $gepotinuza = abs(($x-$x_center)*($x-$x_center)) + abs(($y-$y_center)*($y-$y_center));
+    if ( $gepotinuza <= $radius * $radius) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+use Data::Dumper;
+
+sub _get_points_lie_in_line {
+    my $coord1 = shift;
+    my $coord2 = shift;
+
+    my ($y1, $x1) = @$coord1[$Y,$X];
+    my ($y2, $x2) = @$coord2[$Y,$X];
+    my $aa = 0;
+    my $bb = 0;
+    if ($x1 - $x2) {
+        #$aa = int( ($y1 - $y2)/($x1 - $x2));
+        $aa = ($y1 - $y2)/($x1 - $x2);
+    }
+    #$bb = int( $y1 - ($aa*$x1) );
+    $bb =  $y1 - ($aa*$x1);
+    my $points = [];
+    if ($aa) {
+        for (my $x = min($x1,$x2) + 1; $x < max($x1,$x2); $x++) {
+            my $y = sprintf('%.0f', $aa * $x + $bb);
+            #my $y = int ($aa * $x + $bb);
+
+            if ($y == $coord2->[$Y]) {
+                next;
+            }
+                push(@$points, [$y,$x]);
+        }
+        for (my $y = min($y1,$y2) + 1; $y < max($y1,$y2); $y++) {
+            my $x = sprintf('%.0f', ($y - $bb) / $aa );
+            #my $x = int( ($y - $bb) / $aa);
+            if ($x == $coord2->[$X]) {
+                next;
+            }
+                push(@$points, [$y,$x], );#[$y, $x+1]);
+        }
+    }
+    elsif ($x1 == $x2) {
+        for (my $y = min($y1,$y2) + 1; $y < max($y1,$y2); $y++) {
+            my $x = $x1;
+            push (@$points, [$y, $x]);
+        }
+    }
+    elsif ($y1 == $y2) {
+        for (my $x = min($x1,$x2) + 1; $x < max($x1,$x2); $x++) {
+            my $y = $y1;
+            push (@$points, [$y, $x]);
+        }
+    }
+    return $points;
 }
 
 sub _get_area_around {

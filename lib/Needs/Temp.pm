@@ -22,6 +22,13 @@ sub new {
     return $temp;
 }
 
+sub set_temp_out {
+    my $self = shift;
+    my $temp = shift;
+
+    $self->{temp_out} = $temp;
+}
+
 sub get_temp_result {
     my $self = shift;
 

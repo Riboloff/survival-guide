@@ -21,6 +21,8 @@ use Craft;
 use CraftTable;
 use Utils;
 use Keyboard;
+use Time;
+use Events;
 
 
 my $map = Map->new('squa');
@@ -36,7 +38,8 @@ my $inv = $character->get_inv();
 my $interface = Interface->new($map, $character, $text_obj, $chooser, $inv);
 $text_obj->set_size_area_text($interface->{text});
 my $process_block = {};
-my $time = 0;
+
+my $current_time = Time->new( {'speed' => 1} );
 
 $SIG{INT} = sub {ReadMode('normal'); exit(0)};
 
@@ -151,11 +154,20 @@ while(1) {
             $process_block->{craft} = 1;
         }
     }
-    elsif ($key =~ /^[-]$/) {
-       $character->get_health->sub_hp('1');
-       $character->get_hunger->sub_food('2');
-       $character->get_thirst->sub_water('3');
-       $process_block->{needs} = 1;
+    elsif ($buttom == KEYBOARD_MINUS) {
+        Events->new(
+            {
+                timeout => $current_time->get_current_time() + 5,
+                sub => sub {
+                    my $character = shift;
+
+                    $character->get_health->sub_hp('10');
+                    $character->get_hunger->sub_food('20');
+                    $character->get_thirst->sub_water('30');
+                },
+                sub_opt => [$character],
+            }
+        );
     }
     elsif ($buttom == KEYBOARD_USED) {
         _used_item();
@@ -171,6 +183,7 @@ while(1) {
             next;
         }
     }
+    Events::check_timeout();
 }
 
 sub _used_item {
@@ -183,10 +196,6 @@ sub _used_item {
     ) {
         my $item = $obj->{item};
         my $type = $item->get_type();
-        #my $bag = $chooser->get_bag();
-        #if ($type eq 'charge' and $bag ne $character->get_inv->get_bag) {
-        #    return;
-        #}
         if (
                $type eq 'food'
             or $type eq 'medicine'
@@ -455,7 +464,7 @@ sub is_change_term_size {
 sub _change_time {
     my $text_obj = shift;
 
-    $time++;
+    my $time = $current_time->inc_time->get_current_time();
 
     if ($time % $character->get_thirst->get_time_dec_one() == 0) {
         $character->get_thirst->sub_water('1');
