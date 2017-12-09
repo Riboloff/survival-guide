@@ -1,5 +1,7 @@
 {
     "proto_id": 4,
+    "weight": 2,
+    "volume": 1,
     "used": {
         "add_hp": 10,
         "add_food": 15,

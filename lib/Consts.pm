@@ -48,6 +48,7 @@ our $items_id = {
     eval IT_FURCAP         => 'fur_cap',
     eval IT_FLASHLIGHT_OFF => 'flashlight_off',
     eval IT_FLASHLIGHT_ON  => 'flashlight_on',
+    eval IT_BACKPACK       => 'backpack',
 };
 
 our $objects_id = {
@@ -84,6 +85,7 @@ use constant {
     IT_FURCAP         => 6,
     IT_FLASHLIGHT_OFF => 7,
     IT_FLASHLIGHT_ON  => 8,
+    IT_BACKPACK       => 9,
 
     #Objects:
     OB_SHELF => 1,

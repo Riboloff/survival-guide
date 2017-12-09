@@ -1,0 +1,9 @@
+{
+    "proto_id": 9,
+    "weight": 1,
+    "volume": 0,
+    "add_volume": 10,
+    "type": "equipment",
+    "slot": "trunk",
+    "warm": 1
+}

@@ -1,5 +1,7 @@
 {
     "proto_id": 8,
+    "weight": 1,
+    "volume": 1,
     "type": "charge",
     "used": {
         "light_switch_off": 1 

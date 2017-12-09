@@ -136,7 +136,7 @@ sub get_bag {
         my $position = $self->{position}{$block_name};
         my $item = $self->get_target_object->{item};
         my $slot = $item->get_slot();
-        return $self->{bag}{$block_name}{$slot}{bag};
+        return $self->{bag}{$block_name}{slot}{$slot}{bag};
     }
     return $self->{bag}{$block_name};
 }

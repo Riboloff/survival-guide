@@ -1,5 +1,7 @@
 {
     "proto_id": 7,
+    "weight": 1,
+    "volume": 1,
     "type": "charge",
     "used": {
         "inc_radius_visibility": 20

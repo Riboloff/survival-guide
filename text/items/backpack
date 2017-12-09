@@ -1,0 +1,13 @@
+{
+    "ru": {
+        "name": "Заплечный рюкзак",
+        "desc": "С таким рюкзаком обычно ходят в пешие походы",
+        "use": "Вы одели рюкзак"
+    },
+
+    "en": {
+        "name": "Backpack",
+        "desc": "This is backpack",
+        "use": "You put the backpack"
+    }
+}

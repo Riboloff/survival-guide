@@ -121,8 +121,7 @@ sub temp_line {
     my $interface = shift;
 
     my $temp = $interface->{character}->get_temp->get_temp_result();
-    my $temp_percent = int ($temp * 100 / 36.6);
-    #my $temp_percent = 50;#$interface->{character}->get_thirst->get_water();
+    my $temp_percent = int ($temp * 100 / 72); #???
     my $area = [
         [
             $interface->{needs}{size}[$LT][$Y],
@@ -166,7 +165,6 @@ sub temp_line {
 sub process_block {
     my $interface = shift;
 
-    #my $needs_array = init_needs($interface->{needs});
     my $needs_array = $interface->{needs}{array_area}; 
     my $main_array = $interface->{data_print};
 

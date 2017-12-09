@@ -1,0 +1,11 @@
+{
+    "ru": {
+        "volume": "Объём",
+        "weight": "Вес"
+    },
+
+    "en": {
+        "volume": "Volume",
+        "weight": "Weight"
+    }
+}

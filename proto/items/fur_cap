@@ -1,5 +1,7 @@
 {
     "proto_id": 6,
+    "weight": 1,
+    "volume": 1,
     "type": "equipment",
     "slot": "head",
     "warm": 5

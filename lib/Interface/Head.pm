@@ -6,6 +6,7 @@ use utf8;
 
 use Consts;
 use Interface::Utils;
+use Language;
 use Logger qw(dmp);
 
 sub process_block {
@@ -23,7 +24,7 @@ sub process_block {
     my @two_str = ();
     for my $block_name (@$blocks) {
         my $start_symbol_title = 0;
-        my @title_array = split(//, $block_name);
+        my @title_array = split(//, Language::get_head($block_name));
         if (@title_array <= $size_cell_x) {
             $start_symbol_title = int($size_cell_x / 2 - @title_array / 2);
         }

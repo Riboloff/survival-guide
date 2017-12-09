@@ -27,6 +27,14 @@ use Interface::Needs;
 use Interface::Craft;
 use Interface::Head;
 
+use lib './xslib';
+use lib './xslib/blib/lib';
+use lib './xslib/blib/arch';
+use XS::Interface;
+
+#my $ll = [[5, 6], [3, 4]];
+#XS::Interface::greeting($ll);
+#exit();
 sub new {
     my $class = shift;
     my $map = shift;
@@ -221,11 +229,12 @@ sub _get_screen_diff {
         $bound_rd = $block_data->{size_data}[$RD];
     }
     my $array = $self->{data_print};
-    my $diff = {};
+
     if ($block eq 'head') {
         $bound_rd->[$Y]++ ;
     }
 
+    my $diff = {};
     my $old_data_print = $self->{old_data_print};
     for (my $y = $bound_lt->[$Y]; $y < $bound_rd->[$Y]; $y++) {
         my $key_glob;
@@ -307,6 +316,12 @@ sub get_inv_desc_item {
     my $self = shift;
 
     return $self->{inv}{sub_block}{desc_item};
+}
+
+sub get_inv_info {
+    my $self = shift;
+
+    return $self->{inv}{sub_block}{inv_info};
 }
 
 sub get_equipment {
@@ -426,7 +441,6 @@ sub get_head {
 sub initial {
     my $self = shift;
 
-    my $name = 'list_obj';
     for my $block_name (qw/list_obj action objects inv_bag needs/) {
         my $block = $self->get_block($block_name);
         my $title = Language::get_title_block($block_name) || '';

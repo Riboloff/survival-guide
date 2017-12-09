@@ -22,6 +22,9 @@ sub new {
     my $use_text = $text_hash->{use};
     my $desc = Text->new(undef, $text_hash->{desc});
     my $id = create_new_id();
+    my $weight = $text_hash->{weight};
+    my $volume = $text_hash->{volume};
+    my $add_volume = $text_hash->{add_volume};
     my $item = {
         'id'       => $id,
         'name'     => $name,
@@ -29,6 +32,9 @@ sub new {
         'proto_id' => $proto_id,
         'used'     => {},
         'type'     => '',
+        'weight'   => $weight,
+        'volume'   => $volume,
+        'add_volume' => $add_volume,
     };
     get_proto_feature($item);
     $item->{used}{text} = Utils::split_text($use_text);
@@ -40,6 +46,24 @@ sub new {
 
 sub create_new_id {
     return $id_inc++;
+}
+
+sub get_add_volume {
+    my $self = shift;
+
+    return $self->{add_volume};
+}
+
+sub get_volume {
+    my $self = shift;
+
+    return $self->{volume};
+}
+
+sub get_weight {
+    my $self = shift;
+
+    return $self->{weight};
 }
 
 sub get_name {

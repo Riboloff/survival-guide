@@ -24,7 +24,6 @@ use Keyboard;
 use Time;
 use Events;
 
-
 my $map = Map->new('squa');
 #my $map = Map->new('second_map');
 my $start_coord = [10, 18];
@@ -218,7 +217,6 @@ sub _used_item {
             return;
         }
 
-        my $bag = $chooser->get_bag();
         my $proto_id = $item->get_proto_id();
         if ($proto_id eq IT_FLASHLIGHT_OFF) {
             $character->get_inv->get_bag->put_item_proto(IT_FLASHLIGHT_ON);
@@ -227,6 +225,7 @@ sub _used_item {
             $character->get_inv->get_bag->put_item_proto(IT_FLASHLIGHT_OFF);
         }
 
+        my $bag = $chooser->get_bag();
         $bag->splice_item($proto_id);
 
         my $block_name = $chooser->get_block_name();

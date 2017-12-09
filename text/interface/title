@@ -1,6 +1,7 @@
 {
     "ru": {
         "inv_bag": " Сумка ",
+        "inv_info": " Инфо ",
         "equipment": " Снаряжение ",
         "desc_item": " Описание предмета ",
         "action": " Действие ",
@@ -12,6 +13,7 @@
 
     "en": {
         "inv_bag": " bag ",
+        "inv_info": " Info ",
         "equipment": " equipment ",
         "desc_item": " Desc item ",
         "action": " Action ",

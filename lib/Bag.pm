@@ -104,6 +104,7 @@ sub put_item {
 
     return;
 }
+
 sub get_count_item {
     my $self = shift;
     my $proto_id = shift;
@@ -114,4 +115,31 @@ sub get_count_item {
     return $self->{items}{$proto_id}{count};
 }
 
+sub get_all_weight {
+    my $self = shift;
+
+    my $all_items = $self->get_all_items();
+    my $weight_all = 0;
+    for my $pair (@$all_items) {
+        my ($item, $count) = @{$pair}{qw/item count/};
+        my $weight = $item->{weight} // 0;
+        $weight_all += ($weight * $count);
+    }
+
+    return $weight_all;
+}
+
+sub get_all_volume {
+    my $self = shift;
+
+    my $all_items = $self->get_all_items();
+    my $volume_all = 0;
+    for my $pair (@$all_items) {
+        my ($item, $count) = @{$pair}{qw/item count/};
+        my $volume = $item->{volume} // 0;
+        $volume_all += ($volume * $count);
+    }
+
+    return $volume_all;
+}
 1;
