@@ -40,4 +40,16 @@ sub bleeding_off {
     $self->{bleeding}{true} = 0;
 }
 
+sub get_all_disease {
+    my $self = shift;
+
+    my @keys_disease =  grep {$self->{$_}->{true}} keys %$self;
+
+    my $diseases_true = {};
+    for my $disease (@keys_disease) {
+        $diseases_true->{$disease} = $self->{disease};
+    }
+    return $diseases_true;
+}
+
 1;

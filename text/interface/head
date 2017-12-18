@@ -2,12 +2,14 @@
     "ru": {
         "map": "Карта",
         "craft": "Крафт",
-        "inv": "Инв"
+        "inv": "Инв",
+        "char": "Перс"
     },
 
     "en": {
         "map": "Map",
         "craft": "Craft",
-        "inv": "Inv"
+        "inv": "Inv",
+        "char": "Char"
     }
 }

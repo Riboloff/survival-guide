@@ -18,7 +18,7 @@ sub process_block {
     my $size_cell_x = 7;
 
     my $block_show = $interface->get_main_block_show_name();
-    my $blocks = ['map', 'craft', 'inv'];
+    my $blocks = ['map', 'craft', 'inv', 'char'];
 
     my @one_str = ();
     my @two_str = ();

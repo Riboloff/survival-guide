@@ -282,6 +282,8 @@ sub set_size_all_block {
     my $size_area_inv_info = get_size_area_inv_info($size_area_desc_item, $size_area_looting);
     my $size_area_needs = get_size_area_needs($size_interface, $size_area_text);
     my $size_area_head = get_size_area_head($size_area_map);
+    my $size_area_char = $size_area_inv;
+    my $size_area_char_dis = $size_area_bag;
 
     $Interface->{size} = $size_interface;
     $Interface->{map}{size} = $size_area_map;
@@ -294,14 +296,20 @@ sub set_size_all_block {
     $Interface->{inv}{sub_block}{equipment}{size} = $size_area_equipment;
     $Interface->{inv}{sub_block}{desc_item}{size} = $size_area_desc_item;
     $Interface->{inv}{sub_block}{inv_info}{size} = $size_area_inv_info;
+
+    $Interface->{char}{size} = $size_area_char;
+    $Interface->{char}{sub_block}{char_dis}{size} = $size_area_char_dis;
+
     $Interface->{looting}{size} = $size_area_looting;
     $Interface->{looting}{sub_block}{looting_bag}{size} = $size_area_bag;
     $Interface->{looting}{sub_block}{loot_list}{size} = $size_area_loot_list;
     $Interface->{looting}{sub_block}{desc_item}{size} = $size_area_desc_item;
+
     $Interface->{craft}{size} = $size_area_looting;
     $Interface->{craft}{sub_block}{bag}{size} = $size_area_bag;
     $Interface->{craft}{sub_block}{place}{size} = $size_area_loot_list;
     $Interface->{craft}{sub_block}{result}{size} = $size_area_desc_item;
+
     $Interface->{needs}{size} = $size_area_needs;
     $Interface->{head}{size} = $size_area_head;
 

@@ -8,6 +8,10 @@ use Consts;
 use List::Util qw(min);
 use Logger qw(dmp);
 
+use lib './xslib';
+use lib './xslib/blib/lib';
+use lib './xslib/blib/arch';
+
 sub is_object_into_area {
     my $size_area = shift;
     my $object_array = shift;

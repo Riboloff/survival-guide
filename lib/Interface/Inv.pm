@@ -8,7 +8,6 @@ use Logger qw(dmp);
 use Consts;
 use Interface::Utils;
 use Storable qw(dclone);
-use utf8;
 
 sub process_bag {
     my $interface = shift;

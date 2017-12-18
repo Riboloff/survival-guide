@@ -22,6 +22,7 @@ sub new {
             craft_place  => 0,
             craft_bag    => 0,
             craft_result => 0,
+            char_dis     => 0,
         },
         block_name => 'list_obj',
         list => {},
@@ -55,6 +56,12 @@ sub new {
                     blocks => [
                         'looting_bag',
                         'loot_list',
+                    ],
+                },
+                char => {
+                    position => 0,
+                    blocks => [
+                        'char_dis',
                     ],
                 },
             },

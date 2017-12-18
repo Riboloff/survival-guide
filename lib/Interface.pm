@@ -25,16 +25,23 @@ use Interface::Looting;
 use Interface::Size;
 use Interface::Needs;
 use Interface::Craft;
+use Interface::Char;
 use Interface::Head;
-
+=we
 use lib './xslib';
 use lib './xslib/blib/lib';
 use lib './xslib/blib/arch';
 use XS::Interface;
 
-#my $ll = [[5, 6], [3, 4]];
-#XS::Interface::greeting($ll);
-#exit();
+my $ll = [[0, 5, 6], [0, 88, 91], [0, 9999, 77777]];
+my $tl = [[51, 61], [881, 911]];
+print Data::Dumper::Dumper($ll);
+print Data::Dumper::Dumper($tl);
+XS::Interface::overlay_arrays_simple($ll, $tl, 1, 1);
+print Data::Dumper::Dumper($ll);
+print Data::Dumper::Dumper($tl);
+exit();
+=cut
 sub new {
     my $class = shift;
     my $map = shift;
@@ -201,13 +208,16 @@ sub _process_block {
     } elsif ($block eq 'inv') {
         Interface::Inv::process_block($self);
         Interface::Head::process_block($self);
+    } elsif ($block eq 'craft') {
+        Interface::Craft::process_block($self);
+        Interface::Head::process_block($self);
+    } elsif ($block eq 'char') {
+        Interface::Char::process_block($self);
+        Interface::Head::process_block($self);
     } elsif ($block eq 'looting') {
         Interface::Looting::process_block($self);
     } elsif ($block eq 'needs') {
         Interface::Needs::process_block($self);
-    } elsif ($block eq 'craft') {
-        Interface::Craft::process_block($self);
-        Interface::Head::process_block($self);
     } elsif ($block eq 'head') {
         Interface::Head::process_block($self);
     }
@@ -322,6 +332,18 @@ sub get_inv_info {
     my $self = shift;
 
     return $self->{inv}{sub_block}{inv_info};
+}
+
+sub get_char {
+    my $self = shift;
+
+    return $self->{char};
+}
+
+sub get_char_dis {
+    my $self = shift;
+
+    return $self->{char}{sub_block}{char_dis};
 }
 
 sub get_equipment {
@@ -441,7 +463,7 @@ sub get_head {
 sub initial {
     my $self = shift;
 
-    for my $block_name (qw/list_obj action objects inv_bag needs/) {
+    for my $block_name (qw/list_obj action objects inv_bag needs char_dis/) {
         my $block = $self->get_block($block_name);
         my $title = Language::get_title_block($block_name) || '';
         Interface::Utils::init_array_area($block, $title);
@@ -489,6 +511,11 @@ sub get_parent_block_name {
         or $block_name eq 'equipment'
     ) {
         $parent_block_name = 'inv';
+    }
+    elsif (
+           $block_name eq 'char_dis'
+    ) {
+        $parent_block_name = 'char';
     }
     elsif (
            $block_name eq 'craft_bag'

@@ -28,9 +28,11 @@ my $hash_keys = {
     '60'       => KEYBOARD_MOVE_ITEM_RIGHT,
     '62'       => KEYBOARD_MOVE_ITEM_LEFT,
     '105'      => KEYBOARD_INV,
-    '99'       => KEYBOARD_CRAFT,
+    '117'       => KEYBOARD_CRAFT,
     '101'      => KEYBOARD_USED,
     '45'       => KEYBOARD_MINUS,
+    #'99'       => KEYBOARD_CHAR,
+    '111'      => KEYBOARD_CHAR,
 
 };
 

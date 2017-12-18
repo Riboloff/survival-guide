@@ -10,7 +10,7 @@ use Consts;
 use Logger qw(dmp);
 use ReadFile;
 
-my $lang = 'en'; #TODO пока хардкод.
+my $lang = 'ru'; #TODO пока хардкод.
 
 my $tilte_blocks = _get_text_lang($Consts::text_interface_dir, 'title');
 my $inv_info = _get_text_lang($Consts::text_interface_dir, 'inv_info');

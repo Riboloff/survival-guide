@@ -120,6 +120,7 @@ use constant {
     KEYBOARD_CRAFT => 17,
     KEYBOARD_USED => 18,
     KEYBOARD_MINUS => 19,
+    KEYBOARD_CHAR => 20,
 };
 
 1;

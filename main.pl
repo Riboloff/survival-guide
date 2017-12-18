@@ -129,16 +129,6 @@ while(1) {
         $chooser->right();
         $process_block->{$show_block} = 1;
     }
-    elsif ($buttom == KEYBOARD_INV) {
-        if ($interface->get_main_block_show_name() ne 'inv') {
-            $chooser->{block_name} = 'inv_bag';
-            $chooser->{position}{inv_bag} = 0;
-            $process_block->{inv} = 1;
-        } else {
-            _close_block('inv');
-            next;
-        }
-    }
     elsif (
            $buttom == KEYBOARD_MOVE_ITEM_RIGHT
         or $buttom == KEYBOARD_MOVE_ITEM_LEFT
@@ -171,6 +161,16 @@ while(1) {
     elsif ($buttom == KEYBOARD_USED) {
         _used_item();
     }
+    elsif ($buttom == KEYBOARD_INV) {
+        if ($interface->get_main_block_show_name() ne 'inv') {
+            $chooser->{block_name} = 'inv_bag';
+            $chooser->{position}{inv_bag} = 0;
+            $process_block->{inv} = 1;
+        } else {
+            _close_block('inv');
+            next;
+        }
+    }
     elsif ($buttom == KEYBOARD_CRAFT) {
         if ($interface->get_main_block_show_name() ne 'craft') {
             my $craft = Craft->new($interface->{inv}{obj}{bag});
@@ -179,6 +179,16 @@ while(1) {
             $process_block->{craft} = 1;
         } else {
             _close_block('craft');
+            next;
+        }
+    }
+    elsif ($buttom == KEYBOARD_CHAR) {
+        if ($interface->get_main_block_show_name() ne 'char') {
+            $chooser->{block_name} = 'char_dis';
+            $chooser->{position}{char_dis} = 0;
+            $process_block->{char} = 1;
+        } else {
+            _close_block('char');
             next;
         }
     }
