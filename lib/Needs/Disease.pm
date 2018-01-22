@@ -47,7 +47,7 @@ sub get_all_disease {
 
     my $diseases_true = {};
     for my $disease (@keys_disease) {
-        $diseases_true->{$disease} = $self->{disease};
+        $diseases_true->{$disease} = $self->{$disease};
     }
     return $diseases_true;
 }

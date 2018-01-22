@@ -5,8 +5,8 @@ use warnings;
 
 use Storable qw(dclone);
 
-#use Term::ANSIColor 4.00 qw(:constants256);
-use Term::ANSIColor 4.00;
+use Term::ANSIColor;
+#use Term::ANSIColor 4.00;
 $Term::ANSIColor::AUTORESET = 1;
 
 use Term::Cap;

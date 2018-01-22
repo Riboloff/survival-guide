@@ -284,6 +284,8 @@ sub set_size_all_block {
     my $size_area_head = get_size_area_head($size_area_map);
     my $size_area_char = $size_area_inv;
     my $size_area_char_dis = $size_area_bag;
+    my $size_area_char_empty = $size_area_equipment;
+    my $size_area_char_desc = $size_area_desc_item;  
 
     $Interface->{size} = $size_interface;
     $Interface->{map}{size} = $size_area_map;
@@ -298,7 +300,9 @@ sub set_size_all_block {
     $Interface->{inv}{sub_block}{inv_info}{size} = $size_area_inv_info;
 
     $Interface->{char}{size} = $size_area_char;
-    $Interface->{char}{sub_block}{char_dis}{size} = $size_area_char_dis;
+    $Interface->{char}{sub_block}{char_dis}{size}   = $size_area_char_dis;
+    $Interface->{char}{sub_block}{char_empty}{size} = $size_area_char_empty;
+    $Interface->{char}{sub_block}{char_desc}{size}  = $size_area_char_desc;
 
     $Interface->{looting}{size} = $size_area_looting;
     $Interface->{looting}{sub_block}{looting_bag}{size} = $size_area_bag;

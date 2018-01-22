@@ -98,7 +98,7 @@ sub get_map_static {
                 my $icon = $cell->get_icon;
 
                 if ($icon eq ' ') {
-                    $map_array->[$y][$x]->{symbol} = '"';
+                    $map_array->[$y][$x]->{symbol} = '.';
                 } else {
                     $map_array->[$y][$x]->{symbol} = $icon;
                     $map_array->[$y][$x]->{color} = $cell->{color} || 'green';

@@ -346,6 +346,18 @@ sub get_char_dis {
     return $self->{char}{sub_block}{char_dis};
 }
 
+sub get_char_empty {
+    my $self = shift;
+
+    return $self->{char}{sub_block}{char_empty};
+}
+
+sub get_char_desc {
+    my $self = shift;
+
+    return $self->{char}{sub_block}{char_desc};
+}
+
 sub get_equipment {
     my $self = shift;
 
@@ -463,7 +475,7 @@ sub get_head {
 sub initial {
     my $self = shift;
 
-    for my $block_name (qw/list_obj action objects inv_bag needs char_dis/) {
+    for my $block_name (qw/list_obj action objects inv_bag needs char_dis char_empty char_desc/) {
         my $block = $self->get_block($block_name);
         my $title = Language::get_title_block($block_name) || '';
         Interface::Utils::init_array_area($block, $title);
