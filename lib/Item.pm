@@ -144,7 +144,7 @@ sub used_food {
             for my $desease (@$used_value) {
                 $char->get_disease->bleeding_off();
                 my $text_bleeding_off = Utils::get_random_line(
-                                            Language::get_disease('bleeding_off')
+                                            Language::get_disease_info('bleeding_off')
                                         );
                 $text_obj->add_text($text_bleeding_off);
             }

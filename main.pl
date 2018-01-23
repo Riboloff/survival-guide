@@ -502,7 +502,7 @@ sub _change_time {
     ) {
         $character->get_health->sub_hp('1');
         my $text_bleeding = Utils::get_random_line(
-                                Language::get_disease('bleeding')
+                                Language::get_disease_info('bleeding')
                             );
         $text_obj->add_text($text_bleeding);
     }

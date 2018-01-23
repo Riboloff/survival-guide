@@ -37,6 +37,7 @@ our $item_dir           = 'proto/items/';
 our $text_objects_dir   = 'text/objects/';
 our $text_interface_dir = 'text/interface';
 our $text_inform_dir    = 'text/inform';
+our $text_disease_dir   = 'text/disease';
 
 
 our $items_id = {

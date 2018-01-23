@@ -249,6 +249,9 @@ sub _get_screen_diff {
     for (my $y = $bound_lt->[$Y]; $y < $bound_rd->[$Y]; $y++) {
         my $key_glob;
         for (my $x = $bound_lt->[$X]; $x < $bound_rd->[$X]; $x++) {
+            #my $symbol = $array->[$y][$x]->{symbol} // '';
+            #my $color = $array->[$y][$x]->{color} // '';
+
             my $symbol = $array->[$y][$x]->{symbol};
             my $color = $array->[$y][$x]->{color};
             my $key = "$y,$x";

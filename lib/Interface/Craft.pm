@@ -185,9 +185,6 @@ sub init_craft {
     my $y_bound_craft = $craft->{size}[$RD][$Y];
     my $x_bound_craft = $craft->{size}[$RD][$X];
 
-    my $y_bound_bag = $craft->{bag}{size}[$RD][$Y];
-    my $x_bound_bag = $craft->{bag}{size}[$RD][$X];
-
     for my $y (0 .. $y_bound_craft - 1) {
         for my $x (0 .. $x_bound_craft - 1) {
             $craft_array->[$y][$x]{symbol} = ' ';

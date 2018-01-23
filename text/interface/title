@@ -8,7 +8,10 @@
         "list_obj": " Объекты рядом ", 
         "loot_list": " Можно взять ",
         "craft_place": " Верстак ",
-        "craft_result": " Результат крафта "
+        "craft_result": " Результат крафта ",
+        "char_dis": " Болезни ",
+        "char_empty": " Пусто ",
+        "char_desc": " Описание болезней "
     },
 
     "en": {
@@ -21,6 +24,9 @@
         "loot_list": " Можно взять ",
         "loot_list": " Loot_list ",
         "craft_place": " Workbench ",
-        "craft_result": " Craft result "
+        "craft_result": " Craft result ",
+        "char_dis": " Diseases  ",
+        "char_empty": " Empty ",
+        "char_desc": " Desc diseases "
     }
 }

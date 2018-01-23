@@ -6,6 +6,7 @@ use utf8;
 
 use lib qw/lib/;
 use Logger qw(dmp);
+use Text;
 
 sub new {
     my $class = shift;
@@ -14,6 +15,7 @@ sub new {
         bleeding => {
             true => 1,
             time_dec_one => 5,
+            desc => Text->new('disease/bleeding', undef),
         },
     };
 
