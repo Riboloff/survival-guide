@@ -150,7 +150,6 @@ sub used_food {
                     $disease = 'pain';
                 }
                 $char->get_disease->disease_off($disease);
-                dmp($);
                 my $text_disease_off = Utils::get_random_line(
                                             Language::get_disease_info($disease . '_off')
                                         );
