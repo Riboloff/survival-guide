@@ -141,12 +141,20 @@ sub used_food {
             $char->get_hunger->sub_food($used_value);
         }
         elsif ($used_key eq 'deseases') {
-            for my $desease (@$used_value) {
-                $char->get_disease->bleeding_off();
-                my $text_bleeding_off = Utils::get_random_line(
-                                            Language::get_disease_info('bleeding_off')
+            my $disease = '';
+            for my $disease_id (@$used_value) {
+                if ($disease_id == DE_BLEEDING) {
+                    $disease = 'bleeding';
+                }
+                elsif ($disease_id == DE_PAIN) {
+                    $disease = 'pain';
+                }
+                $char->get_disease->disease_off($disease);
+                dmp($);
+                my $text_disease_off = Utils::get_random_line(
+                                            Language::get_disease_info($disease . '_off')
                                         );
-                $text_obj->add_text($text_bleeding_off);
+                $text_obj->add_text($text_disease_off);
             }
         }
         elsif ($used_key eq 'inc_radius_visibility') {

@@ -15,7 +15,13 @@ sub new {
         bleeding => {
             true => 1,
             time_dec_one => 5,
+            score => 1,
             desc => Text->new('disease/bleeding', undef),
+        },
+        pain => {
+            true => 1,
+            score => 1,
+            desc => Text->new('disease/pain', undef),
         },
     };
 
@@ -24,22 +30,31 @@ sub new {
     return $self;
 }
 
-sub is_bleeding {
-    my $self = shift;
+sub get_score {
+    my $self= shift;
+    my $disease = shift;
 
-    return $self->{bleeding}{true};
+    return $self->{$disease}{score};
+}
+
+sub is_disease {
+    my $self = shift;
+    my $disease = shift;
+
+    return $self->{$disease}{true};
 }
 
 sub get_time_dec_one_bleeding {
     my $self = shift;
 
-    return $self->{bleeding}{time_dec_one};
+    return int ($self->{bleeding}{time_dec_one} / $self->{bleeding}{score});
 }
 
-sub bleeding_off {
+sub disease_off {
     my $self = shift;
+    my $disease = shift;
 
-    $self->{bleeding}{true} = 0;
+    $self->{$disease}{true} = 0;
 }
 
 sub get_all_disease {

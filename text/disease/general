@@ -1,9 +1,11 @@
 {
     "ru": {
+        "pain": "боль",
         "bleeding": "кровотечение"
     },
 
     "en": {
+        "pain": "pain",
         "bleeding": "bleeding"
     }
 }

@@ -1,11 +1,17 @@
 {
     "ru": {
-        "bleeding": "Вы теряете здоровье из-за кровотечения||Кровотечение. Очень больно!||Используйте бинт, чтобы остановить кровотечение.",
-        "bleeding_off": "Вы остановили кровотечение"
+        "bleeding_1": "Вы теряете здоровье из-за кровотечения||Слобое кровотечение.||Используйте бинт, чтобы остановить кровотечение.",
+        "bleeding_2": "У вас сильное кровотечение||Кровотечение. Очень больно!||Используйте бинт, чтобы остановить кровотечение.",
+        "bleeding_off": "Вы остановили кровотечение",
+        "no_enable_craft_pain": "Вы не можете крафтить, не возможно сосредоточеться из-за боли",
+        "pain_off": "Сразу стало полегче"
     },
 
     "en": {
-        "bleeding": "You are losting health for bleeding",
-        "bleeding_off": "You have stoped bleeding"
+        "bleeding_1": "You are losting health for bleeding",
+        "bleeding_2": "You are losting health for strong bleeding",
+        "bleeding_off": "You have stoped bleeding",
+        "no_enable_craft_pain": "Вы не можете крафтить, не возможно сосредоточеться из-за боли",
+        "pain_off": "Сразу стало полегче"
     }
 }

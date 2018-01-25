@@ -1,0 +1,9 @@
+{
+    "proto_id": 10,
+    "weight": 0,
+    "volume": 0,
+    "used": {
+        "deseases": [2]
+    },
+    "type": "medicine" 
+}

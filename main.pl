@@ -301,20 +301,26 @@ sub _enter {
         }
     }
     elsif ($chooser->{block_name} eq 'craft_result') {
-        my $position = $chooser->get_position();
-        my $item = $chooser->{list}{craft_result}[$position]->{item};
-        my $bag_inv = $interface->get_inv_obj->get_bag();
-        my $bag_craft_result = $interface->get_craft_obj->get_craft_result_bag();
-        _move_item_between_bag($bag_inv, '<', $bag_craft_result, $item);
+        if ($character->is_enable_craft()) {
+            my $position = $chooser->get_position();
+            my $item = $chooser->{list}{craft_result}[$position]->{item};
+            my $bag_inv = $interface->get_inv_obj->get_bag();
+            my $bag_craft_result = $interface->get_craft_obj->get_craft_result_bag();
+            _move_item_between_bag($bag_inv, '<', $bag_craft_result, $item);
 
-        my $list_ingr_proto_id = $CraftTable::craft_table_local{$item->get_proto_id()};
-        for my $ingr_proto_id (keys %$list_ingr_proto_id) {
-            my $count = $list_ingr_proto_id->{$ingr_proto_id};
-            $inv->rm_bag_items($ingr_proto_id, $count);
+            my $list_ingr_proto_id = $CraftTable::craft_table_local{$item->get_proto_id()};
+            for my $ingr_proto_id (keys %$list_ingr_proto_id) {
+                my $count = $list_ingr_proto_id->{$ingr_proto_id};
+                $inv->rm_bag_items($ingr_proto_id, $count);
+            }
+
+            $interface->{craft}{obj} = Craft->new($interface->{inv}{obj}{bag});
+        } else {
+            my $cause = $character->get_cause_no_enable_craft();
+            my $text_no_enable_craft = Language::get_disease_info('no_enable_craft_' . $cause);
+            $interface->get_text_obj->add_text($text_no_enable_craft);
+            $process_block->{text} = 1;
         }
-
-        $interface->{craft}{obj} = Craft->new($interface->{inv}{obj}{bag});
-
         $process_block->{craft} = 1;
     }
 }
@@ -497,12 +503,13 @@ sub _change_time {
         $character->get_health->sub_hp('1');
     }
     if (
-        $character->get_disease->is_bleeding
+        $character->get_disease->is_disease('bleeding')
         and $time % $character->get_disease->get_time_dec_one_bleeding() == 0
     ) {
         $character->get_health->sub_hp('1');
+        my $score_bleeding = $character->get_disease->get_score('bleeding');
         my $text_bleeding = Utils::get_random_line(
-                                Language::get_disease_info('bleeding')
+                                Language::get_disease_info('bleeding_' . $score_bleeding)
                             );
         $text_obj->add_text($text_bleeding);
     }

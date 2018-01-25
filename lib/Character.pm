@@ -106,4 +106,21 @@ sub get_disease {
     return $self->{needs}{disease};
 }
 
+sub is_enable_craft {
+    my $self = shift;
+
+    if ($self->get_disease->is_disease('pain')) {
+        $self->{cause_no_enable_craft} = 'pain';
+        return 0;
+    }
+
+    return 1;
+}
+
+sub get_cause_no_enable_craft {
+    my $self = shift;
+
+    return $self->{cause_no_enable_craft};
+}
+
 1;

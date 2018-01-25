@@ -50,6 +50,7 @@ our $items_id = {
     eval IT_FLASHLIGHT_OFF => 'flashlight_off',
     eval IT_FLASHLIGHT_ON  => 'flashlight_on',
     eval IT_BACKPACK       => 'backpack',
+    eval IT_PAINKILLER     => 'painkiller',
 };
 
 our $objects_id = {
@@ -87,6 +88,7 @@ use constant {
     IT_FLASHLIGHT_OFF => 7,
     IT_FLASHLIGHT_ON  => 8,
     IT_BACKPACK       => 9,
+    IT_PAINKILLER     => 10,
 
     #Objects:
     OB_SHELF => 1,
@@ -100,6 +102,7 @@ use constant {
 
     #deseases
     DE_BLEEDING => 1,
+    DE_PAIN => 2,
 
     #keys ord
     KEYBOARD_ENTER       => 1,

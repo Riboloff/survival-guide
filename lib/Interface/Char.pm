@@ -63,7 +63,7 @@ sub process_disease {
     my $char_dis_array = dclone($interface->get_char_dis->{array_area});
     my $disease_list_translate = [map {Language::get_disease($_)} @$disease_list];
     my $args = {
-        list => $disease_list,
+        list => $disease_list_translate,
         array => $char_dis_array,
         chooser_position => $chooser_position,
         size_area_frame => $interface->get_char_dis->{size_area_frame},
