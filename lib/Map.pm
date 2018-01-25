@@ -128,57 +128,6 @@ sub _is_into_circle {
     }
 }
 
-use Data::Dumper;
-
-sub _get_points_lie_in_line {
-    my $coord1 = shift;
-    my $coord2 = shift;
-
-    my ($y1, $x1) = @$coord1[$Y,$X];
-    my ($y2, $x2) = @$coord2[$Y,$X];
-    my $aa = 0;
-    my $bb = 0;
-    if ($x1 - $x2) {
-        #$aa = int( ($y1 - $y2)/($x1 - $x2));
-        $aa = ($y1 - $y2)/($x1 - $x2);
-    }
-    #$bb = int( $y1 - ($aa*$x1) );
-    $bb =  $y1 - ($aa*$x1);
-    my $points = [];
-    if ($aa) {
-        for (my $x = min($x1,$x2) + 1; $x < max($x1,$x2); $x++) {
-            my $y = sprintf('%.0f', $aa * $x + $bb);
-            #my $y = int ($aa * $x + $bb);
-
-            if ($y == $coord2->[$Y]) {
-                next;
-            }
-                push(@$points, [$y,$x]);
-        }
-        for (my $y = min($y1,$y2) + 1; $y < max($y1,$y2); $y++) {
-            my $x = sprintf('%.0f', ($y - $bb) / $aa );
-            #my $x = int( ($y - $bb) / $aa);
-            if ($x == $coord2->[$X]) {
-                next;
-            }
-                push(@$points, [$y,$x], );#[$y, $x+1]);
-        }
-    }
-    elsif ($x1 == $x2) {
-        for (my $y = min($y1,$y2) + 1; $y < max($y1,$y2); $y++) {
-            my $x = $x1;
-            push (@$points, [$y, $x]);
-        }
-    }
-    elsif ($y1 == $y2) {
-        for (my $x = min($x1,$x2) + 1; $x < max($x1,$x2); $x++) {
-            my $y = $y1;
-            push (@$points, [$y, $x]);
-        }
-    }
-    return $points;
-}
-
 sub _get_area_around {
     my $coord    = shift;
     my $rd_bound = shift;
@@ -252,6 +201,71 @@ sub get_cell {
     my $y = $coord->[$Y];
     my $x = $coord->[$X];
     return $self->{map}->[$y][$x];
+}
+sub _get_points_lie_in_line {
+    my $coord1 = shift;
+    my $coord2 = shift;
+
+    my ($y1, $x1) = @$coord1[$Y,$X];
+    my ($y2, $x2) = @$coord2[$Y,$X];
+    my $aa = 0;
+    my $bb = 0;
+    if ($x1 - $x2) {
+        $aa = ($y1 - $y2)/($x1 - $x2);
+    }
+    $bb = $y1 - ($aa*$x1);
+    my $points = [];
+    if ($aa) {
+        if (abs $aa < 1) { #очень острый угл по горизонталe. Видимость стены, когда идешь в доль неё.
+            my $k = ($x2-$x1) > 0 ? 1 : -1;
+            for (my $x = min($x1,$x2) + 1; $x < max($x1,$x2); $x++) {
+                my $y;
+                if ($aa*$k > 0) {
+                    $y = int ($aa * $x + $bb);
+                }
+                else {
+                    $y = int ($aa * $x + $bb) + 1;
+                }
+                push(@$points, [$y,$x]);
+            }
+        } elsif (abs $aa > 1) { #очень острый угл по вертекалe. Видимость стены, когда идешь в доль неё.
+            my $k = ($y2-$y1) > 0 ? 1 : -1;
+            for (my $y = min($y1,$y2) + 1; $y < max($y1,$y2); $y++) {
+                my $x;
+                if ($aa*$k > 0) {
+                    $x = int( ($y - $bb) / $aa);
+                }
+                else {
+                    $x = int( ($y - $bb) / $aa) + 1;
+                }
+
+                push(@$points, [$y,$x]);
+            }
+        } else {
+            for (my $x = min($x1,$x2) + 1; $x < max($x1,$x2); $x++) {
+                my $y = sprintf('%.0f', $aa * $x + $bb);
+                push(@$points, [$y,$x]);
+            }
+            for (my $y = min($y1,$y2) + 1; $y < max($y1,$y2); $y++) {
+                my $x = sprintf('%.0f', ($y - $bb) / $aa );
+                push(@$points, [$y,$x], );#[$y, $x+1]);
+            }
+        }
+    }
+    elsif ($x1 == $x2) {
+        for (my $y = min($y1,$y2) + 1; $y < max($y1,$y2); $y++) {
+            my $x = $x1;
+            push (@$points, [$y, $x]);
+        }
+    }
+    elsif ($y1 == $y2) {
+        for (my $x = min($x1,$x2) + 1; $x < max($x1,$x2); $x++) {
+            my $y = $y1;
+            push (@$points, [$y, $x]);
+        }
+    }
+
+    return $points;
 }
 
 1;
