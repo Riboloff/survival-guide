@@ -1,0 +1,15 @@
+{
+    "ru": {
+        "open_false": "Дверь заперта",
+        "lockpick_false": "Не получилось взломать",
+        "lockpick_true": "Дверь взломана",
+        "hasnot_lockpick": "У вас нет отмычек"
+    },
+
+    "en": {
+        "open_false": "Дверь заперта",
+        "lockpick_false": "Не получилось взломать",
+        "lockpick_true": "Дверь взломана",
+        "hasnot_lockpick": "У вас нет отмычек"
+    }
+}

@@ -9,23 +9,19 @@ use Consts;
 my $id_inc = 0;
 
 sub new {
-    my ($self, $icon, $proto_id, $actions, $coord, $blocker) = @_;
+    my $self = shift;
+    my $args = shift;
 
-    my $obj_text = Language::get_text($proto_id, 'objects');
+    my $obj_text = Language::get_text($args->{proto_id}, 'objects');
     my $name = $obj_text->{name};
     my $desc = Utils::split_text($obj_text->{desc});
 
     my $door = {
-        'icon' => $icon,
-        'name' => $name,
-        'actions' => $actions,
-        'type' => 'Door',
-        'proto_id' => $proto_id,
-        'desc'     => $desc,
-        'coord' => $coord,
-        'blocker' => $blocker,
+        type => 'Door',
+        desc => $desc,
+        name => $name,
+        %$args,
     };
-
     bless($door, $self);
 
     return $door;
@@ -76,7 +72,7 @@ sub set_actions {
 sub close {
     my $self = shift;
 
-    $self->{icon} = ICON_CLOSE_DOOR;
+    $self->{icon}{symbol} = ICON_CLOSE_DOOR;
     $self->{blocker} = 1;
 
     my $actions = $self->get_actions();
@@ -91,8 +87,13 @@ sub close {
 
 sub open {
     my $self = shift;
+    my $text_obj = shift;
 
-    $self->{icon} = ICON_OPEN_DOOR;
+    if ($self->{lockpick}) {
+        $text_obj->add_text(Language::get_open_door_info('open_false'));
+        return;
+    }
+    $self->{icon}{symbol} = ICON_OPEN_DOOR;
     $self->{blocker} = 0;
 
     my $actions = $self->get_actions();
@@ -103,6 +104,22 @@ sub open {
     }
 
     $self->set_actions($actions);
+}
+
+sub lockpick {
+    my $self = shift;
+    my $bag = shift;
+    my $text_obj = shift;
+
+    if ($bag->has_item(IT_LOCKPICK)) {
+        $self->{icon}{color} = 'green';
+        $self->{lockpick} = 0;
+        $text_obj->add_text(Language::get_open_door_info('lockpick_true'));
+    } else {
+        $text_obj->add_text(Language::get_open_door_info('hasnot_lockpick'));
+    }
+
+    return 0;
 }
 
 1;

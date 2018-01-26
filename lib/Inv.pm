@@ -15,7 +15,7 @@ sub new {
 
     my $inv = {
         'on' => 0,
-        'bag' => Bag->new([10, 9, 3, 7, 2, 5, 5, 6]),
+        'bag' => Bag->new([11, 9, 3, 7, 2, 5, 5, 6]),
         'equipment' => Equip->new(),
     };
 

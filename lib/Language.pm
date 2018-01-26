@@ -21,6 +21,7 @@ my $diseases_info = _get_text_lang($Consts::text_inform_dir, 'disease');
 my $head = _get_text_lang($Consts::text_interface_dir, 'head');
 
 my $diseases = _get_text_lang($Consts::text_disease_dir, 'general');
+my $open_door_info = _get_text_lang($Consts::text_inform_dir, 'open_door');
 
 sub get_text {
     my $id = shift;
@@ -94,6 +95,12 @@ sub get_disease {
     my $disease_name = shift;
 
     return $diseases->{$disease_name};
+}
+
+sub get_open_door_info {
+    my $key = shift;
+
+    return $open_door_info->{$key};
 }
 
 1;

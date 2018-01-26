@@ -15,19 +15,24 @@ use Language;
 use Logger qw(dmp);
 
 sub new {
-    my $self = shift;
-    my $icon = shift || '';
-    my $conf = shift;
-    my $coord = shift;
+    my $self   = shift;
+    my $symbol = shift || '';
+    my $conf   = shift;
+    my $coord  = shift;
 
     $coord = [split(/,/, $coord)];
+    my $icon = {
+        symbol => $symbol,
+        color  => '',
+    };
     my $cell = {
         'icon' => $icon,
         'blocker' => 0,
         'type' => '',
         'obj' => '',
+        'color' => '',
     };
-    if ($icon eq 'C' and (ref $conf eq 'HASH') ) {
+    if ($symbol eq 'C' and (ref $conf eq 'HASH') ) {
         $icon = $cell->{icon} = $conf->{icon};
         $cell->{type} = $conf->{type};
         $cell->{blocker} = $conf->{blocker} || 1;
@@ -38,16 +43,25 @@ sub new {
         my $items_id = $conf->{items_id};
         $cell->{obj} = Container->new($icon, $cell->{name_id}, $actions, $items_id);
     }
-    elsif ($icon eq 'D' and (ref $conf eq 'HASH') ) {
+    elsif ($symbol eq 'D' and (ref $conf eq 'HASH') ) {
         $icon = $cell->{icon} = $conf->{icon};
         $cell->{type} = $conf->{type};
         $cell->{blocker} = $conf->{blocker} || 1;
         $cell->{name_id} = $conf->{name_id};
         my $actions_id = $conf->{actions_id};
         my $actions = _get_actions($actions_id);
-        $cell->{obj} = Door->new($icon, $cell->{name_id}, $actions, $coord, $cell->{blocker});
+        $cell->{obj} = Door->new(
+            {
+                icon     => $icon,
+                proto_id => $cell->{name_id},
+                actions  => $actions,
+                coord    => $coord,
+                blocker  => $cell->{blocker},
+                lockpick => $conf->{lockpick},
+            }
+        );
     }
-    elsif ($icon eq 'S' and (ref $conf eq 'HASH') ) {
+    elsif ($symbol eq 'S' and (ref $conf eq 'HASH') ) {
         $cell->{blocker} = 0;
         $cell->{type} = $conf->{type};
         $cell->{name_id} = $conf->{name_id};
@@ -57,7 +71,7 @@ sub new {
         my $actions = _get_actions($actions_id);
         $cell->{obj} = Stair->new($icon, $cell->{name_id}, $map_name, $coord_enter, $actions);
     }
-    elsif ($icon =~ /[-|+]/) {
+    elsif ($symbol =~ /[-|+]/) {
         $cell->{blocker} = 1;
         $cell->{type} = 'wall';
     }

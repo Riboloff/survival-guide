@@ -13,13 +13,13 @@ sub new {
 
     my $self = {
         bleeding => {
-            true => 1,
+            true => 0,
             time_dec_one => 5,
             score => 1,
             desc => Text->new('disease/bleeding', undef),
         },
         pain => {
-            true => 1,
+            true => 0,
             score => 1,
             desc => Text->new('disease/pain', undef),
         },

@@ -83,15 +83,14 @@ while(1) {
 
     ) {
         if ($interface->get_main_block_show_name() eq 'map') {
-            _change_coord($character, $interface->get_map_obj, $buttom);
-            my $text_obj = $interface->get_text_obj();
-            _change_time($text_obj);
-
-            $process_block->{needs}   = 1;
-            $process_block->{map}     = 1;
-            $process_block->{objects} = 1;
-            $process_block->{text}    = 1;
-
+            if (_change_coord($character, $interface->get_map_obj, $buttom)) {
+                my $text_obj = $interface->get_text_obj();
+                _change_time($text_obj);
+                $process_block->{needs}   = 1;
+                $process_block->{map}     = 1;
+                $process_block->{objects} = 1;
+                $process_block->{text}    = 1;
+            }
             $chooser->reset_all_position();
         }
     }
@@ -121,7 +120,6 @@ while(1) {
         $show_block = 'objects' if $show_block eq 'map';
         $chooser->left();
         $process_block->{$show_block} = 1;
-
     }
     elsif ($buttom == KEYBOARD_RIGHT) {
         my $show_block = $interface->get_main_block_show_name();
@@ -261,6 +259,7 @@ sub _enter {
         my $action_id = $chooser->{list}{action}[$position]->get_proto_id();
         my $pos = $chooser->{position}{list_obj};
         my $obj = $chooser->{list}{list_obj}[$pos];
+        my $text_obj = $interface->{text}{obj};
         if ($action_id == AC_OPEN) {
             if ($obj->get_type eq 'Container') {
                 $chooser->{position}{loot_list} = 0;
@@ -270,14 +269,14 @@ sub _enter {
             }
             elsif($obj->get_type eq 'Door') {
                 my $door = $obj;
-                $obj->open();
+                $door->open($text_obj);
+                $process_block->{text} = 1;
                 $process_block->{map} = 1;
                 $process_block->{objects} = 1;
             }
         }
         elsif ($action_id == AC_WATCH) {
             my $description = $obj->get_desc();
-            my $text_obj = $interface->{text}{obj};
             $text_obj->add_text($description);
             $process_block->{text} = 1;
         }
@@ -285,6 +284,16 @@ sub _enter {
             if ($obj->get_type eq 'Door') {
                 my $door = $obj;
                 $door->close();
+                $process_block->{map} = 1;
+                $process_block->{objects} = 1;
+            }
+        }
+        elsif ($action_id == AC_LOCKPICK) {
+            if ($obj->get_type eq 'Door') {
+                my $door = $obj;
+                my $bag = $interface->get_inv_obj->get_bag();
+                $obj->lockpick($bag, $text_obj);
+                $process_block->{text} = 1;
                 $process_block->{map} = 1;
                 $process_block->{objects} = 1;
             }
@@ -355,13 +364,13 @@ sub _change_coord {
     my $cell = $map->[$y][$x];
 
     if ($cell->get_blocker) {
-        return;
+        return 0;
     }
 
     $character->{coord}[$X] = $x;
     $character->{coord}[$Y] = $y;
 
-    return;
+    return 1;
 }
 
 sub _scroll_text {

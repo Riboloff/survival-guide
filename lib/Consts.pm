@@ -51,6 +51,7 @@ our $items_id = {
     eval IT_FLASHLIGHT_ON  => 'flashlight_on',
     eval IT_BACKPACK       => 'backpack',
     eval IT_PAINKILLER     => 'painkiller',
+    eval IT_LOCKPICK       => 'lockpick',
 };
 
 our $objects_id = {
@@ -89,6 +90,7 @@ use constant {
     IT_FLASHLIGHT_ON  => 8,
     IT_BACKPACK       => 9,
     IT_PAINKILLER     => 10,
+    IT_LOCKPICK       => 11,
 
     #Objects:
     OB_SHELF => 1,

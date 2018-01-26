@@ -65,7 +65,7 @@ sub get_all_items {
     my $self = shift;
 
     my $all_items = [];
-    for my $ptoro_id (sort keys $self->{items}) {
+    for my $ptoro_id (sort keys %{$self->{items}}) {
         push(@$all_items, $self->{items}{$ptoro_id});
     }
 
@@ -142,4 +142,16 @@ sub get_all_volume {
 
     return $volume_all;
 }
+
+sub has_item {
+    my $self = shift;
+    my $item_id = shift;
+
+    if (exists $self->{items}{$item_id}) {
+        return 1;
+    }
+
+    return 0;
+}
+
 1;

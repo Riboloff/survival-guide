@@ -93,12 +93,10 @@ sub process_desc_disease {
     my $chooser = $interface->{chooser};
     my $chooser_block_name = $chooser->{block_name};
     my $position_chooser = $chooser->{position}{$chooser_block_name};
+    return [] unless $position_chooser;
     my $disease_name = $chooser->{list}{$chooser_block_name}[$position_chooser];
     my $disease = $chooser->{bag}{$chooser_block_name}{$disease_name};
-
-    if (!defined $disease) {
-        return [];
-    }
+    return [] unless $disease;
 
     my $text = $disease->{desc};
     my $area = $interface->get_char_desc->{size};
