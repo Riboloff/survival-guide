@@ -9,19 +9,25 @@ use lib qw/lib/;
 use Consts;
 use Logger qw(dmp);
 use ReadFile;
+use Utils;
 
 my $lang = 'ru'; #TODO пока хардкод.
 #my $lang = 'en'; #TODO пока хардкод.
 
+
+my $inv_info = Utils::add_hash(
+    _get_text_lang($Consts::text_interface_dir, 'inv_info'),
+    _get_text_lang($Consts::text_inform_dir, 'inv')
+);
+
 my $tilte_blocks = _get_text_lang($Consts::text_interface_dir, 'title');
-my $inv_info = _get_text_lang($Consts::text_interface_dir, 'inv_info');
 my $needs = _get_text_lang($Consts::text_interface_dir, 'needs');
 
 my $diseases_info = _get_text_lang($Consts::text_inform_dir, 'disease');
+my $open_door_info = _get_text_lang($Consts::text_inform_dir, 'open_door');
 my $head = _get_text_lang($Consts::text_interface_dir, 'head');
 
 my $diseases = _get_text_lang($Consts::text_disease_dir, 'general');
-my $open_door_info = _get_text_lang($Consts::text_inform_dir, 'open_door');
 
 sub get_text {
     my $id = shift;

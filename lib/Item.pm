@@ -37,7 +37,9 @@ sub new {
         'add_volume' => $add_volume,
     };
     get_proto_feature($item);
-    $item->{used}{text} = Utils::split_text($use_text);
+    if ($use_text) {
+        $item->{used}{text} = Utils::split_text($use_text);
+    }
 
     bless($item, $self);
 

@@ -42,7 +42,7 @@ my $current_time = Time->new( {'speed' => 1} );
 
 $SIG{INT} = sub {ReadMode('normal'); exit(0)};
 
-#my %cchars = GetControlChars();
+#my %chars = GetControlChars();
 
 while(1) {
     $interface->print($process_block);
@@ -135,6 +135,7 @@ while(1) {
         if ($show_block eq 'looting') {
             _move_item_looting($key, $chooser, $interface);
             $process_block->{looting} = 1;
+            $process_block->{text} = 1;
         }
         elsif ($show_block eq 'craft') {
             _move_item_craft($key, $chooser, $interface);
@@ -259,7 +260,7 @@ sub _enter {
         my $action_id = $chooser->{list}{action}[$position]->get_proto_id();
         my $pos = $chooser->{position}{list_obj};
         my $obj = $chooser->{list}{list_obj}[$pos];
-        my $text_obj = $interface->{text}{obj};
+        my $text_obj = $interface->get_text_obj();
         if ($action_id == AC_OPEN) {
             if ($obj->get_type eq 'Container') {
                 $chooser->{position}{loot_list} = 0;
@@ -425,8 +426,6 @@ sub _move_item_looting {
     my $chooser = shift;
     my $interface = shift;
 
-    my $bag_inv = $interface->get_inv_obj->get_bag();
-
     my $chooser_position_list_obj = $chooser->{position}{list_obj};
     my $container = $chooser->{list}{list_obj}[$chooser_position_list_obj];
     my $bag_cont = $container->get_bag();
@@ -434,6 +433,17 @@ sub _move_item_looting {
     my $block_name = $chooser->get_block_name();
     my $chooser_position = $chooser->get_position();
     my $item = $chooser->{list}{$block_name}[$chooser_position]->{item};
+
+    my $inv = $interface->get_inv_obj();
+    my $bag_inv = $inv->get_bag();
+    my $volume = $inv->get_all_volume();
+    my $max_volume = $inv->get_equipment->get_max_volume();
+    if ($volume + $item->get_volume() > $max_volume) {
+        my $text_obj = $interface->get_text_obj();
+        dmp(Language::get_inv_info('volume_max'));
+        $text_obj->add_text(Language::get_inv_info('volume_max'));
+        return;
+    }
     if (
             $block_name eq 'looting_bag' and $key eq '>'
          or $block_name eq 'loot_list'   and $key eq '<'

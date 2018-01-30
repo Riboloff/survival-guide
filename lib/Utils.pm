@@ -36,4 +36,15 @@ sub get_random_line {
     return $lines->[$pos];
 }
 
+sub add_hash {
+    my $hash_one = shift;
+    my $hash_two = shift;
+
+    for my $key (keys %$hash_one) {
+        $hash_two->{$key} = $hash_one->{$key};
+    }
+
+    return $hash_two;
+}
+
 1;

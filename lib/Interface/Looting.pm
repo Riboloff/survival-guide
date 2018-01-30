@@ -132,6 +132,7 @@ sub process_block {
     my $loot_list_array = process_loot_list($interface);
     my $bag_array = process_bag($interface);
     my $desc_item = process_desc_item($interface);
+    my $inv_info_array = Interface::InvInfo::process_inv_info($interface);
 
     my $offset_bag = [
         $interface->get_inv_bag->{size}[$LT][$Y] - $interface->get_looting->{size}[$LT][$Y],
@@ -145,6 +146,10 @@ sub process_block {
         $interface->get_looting_desc_item->{size}[$LT][$Y] - $interface->get_looting->{size}[$LT][$Y],
         $interface->get_looting_desc_item->{size}[$LT][$X] - $interface->get_looting->{size}[$LT][$X]
     ];
+    my $offset_inv_info = [
+        $interface->get_inv_info->{size}[$LT][$Y] - $interface->get_looting->{size}[$LT][$Y],
+        $interface->get_inv_info->{size}[$LT][$X] - $interface->get_looting->{size}[$LT][$X]
+    ];
     my $offset_looting = [
         $interface->get_looting->{size}[$LT][$Y],
         $interface->get_looting->{size}[$LT][$X]
@@ -153,6 +158,7 @@ sub process_block {
     Interface::Utils::overlay_arrays_simple($looting_array, $bag_array, $offset_bag);
     Interface::Utils::overlay_arrays_simple($looting_array, $loot_list_array, $offset_loot_list);
     Interface::Utils::overlay_arrays_simple($looting_array, $desc_item, $offset_desc_item);
+    Interface::Utils::overlay_arrays_simple($looting_array, $inv_info_array, $offset_inv_info);
 
     Interface::Utils::overlay_arrays_simple($main_array, $looting_array, $offset_looting);
 }
