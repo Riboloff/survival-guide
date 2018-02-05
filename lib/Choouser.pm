@@ -5,7 +5,7 @@ use warnings;
 
 use lib qw(lib);
 use Logger qw(dmp);
-use Consts qw($X $Y $LT $RD);
+use Consts;
 use Interface;
 
 sub new {
@@ -197,6 +197,20 @@ sub get_target_list {
     my $list = $self->{list}{$block_name};
 
     return  $list;
+}
+
+sub move_chooser {
+    my $self   = shift;
+    my $buttom = shift;
+
+    if ($buttom == KEYBOARD_UP) {
+        $self->top();
+    }
+    elsif ($buttom == KEYBOARD_DOWN) {
+        $self->down();
+    }
+
+    return;
 }
 
 1;

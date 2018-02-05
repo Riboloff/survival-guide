@@ -83,7 +83,7 @@ while(1) {
 
     ) {
         if ($interface->get_main_block_show_name() eq 'map') {
-            if (_change_coord($character, $interface->get_map_obj, $buttom)) {
+            if ($character->move($interface->get_map_obj, $buttom)) {
                 my $text_obj = $interface->get_text_obj();
                 _change_time($text_obj);
                 $process_block->{needs}   = 1;
@@ -105,7 +105,7 @@ while(1) {
            $buttom == KEYBOARD_UP
         or $buttom == KEYBOARD_DOWN
     ) {
-        _move_chooser($buttom);
+        $chooser->move_chooser($buttom);
         my $chooser_block_name = $chooser->{block_name};
         $process_block->{$chooser_block_name} = 1;
 
@@ -335,45 +335,6 @@ sub _enter {
     }
 }
 
-sub _change_coord {
-    my $character = shift;
-    my $map_obj = shift;
-    my $move = shift;
-
-    my $x = $character->{coord}[$X];
-    my $y = $character->{coord}[$Y];
-
-    my $map = $map_obj->{map};
-
-    if ($move == KEYBOARD_MOVE_RIGHT) {
-        if ($x + 1 < @{$map->[$y]}) {
-            $x++;
-        }
-    } elsif ($move == KEYBOARD_MOVE_LEFT) {
-        if ($x > 0) {
-            $x--;
-        }
-    } elsif ($move == KEYBOARD_MOVE_UP) {
-        if ($y > 0) {
-            $y--;
-        }
-    } elsif ($move == KEYBOARD_MOVE_DOWN) {
-        if ($y + 1 < @$map) {
-            $y++;
-        }
-    }
-    my $cell = $map->[$y][$x];
-
-    if ($cell->get_blocker) {
-        return 0;
-    }
-
-    $character->{coord}[$X] = $x;
-    $character->{coord}[$Y] = $y;
-
-    return 1;
-}
-
 sub _scroll_text {
     my $key = shift;
 
@@ -387,18 +348,6 @@ sub _scroll_text {
     return;
 }
 
-sub _move_chooser {
-    my $buttom = shift;
-
-    if ($buttom == KEYBOARD_UP) {
-        $chooser->top();
-    }
-    elsif ($buttom == KEYBOARD_DOWN) {
-        $chooser->down();
-    }
-
-    return;
-}
 
 sub _move_item_between_bag {
     my $one_bag = shift;

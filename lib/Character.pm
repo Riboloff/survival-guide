@@ -12,6 +12,7 @@ use Needs::Hunger;
 use Needs::Thirst;
 use Needs::Temp;
 use Needs::Disease;
+use Consts;
 
 sub new {
     my $self = shift;
@@ -121,6 +122,45 @@ sub get_cause_no_enable_craft {
     my $self = shift;
 
     return $self->{cause_no_enable_craft};
+}
+
+sub move {
+    my $self    = shift;
+    my $map_obj = shift;
+    my $move    = shift;
+
+    my $x = $self->{coord}[$X];
+    my $y = $self->{coord}[$Y];
+
+    my $map = $map_obj->{map};
+
+    if ($move == KEYBOARD_MOVE_RIGHT) {
+        if ($x + 1 < @{$map->[$y]}) {
+            $x++;
+        }
+    } elsif ($move == KEYBOARD_MOVE_LEFT) {
+        if ($x > 0) {
+            $x--;
+        }
+    } elsif ($move == KEYBOARD_MOVE_UP) {
+        if ($y > 0) {
+            $y--;
+        }
+    } elsif ($move == KEYBOARD_MOVE_DOWN) {
+        if ($y + 1 < @$map) {
+            $y++;
+        }
+    }
+    my $cell = $map->[$y][$x];
+
+    if ($cell->get_blocker) {
+        return 0;
+    }
+
+    $self->get_coord->[$X] = $x;
+    $self->get_coord->[$Y] = $y;
+
+    return 1;
 }
 
 1;

@@ -66,7 +66,6 @@ sub inition {
 sub get_text_array {
     my $self = shift;
     my $size = shift;
-    my $ones = shift;
 
     my $size_y = $size->[$Y];
     my $size_x = $size->[$X];
