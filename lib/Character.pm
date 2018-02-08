@@ -29,6 +29,7 @@ sub new {
     my $character = {
         coord => $start_coord,
         symbol => '♿',
+        color => 'red',
         inv => $inv,
         radius_visibility => $start_radius_visibility,
         default_radius_visibility => $start_radius_visibility,
@@ -105,6 +106,12 @@ sub get_disease {
     my $self = shift;
 
     return $self->{needs}{disease};
+}
+
+sub get_color {
+    my $self = shift;
+
+    return $self->{color};
 }
 
 sub is_enable_craft {

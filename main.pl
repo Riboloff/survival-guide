@@ -23,6 +23,7 @@ use Utils;
 use Keyboard;
 use Time;
 use Events;
+use Bot;
 
 my $map = Map->new('squa');
 #my $map = Map->new('second_map');
@@ -43,6 +44,8 @@ my $current_time = Time->new( {'speed' => 1} );
 $SIG{INT} = sub {ReadMode('normal'); exit(0)};
 
 #my %chars = GetControlChars();
+my $bot_tmp = Bot->new([11,20]);
+push(@{$interface->{bots}}, $bot_tmp);
 
 while(1) {
     $interface->print($process_block);
@@ -82,6 +85,8 @@ while(1) {
         or $buttom == KEYBOARD_MOVE_DOWN
 
     ) {
+        my $array_tmp = [KEYBOARD_MOVE_LEFT, KEYBOARD_MOVE_RIGHT, KEYBOARD_MOVE_UP, KEYBOARD_MOVE_DOWN];
+        $bot_tmp->move($interface->get_map_obj, $array_tmp->[int rand @$array_tmp]);
         if ($interface->get_main_block_show_name() eq 'map') {
             if ($character->move($interface->get_map_obj, $buttom)) {
                 my $text_obj = $interface->get_text_obj();

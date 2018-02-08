@@ -8,6 +8,12 @@ use List::Util qw(min);
 use Logger qw(dmp);
 
 sub get_size_interface {
+    if ($size_term->[$Y] <= 25) {
+        die "Слишком мелкий экран по высоте. 25Х80 занков будет норм \n";
+    } 
+    if ($size_term->[$X] <= 80) {
+        die "Слишком мелкий экран по ширене. 25Х80 занков будет норм \n";
+    } 
     return [
         [0, 0],
         [$size_term->[$Y], $size_term->[$X]]
@@ -319,5 +325,6 @@ sub set_size_all_block {
 
     return;
 }
+
 
 1;

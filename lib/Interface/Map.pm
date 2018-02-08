@@ -14,7 +14,8 @@ sub process_block {
     $interface->{main_block_show} = 'map';
     my $map = $interface->{map}{obj};
     my $character = $interface->{character};
-    my $map_array = $map->get_map_static($character);
+    my $bots = $interface->{bots};
+    my $map_array = $map->get_map_static($character, $bots);
     my $main_array = $interface->{data_print};
     my $size_area_map = [ @{$interface->{map}{size}[$RD]} ]; #Значение, а не ссылка
     my $offset_lt = [ @{$interface->{map}{size}[$LT]} ];

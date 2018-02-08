@@ -62,8 +62,7 @@ sub get_map {
 }
 
 sub get_map_static {
-    my $self = shift;
-    my $character = shift;
+    my ($self, $character, $bots) = @_;
 
     my $map = $self->{map};
     my $map_stat = dclone($map);
@@ -106,7 +105,8 @@ sub get_map_static {
             }
         }
     }
-    $map_array = _placement_character($map_array, $character);
+    dmp($bots);
+    $map_array = _placement_character($map_array, $character, $bots);
 
     return $map_array;
 }
@@ -148,13 +148,15 @@ sub _get_area_around {
 sub _placement_character {
     my $map = shift;
     my $character = shift;
+    my $bots = shift;
 
-    my $coord = $character->get_coord();
-    my $y = $coord->[$Y];
-    my $x = $coord->[$X];
-    $map->[$y][$x]->{symbol} = $character->{symbol};
-    $map->[$y][$x]->{color} = 'red';
-
+    for my $character (@$bots, $character) {
+        my $coord = $character->get_coord();
+        my $y = $coord->[$Y];
+        my $x = $coord->[$X];
+        $map->[$y][$x]->{symbol} = $character->{symbol};
+        $map->[$y][$x]->{color} = $character->get_color() || '';
+    }
     return $map;
 }
 
