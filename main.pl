@@ -35,7 +35,21 @@ my $chooser = Choouser->new();
 my $text_obj = Text->new('text_test');
 my $inv = $character->get_inv();
 
-my $interface = Interface->new($map, $character, $text_obj, $chooser, $inv);
+my $bots = [
+    Bot->new([11,20], '@', 'blue'),
+    Bot->new([12,20], 'Z', 'red'),
+];
+
+my $interface = Interface->new(
+    {
+        map       => $map, 
+        character => $character,
+        text_obj  => $text_obj,
+        chooser   => $chooser,
+        inv       => $inv,
+        bots      => $bots,
+    }
+);
 $text_obj->set_size_area_text($interface->{text});
 my $process_block = {};
 
@@ -44,8 +58,6 @@ my $current_time = Time->new( {'speed' => 1} );
 $SIG{INT} = sub {ReadMode('normal'); exit(0)};
 
 #my %chars = GetControlChars();
-my $bot_tmp = Bot->new([11,20]);
-push(@{$interface->{bots}}, $bot_tmp);
 
 while(1) {
     $interface->print($process_block);
@@ -86,7 +98,10 @@ while(1) {
 
     ) {
         my $array_tmp = [KEYBOARD_MOVE_LEFT, KEYBOARD_MOVE_RIGHT, KEYBOARD_MOVE_UP, KEYBOARD_MOVE_DOWN];
-        $bot_tmp->move($interface->get_map_obj, $array_tmp->[int rand @$array_tmp]);
+        my $bot_one = $interface->get_bot_by_id(0);
+        my $bot_two = $interface->get_bot_by_id(1);
+        $bot_one->move($interface->get_map_obj, $array_tmp->[int rand @$array_tmp]);
+        $bot_two->move($interface->get_map_obj, $array_tmp->[int rand @$array_tmp]);
         if ($interface->get_main_block_show_name() eq 'map') {
             if ($character->move($interface->get_map_obj, $buttom)) {
                 my $text_obj = $interface->get_text_obj();

@@ -92,6 +92,13 @@ sub get_icon {
     }
 }
 
+sub set_icon {
+    my $self = shift;
+    my $icon = shift;
+
+    $self->{icon} = $icon;
+}
+
 
 sub get_type {
     my $self = shift;

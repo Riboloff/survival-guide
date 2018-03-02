@@ -72,6 +72,7 @@ sub get_map_static {
     my $radius     = $character->get_radius_visibility();
     my $bound_map = [scalar @$map_stat, scalar @{$map_stat->[0]}];
 
+    $map_stat = _placement_character($map_stat, $character, $bots);
     for (my $y = 0; $y < $bound_map->[$Y]; $y++) {
         for (my $x = 0; $x < $bound_map->[$X]; $x++) {
             $map_array->[$y][$x]->{symbol} = ' ';
@@ -105,8 +106,7 @@ sub get_map_static {
             }
         }
     }
-    dmp($bots);
-    $map_array = _placement_character($map_array, $character, $bots);
+    #$map_array = _placement_character($map_array, $character, $bots);
 
     return $map_array;
 }
@@ -148,15 +148,21 @@ sub _get_area_around {
 sub _placement_character {
     my $map = shift;
     my $character = shift;
-    my $bots = shift;
+    my $bots_hash = shift;
 
+    my $bots = [values %$bots_hash];
     for my $character (@$bots, $character) {
         my $coord = $character->get_coord();
         my $y = $coord->[$Y];
         my $x = $coord->[$X];
-        $map->[$y][$x]->{symbol} = $character->{symbol};
-        $map->[$y][$x]->{color} = $character->get_color() || '';
+        $map->[$y][$x]->set_icon(
+            {
+                symbol => $character->{symbol},
+                color  => $character->{color},
+            }
+        );
     }
+
     return $map;
 }
 

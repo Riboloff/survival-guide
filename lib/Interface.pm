@@ -27,6 +27,8 @@ use Interface::Needs;
 use Interface::Craft;
 use Interface::Char;
 use Interface::Head;
+use Utils;
+
 =we
 use lib './xslib';
 use lib './xslib/blib/lib';
@@ -42,16 +44,18 @@ print Data::Dumper::Dumper($ll);
 print Data::Dumper::Dumper($tl);
 exit();
 =cut
+
 sub new {
-    my $class = shift;
-    my $map = shift;
-    my $character = shift;
-    my $text_obj = shift;
-    my $chooser = shift;
-    my $inv = shift;
+    my ($class, $args) = @_;
 
-    system('clear');
+    my $map       = $args->{map};
+    my $character = $args->{character};
+    my $text_obj  = $args->{text_obj};
+    my $chooser   = $args->{chooser};
+    my $inv       = $args->{inv};
+    my $bots      = Utils::create_hash_from_array_obj($args->{bots});
 
+    #system('clear');
 
     my $hash = {
         main_block_show => 'map', #map, looting, inv
@@ -60,6 +64,7 @@ sub new {
             size => [],
         },
         character => $character,
+        bots => $bots,
         size => [],
         data_print  => [],
         old_data_print => [],
@@ -431,6 +436,13 @@ sub get_objects {
     my $self = shift;
 
     return $self->{objects};
+}
+
+sub get_bot_by_id {
+    my $self = shift;
+    my $id   = shift;
+
+    return $self->{bots}{$id};
 }
 
 sub get_map {

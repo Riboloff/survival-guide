@@ -47,4 +47,15 @@ sub add_hash {
     return $hash_two;
 }
 
+sub create_hash_from_array_obj {
+    my $array = shift;
+
+    my $hash = {};
+    for (@$array) {
+        $hash->{$_->get_id()} = $_;
+    }
+
+    return $hash;
+}
+
 1;

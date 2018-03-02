@@ -59,16 +59,6 @@ sub print_all {
     }
 }
 
-sub clean_screen {
-    $console->Cursor(0, 0);
-
-    for (my $y = 0; $y <= $size_term->[$Y]; $y++) {
-        for(my $x = 0; $x <= $size_term->[$X]; $x++) {
-            print " ";
-        }
-    }
-}
-
 sub print_all_block {
     my $array = shift;
     my $bound = shift;
@@ -84,5 +74,18 @@ sub print_all_block {
         print $line;
     }
 }
+
+=we
+sub clean_screen {
+    $console->Cursor(0, 0);
+
+    for (my $y = 0; $y <= $size_term->[$Y]; $y++) {
+        #for(my $x = 0; $x <= $size_term->[$X]; $x++) {
+            print " " x $size_term->[$X];
+            #}
+    }
+}
+
+=cut
 
 1;
