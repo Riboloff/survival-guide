@@ -5,20 +5,45 @@ use warnings;
 
 use lib qw/lib/;
 use Consts;
+use Logger qw(dmp);
 
 my $hash_keys = {
     '10'       => KEYBOARD_ENTER,
     '96'       => KEYBOARD_BACKQUOTE,
     '27'       => KEYBOARD_ESC,
     '113'      => KEYBOARD_ESC,
-    '27_91_68' => KEYBOARD_MOVE_LEFT,
-    '27_91_67' => KEYBOARD_MOVE_RIGHT,
-    '27_91_66' => KEYBOARD_MOVE_DOWN,
-    '27_91_65' => KEYBOARD_MOVE_UP,
-    '97'       => KEYBOARD_MOVE_LEFT,
-    '100'      => KEYBOARD_MOVE_RIGHT,
-    '115'      => KEYBOARD_MOVE_DOWN,
-    '119'      => KEYBOARD_MOVE_UP,
+    '27_91_68' => {
+        default => KEYBOARD_MOVE_LEFT,
+        target  => KEYBOARD_TARGET_LEFT,
+    },
+    '27_91_67' => {
+        default => KEYBOARD_MOVE_RIGHT,
+        target  => KEYBOARD_TARGET_RIGHT,
+    },
+    '27_91_66' => {
+        default => KEYBOARD_MOVE_DOWN,
+        target  => KEYBOARD_TARGET_DOWN,
+    },
+    '27_91_65' => {
+        default => KEYBOARD_MOVE_UP,
+        target  => KEYBOARD_TARGET_UP,
+    },
+    '97'       => {
+        default => KEYBOARD_MOVE_LEFT,
+        target  => KEYBOARD_TARGET_LEFT,
+    },
+    '100' => {
+        default => KEYBOARD_MOVE_RIGHT,
+        target  => KEYBOARD_TARGET_RIGHT,
+    },
+    '115' => {
+        default => KEYBOARD_MOVE_DOWN,
+        target  => KEYBOARD_TARGET_DOWN,
+    },
+    '119' => {
+        default => KEYBOARD_MOVE_UP,
+        target  => KEYBOARD_TARGET_UP,
+    },
     '108'      => KEYBOARD_RIGHT,
     '104'      => KEYBOARD_LEFT,
     '107'      => KEYBOARD_UP,
@@ -33,14 +58,37 @@ my $hash_keys = {
     '45'       => KEYBOARD_MINUS,
     #'99'       => KEYBOARD_CHAR,
     '111'      => KEYBOARD_CHAR,
-
+    '70'       => KEYBOARD_TARGET_ON_OFF,
 };
 
-sub get_button {
-    my @keys = @_;
+my $mods = {};
 
-    my $key = join('_', @keys);
-    return $hash_keys->{$key};
+sub get_action {
+    my @button = @_;
+
+    my $action = 0;
+
+    my $key = join('_', @button);
+    if (ref $hash_keys->{$key} eq 'HASH') {
+        ($action) = @{$hash_keys->{$key}}{ keys %$mods};
+        $action //= $hash_keys->{$key}{default};
+    }
+    else {
+        $action = $hash_keys->{$key};
+    }
+
+    return $action;
+}
+
+sub set_or_rm_mod {
+    my $mod = shift;
+
+    if (exists $mods->{$mod}) {
+        delete $mods->{$mod};
+    }
+    else {
+        $mods->{$mod} = 1;
+    }
 }
 
 1;

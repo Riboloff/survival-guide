@@ -62,7 +62,7 @@ sub get_map {
 }
 
 sub get_map_static {
-    my ($self, $character, $bots) = @_;
+    my ($self, $character, $bots, $target) = @_;
 
     my $map = $self->{map};
     my $map_stat = dclone($map);
@@ -107,6 +107,21 @@ sub get_map_static {
         }
     }
     #$map_array = _placement_character($map_array, $character, $bots);
+    $map_array = _placement_target($map_array, $target);
+
+    return $map_array;
+}
+
+sub _placement_target {
+    my $map_array = shift;
+    my $target = shift;
+
+    my ($y, $x) = @{$target->get_position()};
+
+    $map_array->[$y][$x] = {
+        symbol => $target->get_symbol(),
+        color  => $target->get_color(),
+    };
 
     return $map_array;
 }

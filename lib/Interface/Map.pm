@@ -15,7 +15,8 @@ sub process_block {
     my $map = $interface->{map}{obj};
     my $character = $interface->{character};
     my $bots = $interface->{bots};
-    my $map_array = $map->get_map_static($character, $bots);
+    my $target = $interface->{target};
+    my $map_array = $map->get_map_static($character, $bots, $target);
     my $main_array = $interface->{data_print};
     my $size_area_map = [ @{$interface->{map}{size}[$RD]} ]; #Значение, а не ссылка
     my $offset_lt = [ @{$interface->{map}{size}[$LT]} ];
@@ -36,7 +37,7 @@ sub process_block {
 }
 
 #Тут все через жопу извините.
-#Местаю переписать это место.
+#Мечтаю переписать это место.
 sub overlay_bigmap_and_area {
     my $main_array = shift;
     my $map_array = shift;

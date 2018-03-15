@@ -24,6 +24,7 @@ use Keyboard;
 use Time;
 use Events;
 use Bot;
+use Target;
 
 my $map = Map->new('squa');
 #my $map = Map->new('second_map');
@@ -48,6 +49,7 @@ my $interface = Interface->new(
         chooser   => $chooser,
         inv       => $inv,
         bots      => $bots,
+        target    => Target->new(),
     }
 );
 $text_obj->set_size_area_text($interface->{text});
@@ -74,13 +76,14 @@ while(1) {
             push @keys, ord $key_yet;
         }
     }
+    dmp($key); dmp(ord $key);
     if (is_change_term_size()) {
         $interface->set_size_all_block();
         $interface->{data_print} = Interface::_data_print_init($interface->{size}, $interface->{map}{size});
         $process_block->{all} = 1;
         next;
     }
-    my $buttom = Keyboard::get_button(@keys);
+    my $buttom = Keyboard::get_action(@keys);
     next unless($buttom);
 
     if ($buttom eq KEYBOARD_ENTER) {
@@ -89,6 +92,22 @@ while(1) {
     elsif ($buttom eq KEYBOARD_BACKQUOTE) {
         ReadMode('normal');
         exit(0);
+    }
+    elsif ($buttom == KEYBOARD_TARGET_ON_OFF) {
+        Keyboard::set_or_rm_mod('target');
+    }
+    elsif (
+           $buttom == KEYBOARD_TARGET_LEFT
+           or $buttom == KEYBOARD_TARGET_RIGHT
+           or $buttom == KEYBOARD_TARGET_UP
+           or $buttom == KEYBOARD_TARGET_DOWN
+    
+    ) {
+        if ($interface->get_main_block_show_name() eq 'map') {
+            my $target = $interface->get_target();
+            $target->move($interface->get_map_obj, $buttom);
+            $process_block->{map} = 1;
+        }
     }
     elsif (
            $buttom == KEYBOARD_MOVE_LEFT
