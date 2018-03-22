@@ -48,7 +48,7 @@ sub print_all {
             my $symbol = $array->[$y][$x]->{symbol};
             my $color = $array->[$y][$x]->{color};
 
-            $symbol = " " if ($symbol eq '');
+            $symbol = " " if (!defined $symbol or $symbol eq '');
             if ($color) {
                 print colored($symbol, split(/,/, $color));
             } else {

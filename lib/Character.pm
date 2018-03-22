@@ -136,6 +136,12 @@ sub move {
     my $map_obj = shift;
     my $move    = shift;
 
+    if (
+        $self->{bot}
+        and $map_obj->{map_name} ne $self->{map_name}
+    ) {
+        return;
+    }
     my $x = $self->{coord}[$X];
     my $y = $self->{coord}[$Y];
 

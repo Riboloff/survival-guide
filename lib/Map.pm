@@ -44,7 +44,12 @@ sub new {
         }
     }
 
-    my $self = bless {map => $map}, $class;
+    my $self = bless(
+        {
+            map => $map,
+            map_name => $file_name,
+        },
+    $class);
     $maps{$file_name} = $self;
 
     return $self;
@@ -72,7 +77,7 @@ sub get_map_static {
     my $radius     = $character->get_radius_visibility();
     my $bound_map = [scalar @$map_stat, scalar @{$map_stat->[0]}];
 
-    $map_stat = _placement_character($map_stat, $character, $bots);
+    $map_stat = $self->_placement_character($map_stat, $character, $bots);
     for (my $y = 0; $y < $bound_map->[$Y]; $y++) {
         for (my $x = 0; $x < $bound_map->[$X]; $x++) {
             $map_array->[$y][$x]->{symbol} = ' ';
@@ -98,7 +103,8 @@ sub get_map_static {
                 my $icon = $cell->get_icon;
 
                 if ($icon->{symbol} eq ' ') {
-                    $map_array->[$y][$x]->{symbol} = '.';
+                    $map_array->[$y][$x]->{symbol} = ' ';
+                    $map_array->[$y][$x]->{color} = 'on_red';
                 } else {
                     $map_array->[$y][$x]->{symbol} = $icon->{symbol};
                     $map_array->[$y][$x]->{color} = $icon->{color} || 'green';
@@ -107,7 +113,9 @@ sub get_map_static {
         }
     }
     #$map_array = _placement_character($map_array, $character, $bots);
-    $map_array = _placement_target($map_array, $target);
+    if ($target->{visible}) {
+        $map_array = _placement_target($map_array, $target);
+    }
 
     return $map_array;
 }
@@ -161,11 +169,13 @@ sub _get_area_around {
 }
 
 sub _placement_character {
+    my $self = shift;
     my $map = shift;
     my $character = shift;
     my $bots_hash = shift;
 
     my $bots = [values %$bots_hash];
+    $bots = [grep {$_->{map_name} eq $self->{map_name}} @$bots];
     for my $character (@$bots, $character) {
         my $coord = $character->get_coord();
         my $y = $coord->[$Y];

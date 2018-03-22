@@ -23,6 +23,12 @@ sub new {
     return $target;
 }
 
+sub switch {
+    my $self = shift;
+
+    $self->{visible} = $self->{visible} ? 0 : 1;
+}
+
 sub get_position {
     my $self = shift;
 

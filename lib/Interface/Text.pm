@@ -30,8 +30,6 @@ sub process_block {
 
         Interface::Utils::overlay_arrays_simple($main_array, $text_frame_array, $offset);
     } else {
-        dmp(scalar @$text_array);
-        dmp($size_area_text);
         my $last_str_number = @$text_array - $scroll - 1;
         my $first_str_number = $last_str_number - ($size_area_text->[$Y] - 1); 
         my $text_array_chank = [@$text_array[$first_str_number .. $last_str_number]];

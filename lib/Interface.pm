@@ -259,8 +259,8 @@ sub _get_screen_diff {
             #my $symbol = $array->[$y][$x]->{symbol} // '';
             #my $color = $array->[$y][$x]->{color} // '';
 
-            my $symbol = $array->[$y][$x]->{symbol};
-            my $color = $array->[$y][$x]->{color};
+            my $symbol = $array->[$y][$x]->{symbol} // '';
+            my $color = $array->[$y][$x]->{color} // '';
             my $key = "$y,$x";
             if ($symbol eq $old_data_print->[$y][$x]->{symbol}
                and $color eq $old_data_print->[$y][$x]->{color}

@@ -11,13 +11,15 @@ my $id = 0;
 
 sub new {
     my $self = shift;
-    my ($start_coord, $symbol, $color) = @_;
+    my ($start_coord, $symbol, $color, $map) = @_;
 
     my $bot = {
         coord => $start_coord,
         symbol => $symbol // '?',
         color => $color // 'blue',
         id    => create_id(),
+        map_name   => $map->{map_name},
+        bot => 1,
     };
 
     bless($bot, $self);

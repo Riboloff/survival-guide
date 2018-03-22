@@ -37,8 +37,8 @@ my $text_obj = Text->new('text_test');
 my $inv = $character->get_inv();
 
 my $bots = [
-    Bot->new([11,20], '@', 'blue'),
-    Bot->new([12,20], 'Z', 'red'),
+    Bot->new([11,20], '@', 'blue', $map),
+    Bot->new([12,20], 'Z', 'red', $map),
 ];
 
 my $interface = Interface->new(
@@ -76,7 +76,6 @@ while(1) {
             push @keys, ord $key_yet;
         }
     }
-    dmp($key); dmp(ord $key);
     if (is_change_term_size()) {
         $interface->set_size_all_block();
         $interface->{data_print} = Interface::_data_print_init($interface->{size}, $interface->{map}{size});
@@ -94,7 +93,9 @@ while(1) {
         exit(0);
     }
     elsif ($buttom == KEYBOARD_TARGET_ON_OFF) {
+        $interface->get_target->switch();
         Keyboard::set_or_rm_mod('target');
+        $process_block->{map} = 1;
     }
     elsif (
            $buttom == KEYBOARD_TARGET_LEFT
@@ -428,7 +429,6 @@ sub _move_item_looting {
     my $max_volume = $inv->get_equipment->get_max_volume();
     if ($volume + $item->get_volume() > $max_volume) {
         my $text_obj = $interface->get_text_obj();
-        dmp(Language::get_inv_info('volume_max'));
         $text_obj->add_text(Language::get_inv_info('volume_max'));
         return;
     }
