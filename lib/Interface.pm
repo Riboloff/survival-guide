@@ -55,6 +55,7 @@ sub new {
     my $inv       = $args->{inv};
     my $bots      = Utils::create_hash_from_array_obj($args->{bots});
     my $target    = $args->{target};
+    my $time      = $args->{time};
 
     #system('clear');
 
@@ -64,6 +65,7 @@ sub new {
             obj => $map,
             size => [],
         },
+        time => $time, 
         character => $character,
         bots => $bots,
         target => $target,
@@ -493,6 +495,24 @@ sub get_head {
     my $self = shift;
 
     return $self->{head};
+}
+
+sub get_chooser {
+    my $self = shift;
+
+    return $self->{chooser};
+}
+
+sub get_character {
+    my $self = shift;
+
+    return $self->{character};
+}
+
+sub get_time {
+    my $self = shift;
+
+    return $self->{time};
 }
 
 sub initial {

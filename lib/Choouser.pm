@@ -209,6 +209,12 @@ sub move_chooser {
     elsif ($buttom == KEYBOARD_DOWN) {
         $self->down();
     }
+    elsif ($buttom == KEYBOARD_LEFT) {
+        $self->left();
+    }
+    elsif ($buttom == KEYBOARD_RIGHT) {
+        $self->right();
+    }
 
     return;
 }

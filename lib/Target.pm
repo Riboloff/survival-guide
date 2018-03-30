@@ -51,7 +51,7 @@ sub move {
     my $self = shift;
     my $map_obj = shift;
     my $move = shift;
-    
+   
     my $map = $map_obj->{map};
     my $x = $self->{position}[$X];
     my $y = $self->{position}[$Y];

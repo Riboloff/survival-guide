@@ -132,6 +132,7 @@ use constant {
     KEYBOARD_TARGET_RIGHT  => 23,
     KEYBOARD_TARGET_DOWN   => 24,
     KEYBOARD_TARGET_UP     => 25,
+    KEYBOARD_SPACE         => 26,
 };
 
 1;

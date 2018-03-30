@@ -77,6 +77,8 @@ sub get_map_static {
     my $radius     = $character->get_radius_visibility();
     my $bound_map = [scalar @$map_stat, scalar @{$map_stat->[0]}];
 
+    #TODO боты ставятся раньше всех объектов, чтобы они вырезались, если не попадает в обзор. Но из-за этого персонаж и боты рисуются за объектами!!!
+    #Нужен фикс! 
     $map_stat = $self->_placement_character($map_stat, $character, $bots);
     for (my $y = 0; $y < $bound_map->[$Y]; $y++) {
         for (my $x = 0; $x < $bound_map->[$X]; $x++) {
@@ -104,7 +106,7 @@ sub get_map_static {
 
                 if ($icon->{symbol} eq ' ') {
                     $map_array->[$y][$x]->{symbol} = ' ';
-                    $map_array->[$y][$x]->{color} = 'on_red';
+                    $map_array->[$y][$x]->{color} = 'on_yellow';
                 } else {
                     $map_array->[$y][$x]->{symbol} = $icon->{symbol};
                     $map_array->[$y][$x]->{color} = $icon->{color} || 'green';

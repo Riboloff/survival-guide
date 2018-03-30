@@ -24,7 +24,6 @@ sub new {
 
     bless($self, $class);
     $events{$id} = $self;
-
     return $self;
 }
 
@@ -34,7 +33,6 @@ sub _get_id {
 
 sub check_timeout {
     my $cur_time = Time::get_current_time();
-
     for my $event_id (keys %events) {
         my $event = $events{$event_id};
         my $timeout = $event->{timeout};
