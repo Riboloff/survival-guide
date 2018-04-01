@@ -28,7 +28,7 @@ sub new {
     my $equip = $inv->get_equipment();
     my $character = {
         coord => $start_coord,
-        symbol => '♿',
+        symbol => 'Я',
         color => 'red',
         inv => $inv,
         radius_visibility => $start_radius_visibility,
