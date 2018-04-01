@@ -14,11 +14,13 @@ sub process_list_obj {
 
     my $map = $interface->{map}{obj};
     my $character = $interface->{character};
-    my $objects = $map->get_objects_nigh($character);
 
     my $list_obj_array = dclone($interface->get_list_obj->{array_area});
 
-    my $list_obj = [@$objects];
+    my $list_obj = [
+        @{$map->get_objects_nigh($character)},
+        @{$interface->get_bots_nearby($character->get_coord)},
+    ];
     my $chooser = $interface->{chooser};
     $chooser->{list}{list_obj} = $list_obj;
     my @list = map {$_->get_name()} @$list_obj;

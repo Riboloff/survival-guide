@@ -3,6 +3,7 @@ package Utils;
 use strict;
 use warnings;
 
+use Consts;
 use List::Util qw(min max);
 use Logger qw(dmp);
 use lib qw(lib);
@@ -56,6 +57,16 @@ sub create_hash_from_array_obj {
     }
 
     return $hash;
+}
+
+sub are_coords_nearby {
+    my $coord1 = shift;
+    my $coord2 = shift;
+
+    return (
+            abs($coord1->[$X] - $coord2->[$X]) <= 1
+        and abs($coord1->[$Y] - $coord2->[$Y]) <= 1
+    );
 }
 
 1;

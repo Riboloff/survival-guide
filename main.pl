@@ -38,8 +38,8 @@ my $text_obj = Text->new('text_test');
 my $inv = $character->get_inv();
 
 my $bots = [
-    Bot->new([11,20], '@', 'blue', FRIENDLY, $map),
-    Bot->new([12,20], 'Z', 'red', FOE, $map),
+    Bot->new(OB_BOT_DOG, [11,20], '@', 'blue', FRIENDLY, $map),
+    Bot->new(OB_BOT_ZOMBIE, [12,20], 'Z', 'red', FOE, $map),
 ];
 my $current_time = Time->new( {'speed' => 1} );
 my $interface = Interface->new(

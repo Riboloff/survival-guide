@@ -13,21 +13,21 @@ use List::Util qw(min);
 use Data::Dumper;
 use utf8;
 
-use lib qw(lib);
 use Consts qw($X $Y $LT $RD $size_term);
-use Printer;
-use Logger qw(dmp dmp_array);
-use Interface::Map;
-use Interface::Text;
-use Interface::Objects;
+use Interface::Char;
+use Interface::Craft;
+use Interface::Head;
 use Interface::Inv;
 use Interface::Looting;
-use Interface::Size;
+use Interface::Map;
 use Interface::Needs;
-use Interface::Craft;
-use Interface::Char;
-use Interface::Head;
+use Interface::Objects;
+use Interface::Size;
+use Interface::Text;
+use Logger qw(dmp dmp_array);
+use Printer;
 use Utils;
+use lib qw(lib);
 
 =we
 use lib './xslib';
@@ -386,6 +386,31 @@ sub get_action {
     my $self = shift;
 
     return $self->{objects}{sub_block}{action};
+}
+
+sub get_bots {
+    my $self = shift;
+
+    return $self->{bots};
+}
+
+sub get_bots_nearby {
+    my $self = shift;
+    my $coord = shift;
+
+    my $bots = [];
+    my $radius = 1;
+    for my $bot_key (keys %{$self->{bots}}) {
+        my $bot = $self->{bots}{$bot_key};
+        if (
+          Utils::are_coords_nearby($bot->get_coord, $coord)
+        ) {
+            push(@$bots, $bot);
+        }
+    }
+    dmp($bots);
+
+    return $bots;
 }
 
 sub get_craft_obj {

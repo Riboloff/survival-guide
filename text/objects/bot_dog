@@ -1,0 +1,11 @@
+{
+    "ru": {
+        "name": "Собака",
+        "desc": "Это клёвая собака, ее можно приручить."
+    },
+
+    "en": {
+        "name": "Dog",
+        "desc": "This is a lovely dog, it can be tamed."
+    }
+}

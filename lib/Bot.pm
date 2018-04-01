@@ -13,8 +13,12 @@ my $id = 0;
 
 sub new {
     my $self = shift;
-    my ($start_coord, $symbol, $color, $friendly, $map) = @_;
+    my ($bot_type, $start_coord, $symbol, $color, $friendly, $map) = @_;
 
+    my $obj_text = Language::get_text($bot_type, 'objects');
+    my $actions = [
+      Action->new(AC_WATCH),
+    ];
     my $bot = {
         coord => $start_coord,
         symbol => $symbol // '?',
@@ -23,6 +27,10 @@ sub new {
         friendly => $friendly,
         map_name   => $map->{map_name},
         bot => 1,
+        bot_type => $bot_type,
+        name => $obj_text->{name},
+        desc => $obj_text->{desc},
+        actions => $actions,
     };
 
     bless($bot, $self);
@@ -72,6 +80,24 @@ sub move_bot {
     if ($chosen_direction) {
         $self->move($interface->get_map_obj, $chosen_direction);
     }
+}
+
+sub get_name {
+  my $self = shift;
+
+  return $self->{name};
+}
+
+sub get_desc {
+  my $self = shift;
+
+  return $self->{desc};
+}
+
+sub get_actions {
+  my $self = shift;
+
+  return $self->{actions};
 }
 
 1;

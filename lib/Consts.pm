@@ -59,6 +59,8 @@ our $objects_id = {
     eval OB_DOOR  => 'door',
     eval OB_STAIR_UP   => 'stair_up',
     eval OB_STAIR_DOWN => 'stair_down',
+    eval OB_BOT_ZOMBIE => 'bot_zombie',
+    eval OB_BOT_DOG => 'bot_dog',
 };
 
 our $actions_id = {
@@ -97,6 +99,8 @@ use constant {
     OB_DOOR  => 2,
     OB_STAIR_UP   => 3,
     OB_STAIR_DOWN => 4,
+    OB_BOT_ZOMBIE => 5,
+    OB_BOT_DOG => 6,
 
     #Icon
     ICON_CLOSE_DOOR => 'X',

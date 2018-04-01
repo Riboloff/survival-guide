@@ -220,8 +220,8 @@ sub get_objects_nigh {
                  or $type eq 'Door'
                  or $type eq 'Stair'
             ) {
-                my $container = $map->[$y][$x]->get_obj();
-                push(@$objects, $container);
+                my $object = $map->[$y][$x]->get_obj();
+                push(@$objects, $object);
             }
         }
     }

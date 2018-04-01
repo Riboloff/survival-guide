@@ -1,0 +1,11 @@
+{
+    "ru": {
+        "name": "Зомби",
+        "desc": "Это уродливый зомби, она опасна."
+    },
+
+    "en": {
+        "name": "Zombie",
+        "desc": "This is an ugly zombie, she is dangerous."
+    }
+}
