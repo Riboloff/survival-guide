@@ -4,11 +4,11 @@ use strict;
 use warnings;
 
 use lib qw/lib/;
-use Logger qw(dmp);
 
 use Consts;
 use CraftTable;
 use Events;
+use Logger qw(dmp);
 
 
 sub enter {
@@ -156,8 +156,8 @@ sub char_move {
 
     my $process_block = {};
 
-    $interface->get_bot_by_id(0)->move_bot($interface->get_map_obj);
-    $interface->get_bot_by_id(1)->move_bot($interface->get_map_obj);
+    $interface->get_bot_by_id(0)->move_bot($interface);
+    $interface->get_bot_by_id(1)->move_bot($interface);
     if ($interface->get_main_block_show_name() eq 'map') {
         if ($character->move($interface->get_map_obj, $action)) {
             my $text_obj = $interface->get_text_obj();

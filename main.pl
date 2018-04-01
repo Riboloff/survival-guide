@@ -24,6 +24,11 @@ use Target;
 use Text;
 use Time;
 
+use constant {
+    FRIENDLY => 1,
+    FOE => 0,
+};
+
 my $map = Map->new('squa');
 my $start_coord = [10, 18];
 my $character = Character->new($start_coord);
@@ -33,8 +38,8 @@ my $text_obj = Text->new('text_test');
 my $inv = $character->get_inv();
 
 my $bots = [
-    Bot->new([11,20], '@', 'blue', $map),
-    Bot->new([12,20], 'Z', 'red', $map),
+    Bot->new([11,20], '@', 'blue', FRIENDLY, $map),
+    Bot->new([12,20], 'Z', 'red', FOE, $map),
 ];
 my $current_time = Time->new( {'speed' => 1} );
 my $interface = Interface->new(
