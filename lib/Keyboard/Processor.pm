@@ -4,8 +4,9 @@ use strict;
 use warnings;
 
 use lib qw/lib/;
-use Consts;
 use Logger qw(dmp);
+
+use Consts;
 use CraftTable;
 use Events;
 
@@ -155,11 +156,8 @@ sub char_move {
 
     my $process_block = {};
 
-    my $array_tmp = [KEYBOARD_MOVE_LEFT, KEYBOARD_MOVE_RIGHT, KEYBOARD_MOVE_UP, KEYBOARD_MOVE_DOWN];
-    my $bot_one = $interface->get_bot_by_id(0);
-    my $bot_two = $interface->get_bot_by_id(1);
-    $bot_one->move($interface->get_map_obj, $array_tmp->[int rand @$array_tmp]);
-    $bot_two->move($interface->get_map_obj, $array_tmp->[int rand @$array_tmp]);
+    $interface->get_bot_by_id(0)->move_bot($interface->get_map_obj);
+    $interface->get_bot_by_id(1)->move_bot($interface->get_map_obj);
     if ($interface->get_main_block_show_name() eq 'map') {
         if ($character->move($interface->get_map_obj, $action)) {
             my $text_obj = $interface->get_text_obj();

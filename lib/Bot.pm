@@ -4,8 +4,10 @@ use strict;
 use warnings;
 use utf8;
 
-use lib qw/lib/;
 use base 'Character';
+use lib qw/lib/;
+
+use Consts;
 
 my $id = 0;
 
@@ -43,4 +45,12 @@ sub create_id {
     return $id++;
 }
 
-1;
+sub move_bot {
+    my $self = shift;
+    my $map = shift;
+
+    my $array_tmp = [KEYBOARD_MOVE_LEFT, KEYBOARD_MOVE_RIGHT, KEYBOARD_MOVE_UP, KEYBOARD_MOVE_DOWN];
+    $self->move($map, $array_tmp->[int rand @$array_tmp]);
+}
+
+;
