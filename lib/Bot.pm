@@ -53,4 +53,4 @@ sub move_bot {
     $self->move($map, $array_tmp->[int rand @$array_tmp]);
 }
 
-;
+1;
