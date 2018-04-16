@@ -77,49 +77,55 @@ sub get_map_static {
     my $radius     = $character->get_radius_visibility();
     my $bound_map = [scalar @$map_stat, scalar @{$map_stat->[0]}];
 
-    #TODO боты ставятся раньше всех объектов, чтобы они вырезались, если не попадает в обзор. Но из-за этого персонаж и боты рисуются за объектами!!!
-    #Нужен фикс! 
-    $map_stat = $self->_placement_character($map_stat, $character, $bots);
     for (my $y = 0; $y < $bound_map->[$Y]; $y++) {
         for (my $x = 0; $x < $bound_map->[$X]; $x++) {
             $map_array->[$y][$x]->{symbol} = ' ';
             $map_array->[$y][$x]->{color} = '';
 
             my $cell = $map_stat->[$y][$x];
-            if (_is_into_circle($radius, $character->get_coord(), $x, $y)) {
-                my $points_in_line = _get_points_lie_in_line($char_coord, [$y,$x]);
+            next unless _is_into_circle($radius, $char_coord, [$y, $x]);
+            next unless $self->_is_visible_cell($char_coord, [$y, $x]);
+            my $icon = $cell->get_icon;
 
-                my $is_visible = 1;
-                for my $point (@$points_in_line) {
-                    my $point_y = $point->[$Y];
-                    my $point_x = $point->[$X];
-                    my $cell_in_line = $map_stat->[$point_y][$point_x];
-
-                    if ($cell_in_line->get_blocker()) {
-                        $is_visible = 0;
-                        last;
-                    }
-                }
-                next unless $is_visible;
-
-                my $icon = $cell->get_icon;
-
-                if ($icon->{symbol} eq ' ') {
-                    $map_array->[$y][$x]->{symbol} = ' ';
-                    $map_array->[$y][$x]->{color} = 'on_yellow';
-                } else {
-                    $map_array->[$y][$x]->{symbol} = $icon->{symbol};
-                    $map_array->[$y][$x]->{color} = $icon->{color} || 'green';
-                }
+            my $backgroung = 'on_yellow,dark';
+            if ($icon->{symbol} eq ' ') {
+                $map_array->[$y][$x]->{symbol} = ' ';
+                $map_array->[$y][$x]->{color} = $backgroung;
+            } else {
+                $map_array->[$y][$x]->{symbol} = $icon->{symbol};
+                $map_array->[$y][$x]->{color} = $icon->{color} || 'green';
+                $map_array->[$y][$x]->{color} = join(',', ($backgroung, $map_array->[$y][$x]->{color}));
             }
         }
     }
-    #$map_array = _placement_character($map_array, $character, $bots);
+    $map_array = $self->_placement_character($map_array, $character, $bots);
     if ($target->{visible}) {
         $map_array = _placement_target($map_array, $target);
     }
 
     return $map_array;
+}
+
+sub _is_visible_cell {
+    my $self = shift;
+    my $char_coord = shift;
+    my $cell_coord = shift;
+
+    my ($y, $x) = ($cell_coord->[$Y], $cell_coord->[$X]);
+
+    my $points_in_line = _get_points_lie_in_line($char_coord, [$y,$x]);
+
+    for my $point (@$points_in_line) {
+        my $point_y = $point->[$Y];
+        my $point_x = $point->[$X];
+        my $cell_in_line = $self->{map}->[$point_y][$point_x];
+
+        if ($cell_in_line->get_blocker()) {
+            return 0;
+        }
+    }
+
+    return 1;
 }
 
 sub _placement_target {
@@ -139,8 +145,10 @@ sub _placement_target {
 sub _is_into_circle {
     my $radius = shift;
     my $coord  = shift;
-    my $x = shift;
-    my $y = shift;
+    my $coord_cell  = shift;
+
+    my $x = $coord_cell->[$X];
+    my $y = $coord_cell->[$Y];
 
     my $y_center = $coord->[$Y];
     my $x_center = $coord->[$X];
@@ -178,16 +186,26 @@ sub _placement_character {
 
     my $bots = [values %$bots_hash];
     $bots = [grep {$_->{map_name} eq $self->{map_name}} @$bots];
-    for my $character (@$bots, $character) {
-        my $coord = $character->get_coord();
+
+    my $coord = $character->get_coord();
+    my $y = $coord->[$Y];
+    my $x = $coord->[$X];
+
+    $map->[$y][$x]->{symbol} = $character->{symbol};
+    $map->[$y][$x]->{color} = join(',', $map->[$y][$x]->{color}, $character->{color});
+
+    my $radius = $character->get_radius_visibility();
+    for my $bot (@$bots) {
+        my $coord = $bot->get_coord();
         my $y = $coord->[$Y];
         my $x = $coord->[$X];
-        $map->[$y][$x]->set_icon(
-            {
-                symbol => $character->{symbol},
-                color  => $character->{color},
-            }
-        );
+
+        my $char_coord = $character->get_coord();
+        next unless _is_into_circle($radius, $char_coord, [$y, $x]);
+        next unless $self->_is_visible_cell($char_coord, [$y, $x]);
+
+        $map->[$y][$x]->{symbol} = $bot->{symbol};
+        $map->[$y][$x]->{color} = join(',', $map->[$y][$x]->{color}, $bot->{color});
     }
 
     return $map;

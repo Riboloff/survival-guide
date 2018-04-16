@@ -92,7 +92,6 @@ while(1) {
         and ref $button->{sub} eq 'CODE') {
         $process_block = $button->{sub}->($interface, $button->{args});
         Events::check_timeout();
-        next;
     }
 }
 
