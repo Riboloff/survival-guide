@@ -57,9 +57,7 @@ my $interface = Interface->new(
 $text_obj->set_size_area_text($interface->{text});
 my $process_block = {};
 
-
 $SIG{INT} = sub {ReadMode('normal'); exit(0)};
-
 
 while(1) {
     $interface->print($process_block);
@@ -77,8 +75,7 @@ while(1) {
         }
     }
     #dmp($key); dmp(ord $key);
-    #if (Interface::Size::is_change_term_size())
-    if (is_change_term_size()) {
+    if (Interface::Size::is_change_term_size()) {
         $interface->set_size_all_block();
         $interface->{data_print} = Interface::_data_print_init($interface->{size}, $interface->{map}{size});
         $process_block->{all} = 1;
@@ -93,21 +90,4 @@ while(1) {
         $process_block = $button->{sub}->($interface, $button->{args});
         Events::check_timeout();
     }
-}
-
-sub is_change_term_size {
-    my ($wchar_current, $hchar_current) = GetTerminalSize();
-
-    $wchar_current--;
-    $hchar_current--;
-    if (   $Consts::size_term->[$X] != $wchar_current
-        or $Consts::size_term->[$Y] != $hchar_current
-    ) {
-         $Consts::size_term->[$X] = $wchar_current;
-         $Consts::size_term->[$Y] = $hchar_current;
-
-         return 1;
-    }
-
-    return;
 }

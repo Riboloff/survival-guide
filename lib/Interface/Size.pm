@@ -6,6 +6,24 @@ use warnings;
 use Consts;
 use List::Util qw(min);
 use Logger qw(dmp);
+use Term::ReadKey;
+
+sub is_change_term_size {
+    my ($wchar_current, $hchar_current) = GetTerminalSize();
+
+    $wchar_current--;
+    $hchar_current--;
+    if (   $Consts::size_term->[$X] != $wchar_current
+        or $Consts::size_term->[$Y] != $hchar_current
+    ) {
+         $Consts::size_term->[$X] = $wchar_current;
+         $Consts::size_term->[$Y] = $hchar_current;
+
+         return 1;
+    }
+
+    return;
+}
 
 sub get_size_interface {
     if ($size_term->[$Y] <= 25) {

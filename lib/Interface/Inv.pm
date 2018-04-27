@@ -9,6 +9,8 @@ use Consts;
 use Interface::Utils;
 use Storable qw(dclone);
 use Interface::InvInfo;
+use Interface::Window;
+
 
 sub process_bag {
     my $interface = shift;
@@ -128,63 +130,38 @@ sub process_desc_item {
 sub process_block {
     my $interface = shift;
 
-    $interface->{main_block_show} = 'inv';
     my $inv = $interface->get_inv_obj();
-
-    my $inv_array = []; #init_inv($interface->get_inv);
-    my $main_array = $interface->{data_print};
 
     my $equipment_array = process_equipment($interface);
     my $bag_array = process_bag($interface);
     my $desc_array = process_desc_item($interface);
     my $inv_info_array = Interface::InvInfo::process_inv_info($interface);
 
-    my $offset_bag = [
-        $interface->get_inv_bag->{size}[$LT][$Y] - $interface->get_inv->{size}[$LT][$Y],
-        $interface->get_inv_bag->{size}[$LT][$X] - $interface->get_inv->{size}[$LT][$X]
-    ];
-    my $offset_equipment = [
-        $interface->get_equipment->{size}[$LT][$Y] - $interface->get_inv->{size}[$LT][$Y],
-        $interface->get_equipment->{size}[$LT][$X] - $interface->get_inv->{size}[$LT][$X],
-    ];
-    my $offset_desc_item = [
-        $interface->get_inv_desc_item->{size}[$LT][$Y] - $interface->get_inv->{size}[$LT][$Y],
-        $interface->get_inv_desc_item->{size}[$LT][$X] - $interface->get_inv->{size}[$LT][$X]
-    ];
-    my $offset_inv_info = [
-        $interface->get_inv_info->{size}[$LT][$Y] - $interface->get_inv->{size}[$LT][$Y],
-        $interface->get_inv_info->{size}[$LT][$X] - $interface->get_inv->{size}[$LT][$X]
-    ];
-    my $offset = [
-        $interface->get_inv->{size}[$LT][$Y],
-        $interface->get_inv->{size}[$LT][$X]
-    ];
+    my $window = Interface::Window->new(
+            size => {
+                main => $interface->get_inv->{size},
+                sub => {
+                    inv_bag   => $interface->get_inv_bag->{size},
+                    equipment => $interface->get_equipment->{size},
+                    desc_item => $interface->get_inv_desc_item->{size},
+                    inv_info  => $interface->get_inv_info->{size},
+                }
+            }
+    );
 
-    Interface::Utils::overlay_arrays_simple($inv_array, $bag_array, $offset_bag);
-    Interface::Utils::overlay_arrays_simple($inv_array, $equipment_array, $offset_equipment);
-    Interface::Utils::overlay_arrays_simple($inv_array, $desc_array, $offset_desc_item);
-    Interface::Utils::overlay_arrays_simple($inv_array, $inv_info_array, $offset_inv_info);
+    $window->add_sub_block('inv_bag',   $bag_array);
+    $window->add_sub_block('equipment', $equipment_array);
+    $window->add_sub_block('desc_item', $desc_array);
+    $window->add_sub_block('inv_info',  $inv_info_array);
 
-    Interface::Utils::overlay_arrays_simple($main_array, $inv_array, $offset);
-}
-
-
-sub init_inv {
-    my $inv = shift;
-
-    my $inv_array = [];
-
-    my $y_bound_inv = $inv->{size}->[$RD][$Y];
-    my $x_bound_inv = $inv->{size}->[$RD][$X];
-
-    for my $y (0 .. $y_bound_inv) {
-        for my $x (0 .. $x_bound_inv - 1) {
-            $inv_array->[$y][$x]->{symbol} = ' ';
-            $inv_array->[$y][$x]->{color} = '';
-        }
+    if ($interface->{main_block_show} ne 'inv') {
+        $window->animation_appearance_top();
     }
+    $interface->{main_block_show} = 'inv';
 
-    return $inv_array;
+    $interface->create_window($window->{array});
+
+    return;
 }
 
 1;

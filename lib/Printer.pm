@@ -13,8 +13,6 @@ use Term::Cap;
 use POSIX;
 use Term::ANSIScreen;
 
-use Data::Dumper;
-
 binmode(STDOUT, ":utf8");
 
 use lib qw/lib/;
@@ -27,6 +25,7 @@ my $console = Term::ANSIScreen->new;
 
 sub print_diff {
     my $diff = shift;
+
     for my $yx (sort keys %$diff) {
         my ($y, $x) = split(/,/, $yx);
         $console->Cursor($x, $y);
@@ -44,7 +43,7 @@ sub print_all {
 
     $console->Cursor(0, 0);
     for (my $y = 0; $y < @$array; $y++) {
-        for(my $x = 0; $x < @{$array->[$y]}; $x++) {
+        for (my $x = 0; $x < @{$array->[$y]}; $x++) {
             my $symbol = $array->[$y][$x]->{symbol};
             my $color = $array->[$y][$x]->{color};
 
@@ -66,26 +65,83 @@ sub print_all_block {
     my $bound_lt = $bound->[$LT];
     my $bound_rd = $bound->[$RD];
 
-    my @lines = ();
     for (my $y = $bound_lt->[$Y]; $y < $bound_rd->[$Y]; $y++) {
-        $console->Cursor($bound_lt->[$X], $bound_lt->[$Y] + $y);
         my $line_array = $array->[$y];
-        my $line = join('', map{$_->{symbol}} @$line_array[$bound_lt->[$X] .. $bound_rd->[$X]-1]);
-        print $line;
+        my @symbol_same_color_in_line = ();
+        my $color_same = $line_array->[$bound_lt->[$X]]->{color};
+        my $xx = $bound_lt->[$X];
+        for (my $x = $bound_lt->[$X]; $x < $bound_rd->[$X]; $x++) {
+            my $color  = $line_array->[$x]->{color};
+            my $symbol = $line_array->[$x]->{symbol};
+            if ($color eq $color_same) {
+                push(@symbol_same_color_in_line, $symbol);
+            }
+            else {
+                my $line = join('', @symbol_same_color_in_line);
+                $console->Cursor($xx, $y);
+                @symbol_same_color_in_line = ();
+                push(@symbol_same_color_in_line, $symbol);
+
+                if ($color_same) {
+                    print colored($line, split(/,/, $color_same));
+                } else {
+                    print $line;
+                }
+                $color_same = $color;
+                $xx = $x;
+            }
+        }
+        $console->Cursor($xx, $y);
+        my $line = join('', @symbol_same_color_in_line);
+        if ($color_same) {
+            print colored($line, split(/,/, $color_same));
+        } else {
+            print $line;
+        }
     }
 }
 
-=we
-sub clean_screen {
-    $console->Cursor(0, 0);
+sub print_animation {
+    my $array = shift;
+    my $bound = shift;
 
-    for (my $y = 0; $y <= $size_term->[$Y]; $y++) {
-        #for(my $x = 0; $x <= $size_term->[$X]; $x++) {
-            print " " x $size_term->[$X];
-            #}
+    my $bound_lt = $bound->[$LT];
+    my $bound_rd = $bound->[$RD];
+
+    for (my $y = 0; $y < @$array; $y++) {
+        my $line_array = $array->[$y];
+        my @symbol_same_color_in_line = ();
+        my $color_same = $line_array->[$bound_lt->[$X]]->{color};
+        my $xx = $bound_lt->[$X];
+        for (my $x = 0; $x < @{$array->[$y]}; $x++) {
+            my $color  = $line_array->[$x]->{color};
+            my $symbol = $line_array->[$x]->{symbol};
+            if ($color eq $color_same) {
+                push(@symbol_same_color_in_line, $symbol);
+            }
+            else {
+                my $line = join('', @symbol_same_color_in_line);
+                $console->Cursor($xx + $bound_lt->[$X], $y + $bound_lt->[$Y]);
+                @symbol_same_color_in_line = ();
+                push(@symbol_same_color_in_line, $symbol);
+
+                if ($color_same) {
+                    print colored($line, split(/,/, $color_same));
+                } else {
+                    print $line;
+                }
+                $color_same = $color;
+                $xx = $x;
+            }
+        }
+        $console->Cursor($xx + $bound_lt->[$X], $y + $bound_lt->[$Y]);
+        my $line = join('', @symbol_same_color_in_line);
+        if ($color_same) {
+            print colored($line, split(/,/, $color_same));
+        } else {
+            print $line;
+        }
     }
 }
-
-=cut
 
 1;

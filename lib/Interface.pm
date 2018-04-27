@@ -2,6 +2,7 @@ package Interface;
 
 use strict;
 use warnings;
+use utf8;
 
 use Storable qw(dclone);
 use Term::ANSIColor;
@@ -9,9 +10,6 @@ use Term::ReadKey;
 use Term::Cap;
 use POSIX;
 use List::Util qw(min);
-
-use Data::Dumper;
-use utf8;
 
 use Consts qw($X $Y $LT $RD $size_term);
 use Interface::Char;
@@ -27,7 +25,6 @@ use Interface::Text;
 use Logger qw(dmp dmp_array);
 use Printer;
 use Utils;
-use lib qw(lib);
 
 =we
 use lib './xslib';
@@ -65,7 +62,7 @@ sub new {
             obj => $map,
             size => [],
         },
-        time => $time, 
+        time => $time,
         character => $character,
         bots => $bots,
         target => $target,
@@ -240,7 +237,6 @@ sub _get_screen_diff {
     my $bound_rd = [];
 
     my $block_data = $self->get_block($block);
-
     $bound_lt = $block_data->{size}[$LT];
     $bound_rd = [@{$block_data->{size}[$RD]}];
     if (exists $block_data->{size_data}) {
@@ -264,14 +260,16 @@ sub _get_screen_diff {
             my $symbol = $array->[$y][$x]->{symbol} // '';
             my $color = $array->[$y][$x]->{color} // '';
             my $key = "$y,$x";
-            if ($symbol eq $old_data_print->[$y][$x]->{symbol}
-               and $color eq $old_data_print->[$y][$x]->{color}
+            if (
+                   $symbol eq $old_data_print->[$y][$x]->{symbol}
+                and $color eq $old_data_print->[$y][$x]->{color}
             ) {
                 $key_glob = $key;
                 next;
             }
 
-            if ($key_glob
+            if (
+                $key_glob
                 and exists($diff->{$key_glob})
                 and $diff->{$key_glob}->{color} eq $color
             ) {
@@ -346,6 +344,13 @@ sub get_inv_info {
     return $self->{inv}{sub_block}{inv_info};
 }
 
+sub get_equipment {
+    my $self = shift;
+
+    return $self->{inv}{sub_block}{equipment};
+}
+
+
 sub get_char {
     my $self = shift;
 
@@ -368,12 +373,6 @@ sub get_char_desc {
     my $self = shift;
 
     return $self->{char}{sub_block}{char_desc};
-}
-
-sub get_equipment {
-    my $self = shift;
-
-    return $self->{inv}{sub_block}{equipment};
 }
 
 sub get_list_obj {
@@ -408,7 +407,6 @@ sub get_bots_nearby {
             push(@$bots, $bot);
         }
     }
-    dmp($bots);
 
     return $bots;
 }
@@ -606,6 +604,21 @@ sub get_parent_block_name {
     }
 
     return $parent_block_name;
+}
+
+sub create_window {
+    my ($self, $window_array) = @_;
+
+    my $offset = [
+        $self->get_inv->{size}[$LT][$Y],
+        $self->get_inv->{size}[$LT][$X]
+    ];
+
+    Interface::Utils::overlay_arrays_simple(
+        $self->{data_print},
+        $window_array,
+        $offset
+    );
 }
 
 1;
