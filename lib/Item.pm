@@ -20,7 +20,7 @@ sub new {
     my $text_hash = Language::get_text($proto_id, 'items');
     my $name = $text_hash->{name};
     my $use_text = $text_hash->{use};
-    my $desc = Text->new(undef, $text_hash->{desc});
+    my $desc = Text->new(text => $text_hash->{desc});
     my $id = create_new_id();
     my $weight = $text_hash->{weight};
     my $volume = $text_hash->{volume};

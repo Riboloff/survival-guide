@@ -13,13 +13,14 @@ use Consts;
 use Language;
 
 sub new {
-    my $self = shift;
-    my $file_name = shift;
-    my $text = shift;
+    my ($self, %args) = @_;
+
+    my $file = $args{file};
+    my $text = $args{text};
 
     if (!$text) {
-        $file_name = "text/$file_name";
-        $text = Language::read_json_file_lang($file_name);
+        $file = "text/$file";
+        $text = Language::read_json_file_lang($file);
     }
     my $hash = {
         text => $text,

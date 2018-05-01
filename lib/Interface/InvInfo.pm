@@ -27,7 +27,7 @@ sub process_inv_info {
 
     my $str_volume = "[c=$str_color]" . $volume . '/' . $max_volume . '[/c]';
 
-    my $text = Text->new(undef, "$word_weight: $weight/?\n$word_volume: $str_volume");
+    my $text = Text->new(text => "$word_weight: $weight/?\n$word_volume: $str_volume");
     my $area = $interface->get_inv_info->{size};
     my $size_area = Interface::Utils::get_size($area);
     $text->inition($area, 1);

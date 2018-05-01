@@ -16,12 +16,12 @@ sub new {
             true => 0,
             time_dec_one => 5,
             score => 1,
-            desc => Text->new('disease/bleeding', undef),
+            desc => Text->new(file => 'disease/bleeding'),
         },
         pain => {
             true => 0,
             score => 1,
-            desc => Text->new('disease/pain', undef),
+            desc => Text->new(file => 'disease/pain'),
         },
     };
 

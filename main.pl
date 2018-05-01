@@ -34,7 +34,7 @@ my $start_coord = [10, 18];
 my $character = Character->new($start_coord);
 
 my $chooser = Choouser->new();
-my $text_obj = Text->new('text_test');
+my $text_obj = Text->new(file => 'text_test');
 my $inv = $character->get_inv();
 
 my $bots = [

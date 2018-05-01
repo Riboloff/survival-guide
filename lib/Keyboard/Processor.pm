@@ -465,8 +465,14 @@ sub console {
     if (! exists $interface->{console}) {
         $interface->{console} = Console->new();
     }
+    my $process_block = {};
+    if ($interface->get_main_block_show_name() ne 'console') {
+        $process_block = {console => 1};
+    }
+    else { 
+        _close_block($interface, $process_block, 'console');
+    }
 
-    my $process_block = {console => 1};
 
     return $process_block;
 }

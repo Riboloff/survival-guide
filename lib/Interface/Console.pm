@@ -14,7 +14,7 @@ use Text;
 sub process_text {
     my $interface = shift;
 
-    my $text = Text->new(undef, '1234567890');
+    my $text = Text->new(text => '1234567890');
     my $area = $interface->get_console_text->{size};
     my $size_area = Interface::Utils::get_size($area);
     $text->inition($area, 1);
