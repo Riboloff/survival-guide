@@ -86,7 +86,8 @@ while(1) {
 
     if (
         ref $button eq 'HASH'
-        and ref $button->{sub} eq 'CODE') {
+        and ref $button->{sub} eq 'CODE'
+    ) {
         $process_block = $button->{sub}->($interface, $button->{args});
         Events::check_timeout();
     }

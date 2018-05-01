@@ -15,10 +15,10 @@ sub process_block {
     my $head = $interface->get_head;
     my $head_array = init_head($head); 
 
-    my $size_cell_x = 7;
+    my $size_cell_x = 9;
 
     my $block_show = $interface->get_main_block_show_name();
-    my $blocks = ['map', 'craft', 'inv', 'char'];
+    my $blocks = ['map', 'craft', 'inv', 'char', 'console'];
 
     my @one_str = ();
     my @two_str = ();

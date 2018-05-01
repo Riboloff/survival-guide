@@ -154,9 +154,9 @@ sub process_block {
     $window->add_sub_block('desc_item', $desc_array);
     $window->add_sub_block('inv_info',  $inv_info_array);
 
-    if ($interface->{main_block_show} ne 'inv') {
-        $window->animation_appearance_top();
-    }
+    #if ($interface->{main_block_show} ne 'inv') {
+    #    $window->animation_appearance_top($interface);
+    #}
     $interface->{main_block_show} = 'inv';
 
     $interface->create_window($window->{array});

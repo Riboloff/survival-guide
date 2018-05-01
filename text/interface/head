@@ -3,13 +3,15 @@
         "map": "Карта",
         "craft": "Крафт",
         "inv": "Инв",
-        "char": "Перс"
+        "char": "Перс",
+        "console": "Консоль"
     },
 
     "en": {
         "map": "Map",
         "craft": "Craft",
         "inv": "Inv",
-        "char": "Char"
+        "char": "Char",
+        "console": "Console"
     }
 }

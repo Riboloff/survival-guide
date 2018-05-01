@@ -170,6 +170,12 @@ our $hash_keys = {
             args => undef,
         },
     },
+    '112'       => {
+        default  => {
+            sub  => \&Keyboard::Processor::console,
+            args => undef,
+        },
+    },
     '117'       => {
         default  => {
             sub  => \&Keyboard::Processor::craft,

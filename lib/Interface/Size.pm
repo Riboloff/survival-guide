@@ -310,6 +310,7 @@ sub set_size_all_block {
     my $size_area_char_dis = $size_area_bag;
     my $size_area_char_empty = $size_area_equipment;
     my $size_area_char_desc = $size_area_desc_item;  
+    my $size_area_console = $size_area_inv;
 
     $Interface->{size} = $size_interface;
     $Interface->{map}{size} = $size_area_map;
@@ -317,6 +318,7 @@ sub set_size_all_block {
     $Interface->{objects}{size} = $size_area_objects;
     $Interface->{objects}{sub_block}{list_obj}->{size} = $size_area_list_obj;
     $Interface->{objects}{sub_block}{action}->{size} = $size_area_action;
+
     $Interface->{inv}{size} = $size_area_inv;
     $Interface->{inv}{sub_block}{inv_bag}{size} = $size_area_bag;
     $Interface->{inv}{sub_block}{equipment}{size} = $size_area_equipment;
@@ -340,6 +342,9 @@ sub set_size_all_block {
 
     $Interface->{needs}{size} = $size_area_needs;
     $Interface->{head}{size} = $size_area_head;
+
+    $Interface->{console}{size} = $size_area_console;
+    $Interface->{console}{sub_block}{text}{size} = $size_area_console;
 
     return;
 }

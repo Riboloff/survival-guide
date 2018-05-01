@@ -16,7 +16,6 @@ $Data::Dumper::Useqq = 1;
         return "'$s'";
     }
 }
-print Dumper('──');
 #binmode STDOUT, ':encoding(UTF-8)';
 
 sub dmp {

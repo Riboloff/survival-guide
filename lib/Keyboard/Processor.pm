@@ -459,6 +459,18 @@ sub char {
     return $process_block;
 }
 
+sub console {
+    my ($interface) = @_;
+
+    if (! exists $interface->{console}) {
+        $interface->{console} = Console->new();
+    }
+
+    my $process_block = {console => 1};
+
+    return $process_block;
+}
+
 sub _close_block {
     my ($interface, $process_block, $block_name) = @_;
 

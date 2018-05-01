@@ -13,6 +13,7 @@ use List::Util qw(min);
 
 use Consts qw($X $Y $LT $RD $size_term);
 use Interface::Char;
+use Interface::Console;
 use Interface::Craft;
 use Interface::Head;
 use Interface::Inv;
@@ -121,7 +122,7 @@ sub new {
         craft => {
             size => [],
             obj => undef,
-        }
+        },
     };
 
     set_size_all_block($hash);
@@ -219,6 +220,9 @@ sub _process_block {
         Interface::Head::process_block($self);
     } elsif ($block eq 'char') {
         Interface::Char::process_block($self);
+        Interface::Head::process_block($self);
+    } elsif ($block eq 'console') {
+        Interface::Console::process_block($self);
         Interface::Head::process_block($self);
     } elsif ($block eq 'looting') {
         Interface::Looting::process_block($self);
@@ -342,6 +346,18 @@ sub get_inv_info {
     my $self = shift;
 
     return $self->{inv}{sub_block}{inv_info};
+}
+
+sub get_console {
+    my $self = shift;
+
+    return $self->{console};
+}
+
+sub get_console_text {
+    my $self = shift;
+
+    return $self->{console}{sub_block}{text};
 }
 
 sub get_equipment {

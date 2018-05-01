@@ -8,6 +8,7 @@ use Logger qw(dmp);
 use Consts;
 use Interface::Utils;
 use Interface::Utils;
+use Storable qw(dclone);
 use Printer;
 use Time::HiRes qw/usleep/;
 
@@ -29,13 +30,13 @@ sub new {
 sub add_sub_block {
     my ($self, $sub_block, $data_array) = @_;
 
-    my $offset = $self->get_offsets($sub_block);
+    my $offset = $self->get_offset($sub_block);
     Interface::Utils::overlay_arrays_simple($self->{array}, $data_array, $offset);
 
     return $self;
 }
 
-sub get_offsets {
+sub get_offset {
     my ($self, $sub_block) = @_;
 
     my $main_block = $self->{block};
@@ -48,12 +49,17 @@ sub get_offsets {
 
 sub animation_appearance_top {
     my $self = shift;
+    my $inf = shift;
 
-    my $animation_array = $self->{array};
+    my $animation_array = dclone $self->{array};
     my @new = ();
     while (my $string = pop @$animation_array) {
         unshift(@new, $string);
-        Printer::print_animation(\@new, [[2,0], [scalar @new, scalar @$string ]]);
+        my $offset = [
+            $self->{size}{main}->[0],
+            [scalar @new, scalar @$string]
+        ];
+        Printer::print_animation(\@new, $offset);
         usleep(5000);
     }
 }

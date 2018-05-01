@@ -11,7 +11,8 @@
         "craft_result": " Результат крафта ",
         "char_dis": " Болезни ",
         "char_empty": " Пусто ",
-        "char_desc": " Описание болезней "
+        "char_desc": " Описание болезней ",
+        "console": " Консоль "
     },
 
     "en": {
@@ -27,6 +28,7 @@
         "craft_result": " Craft result ",
         "char_dis": " Diseases  ",
         "char_empty": " Empty ",
-        "char_desc": " Desc diseases "
+        "char_desc": " Desc diseases ",
+        "console": " Console "
     }
 }
