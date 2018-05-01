@@ -359,6 +359,11 @@ sub get_console_text {
 
     return $self->{console}{sub_block}{text};
 }
+sub get_console_obj {
+    my $self = shift;
+
+    return $self->{console}{obj};
+}
 
 sub get_equipment {
     my $self = shift;

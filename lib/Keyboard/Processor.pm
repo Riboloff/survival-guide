@@ -7,6 +7,7 @@ use lib qw/lib/;
 
 use Consts;
 use CraftTable;
+use Console;
 use Events;
 use Logger qw(dmp);
 
@@ -462,8 +463,8 @@ sub char {
 sub console {
     my ($interface) = @_;
 
-    if (! exists $interface->{console}) {
-        $interface->{console} = Console->new();
+    if (! exists $interface->{console}{obj}) {
+        $interface->{console}{obj} = Console->new();
     }
     my $process_block = {};
     if ($interface->get_main_block_show_name() ne 'console') {

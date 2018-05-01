@@ -72,7 +72,6 @@ sub get_text_array {
     my $size_x = $size->[$X];
 
     my $array = [@{$self->{array}}];
-    #my $array = $self->{array};
     my @new_lines = ();
     for my $line (split(/\n/, $self->{text})) {
         my $parse_text = _parse_color($line);
@@ -119,11 +118,11 @@ sub _parse_color {
     my $line = shift;
 
     my $symbols = [];
-    my @arr = split(/(\[c=\w+\].*?)\[\/c\]/, $line);
+    my @arr = split(/(\[c=[A-Za-z,]++\].*?)\[\/c\]/, $line);
     for my $sub_lines (@arr) {
         my $color = '';
         my $line_color = $sub_lines;
-        if ($sub_lines =~ /^\[c=(\w+)\](.*)$/) {
+        if ($sub_lines =~ /^\[c=([A-Za-z,]++)\](.*)$/) {
             $color = $1;
             $line_color = $2;
         }
