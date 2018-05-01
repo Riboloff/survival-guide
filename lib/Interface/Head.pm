@@ -20,9 +20,12 @@ sub process_block {
     my $block_show = $interface->get_main_block_show_name();
     my $blocks = ['map', 'craft', 'inv', 'char', 'console'];
 
+    my $pre_block_show = '';
+
     my @one_str = ();
     my @two_str = ();
-    for my $block_name (@$blocks) {
+    for (my $i=0; $i < @$blocks; $i++) {
+        my $block_name = $blocks->[$i];
         my $start_symbol_title = 0;
         my @title_array = split(//, Language::get_head($block_name));
         if (@title_array <= $size_cell_x) {
@@ -32,7 +35,7 @@ sub process_block {
         for (my $x = 0; $x < $size_cell_x; $x++) {
             $cell_array[0][$x]->{symbol} = '';
             $cell_array[0][$x]->{color} = '';
-            if ($x == 0 or $x == $size_cell_x - 1) {
+            if ($x == $size_cell_x - 1) {
                 $cell_array[0][$x]->{symbol} = '│';
             }
             if (
@@ -53,19 +56,18 @@ sub process_block {
                 $cell_array[1][$x]->{symbol} = ' ';
             }
             if ($cell_array[0][$x]->{symbol} eq '│') {
-                if ($block_name eq $block_show) {
-                    if ($x < $start_symbol_title) {
-                        $cell_array[1][$x]->{symbol} = '┘';
-                    }
-                    else {
-                        $cell_array[1][$x]->{symbol} = '└';
-                    }
+                if (
+                    $block_name eq $block_show
+                ) {
+                    $cell_array[1][$x]->{symbol} = '└';
+                }
+                elsif($blocks->[$i+1] and $blocks->[$i+1] eq $block_show) {
+                    $cell_array[1][$x]->{symbol} = '┘';
                 }
                 else {
                     $cell_array[1][$x]->{symbol} = '┴';
                 }
             }
-
         }
         push @one_str, @{$cell_array[0]};
         push @two_str, @{$cell_array[1]};
