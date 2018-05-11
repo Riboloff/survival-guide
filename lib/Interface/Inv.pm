@@ -159,7 +159,7 @@ sub process_block {
     #}
     $interface->{main_block_show} = 'inv';
 
-    $interface->create_window($window->{array});
+    $interface->create_window($window);
 
     return;
 }

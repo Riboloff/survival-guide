@@ -93,8 +93,9 @@ sub process_desc_disease {
     my $chooser = $interface->{chooser};
     my $chooser_block_name = $chooser->{block_name};
     my $position_chooser = $chooser->{position}{$chooser_block_name};
-    return [] unless $position_chooser;
+    return [] unless defined $position_chooser;
     my $disease_name = $chooser->{list}{$chooser_block_name}[$position_chooser];
+    return [] unless defined $disease_name;
     my $disease = $chooser->{bag}{$chooser_block_name}{$disease_name};
     return [] unless $disease;
 

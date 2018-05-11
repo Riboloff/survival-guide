@@ -46,7 +46,7 @@ sub process_block {
     }
     $interface->{main_block_show} = 'console';
 
-    $interface->create_window($window->{array});
+    $interface->create_window($window);
 
     return;
 }

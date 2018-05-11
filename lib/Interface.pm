@@ -13,6 +13,7 @@ use List::Util qw(min);
 
 use Consts qw($X $Y $LT $RD $size_term);
 use Interface::Char;
+use Interface::Commands;
 use Interface::Console;
 use Interface::Craft;
 use Interface::Head;
@@ -224,6 +225,10 @@ sub _process_block {
     } elsif ($block eq 'console') {
         Interface::Console::process_block($self);
         Interface::Head::process_block($self);
+    } elsif ($block eq 'commands') {
+        Interface::Commands::process_block($self);
+    } elsif ($block eq 'command') {
+        Interface::Commands::process_block($self);
     } elsif ($block eq 'looting') {
         Interface::Looting::process_block($self);
     } elsif ($block eq 'needs') {
@@ -359,6 +364,25 @@ sub get_console_text {
 
     return $self->{console}{sub_block}{text};
 }
+
+sub get_commands {
+    my $self = shift;
+
+    return $self->{commands};
+}
+
+sub get_dir {
+    my $self = shift;
+
+    return $self->{commands}{sub_block}{dir};
+}
+
+sub get_file {
+    my $self = shift;
+
+    return $self->{commands}{sub_block}{file};
+}
+
 sub get_console_obj {
     my $self = shift;
 
@@ -562,9 +586,10 @@ sub get_time {
 sub initial {
     my $self = shift;
 
-    for my $block_name (qw/list_obj action objects inv_bag needs char_dis char_empty char_desc/) {
+    #TODO Инитить все блоки. И при отрисовке использовать эту инфу всегда, для всех блоков!
+    for my $block_name (qw/list_obj action objects inv_bag needs char_dis char_empty char_desc dir file/) {
         my $block = $self->get_block($block_name);
-        my $title = Language::get_title_block($block_name) || '';
+        my $title = Language::get_title_block($block_name) || 'tmptmp';
         Interface::Utils::init_array_area($block, $title);
     }
 }
@@ -577,7 +602,9 @@ sub get_block {
     return unless $block_name;
     my $method_name = 'get_' . $block_name;
     eval{ $block_obj = $self->$method_name};
-    return $block_obj;
+    if ($@) {
+        print ('error:' . $@);
+    }
 
     return $block_obj;
 }
@@ -623,21 +650,29 @@ sub get_parent_block_name {
     ) {
         $parent_block_name = 'craft';
     }
+    elsif (
+           $block_name eq 'dir'
+        or $block_name eq 'file'
+    ) {
+        $parent_block_name = 'commands';
+    }
 
     return $parent_block_name;
 }
 
 sub create_window {
-    my ($self, $window_array) = @_;
+    my ($self, $window) = @_;
 
+
+    dmp($window->{size});
     my $offset = [
-        $self->get_inv->{size}[$LT][$Y],
-        $self->get_inv->{size}[$LT][$X]
+        $window->{size}{main}[$LT][$Y],
+        $window->{size}{main}[$LT][$X]
     ];
 
     Interface::Utils::overlay_arrays_simple(
         $self->{data_print},
-        $window_array,
+        $window->{array},
         $offset
     );
 }

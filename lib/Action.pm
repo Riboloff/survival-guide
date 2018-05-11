@@ -8,7 +8,6 @@ use utf8;
 my $id_inc = 0;
 
 sub new {
-    #my ($self, $name, $proto_id) = @_;
     my ($self, $proto_id) = @_;
 
     my $hash = Language::get_text($proto_id, 'actions');

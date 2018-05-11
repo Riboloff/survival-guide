@@ -10,21 +10,23 @@ use Keyboard::Consts qw($hash_keys);
 
 my $mods = {};
 
-sub get_action {
+sub get_actions {
     my @button = @_;
 
-    my $action = 0;
+    my $actions = 0;
 
     my $key = join('_', @button);
     if (ref $hash_keys->{$key} eq 'HASH') {
-        ($action) = @{$hash_keys->{$key}}{ keys %$mods};
-        $action //= $hash_keys->{$key}{default};
+        $actions = [@{$hash_keys->{$key}}{ keys %$mods}];
+        if (!@$actions) {
+            $actions = $hash_keys->{$key}{default};
+        }
     }
     else {
-        $action = $hash_keys->{$key};
+        $actions = $hash_keys->{$key};
     }
 
-    return $action;
+    return $actions;
 }
 
 sub set_or_rm_mod {

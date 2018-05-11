@@ -10,200 +10,213 @@ use Keyboard::Processor;
 use base qw(Exporter);
 our @EXPORT = qw($hash_keys);
 
+#TODO По нажатию кнопки запускать несколько ф-й.
+#Алиасы для ключей
+
 our $hash_keys = {
     '10'       => {
-        default => {
-            sub => \&Keyboard::Processor::enter,
-            args => [],
-        }
+        default => [
+                {
+                    sub => \&Keyboard::Processor::enter,
+                    args => [],
+                }
+        ]
     },
     '96'       => {
-        default  => {
-            sub  => \&Keyboard::Processor::exit,
-            args => undef,
-        },
+        default  => [
+            {
+                sub  => \&Keyboard::Processor::exit,
+                args => undef,
+            },
+        ],
     },
     '27'       => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::esc,
             args => KEYBOARD_ESC,
-        },
+        }],
     },
     '113'       => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::esc,
             args => KEYBOARD_ESC,
-        },
+        }],
     },
     '32'       => KEYBOARD_SPACE,
     '27_91_68' => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::char_move,
             args => KEYBOARD_MOVE_LEFT,
-        },
-        target  => {
+        }],
+        target  => [{
             sub  => \&Keyboard::Processor::target_move,
             args => KEYBOARD_TARGET_LEFT,
-        },
+        }],
     },
     '27_91_67' => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::char_move,
             args => KEYBOARD_MOVE_RIGHT,
-        },
-        target  => {
+        }],
+        target  => [{
             sub  => \&Keyboard::Processor::target_move,
             args => KEYBOARD_TARGET_RIGHT,
-        },
+        }],
     },
     '27_91_66' => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::char_move,
             args => KEYBOARD_MOVE_DOWN,
-        },
-        target  => {
+        }],
+        target  => [{
             sub => \&Keyboard::Processor::target_move,
             args => KEYBOARD_TARGET_DOWN,
-        },
+        }],
     },
     '27_91_65' => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::char_move,
             args => KEYBOARD_MOVE_UP,
-        },
-        target  => {
+        }],
+        target  => [{
             sub  => \&Keyboard::Processor::target_move,
             args => KEYBOARD_TARGET_UP,
-        },
+        }],
     },
     '97'       => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::char_move,
             args => KEYBOARD_MOVE_LEFT,
-        },
-        target  => {
+        }],
+        target  => [{
             sub  => \&Keyboard::Processor::target_move,
             args => KEYBOARD_TARGET_LEFT,
-        },
+        }],
     },
     '100' => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::char_move,
             args => KEYBOARD_MOVE_RIGHT,
-        },
-        target  => {
+        }],
+        target  => [{
             sub => \&Keyboard::Processor::target_move,
             args => KEYBOARD_TARGET_RIGHT,
-        }
+        }]
     },
     '115' => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::char_move,
             args => KEYBOARD_MOVE_DOWN,
-        },
-        target  => {
+        }],
+        target  => [{
             sub => \&Keyboard::Processor::target_move,
             args => KEYBOARD_TARGET_DOWN,
-        },
+        }],
     },
     '119' => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::char_move,
             args => KEYBOARD_MOVE_UP,
-        },
-        target  => {
+        }],
+        target  => [{
             sub => \&Keyboard::Processor::target_move,
             args => KEYBOARD_TARGET_UP,
-        },
+        }],
     },
     '108'      => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::chooser_move,
             args => KEYBOARD_RIGHT,
-        },
+        }],
     },
     '104'      => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::chooser_move,
             args => KEYBOARD_LEFT,
-        },
+        }],
     },
     '107'      => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::chooser_move,
             args => KEYBOARD_UP,
-        },
+        }],
     },
     '106'      => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::chooser_move,
             args => KEYBOARD_DOWN,
-        },
+        }],
     },
     '114'      => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::scroll_text,
             args => KEYBOARD_TEXT_UP,
-        },
+        }],
     },
     '102'      => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::scroll_text,
             args => KEYBOARD_TEXT_DOWN,
-        },
+        }],
     },
     '60'       => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::move_item,
             args => KEYBOARD_MOVE_ITEM_LEFT,
-        },
+        }],
     },
     '62'       => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::move_item,
             args => KEYBOARD_MOVE_ITEM_RIGHT,
-        },
+        }],
     },
     '105'       => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::inv,
             args => undef,
-        },
+        }],
     },
     '112'       => {
-        default  => {
-            sub  => \&Keyboard::Processor::console,
-            args => undef,
-        },
+        default  => [
+            {
+                sub  => \&Keyboard::Processor::console,
+                args => undef,
+            },
+            {
+                sub  => \&Keyboard::Processor::commands,
+                args => undef,
+            }
+        ],
     },
     '117'       => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::craft,
             args => undef,
-        },
+        }],
     },
     '101'       => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::used_item,
             args => undef,
-        },
+        }],
     },
     '45'       => {
-        default  => {
+        default  => [{
             sub  => \&Keyboard::Processor::create_event_minus,
             args => undef,
-        },
+        }],
     },
     '111'      => {
-        default => {
+        default => [{
             sub => \&Keyboard::Processor::char,
             args => undef,
-        }
+        }]
     },
     '70'       => {
-        default => {
+        default => [{
             sub => \&Keyboard::Processor::target_on_off,
             args => undef,
-        }
+        }]
     },
 };

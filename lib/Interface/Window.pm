@@ -30,6 +30,7 @@ sub new {
 sub add_sub_block {
     my ($self, $sub_block, $data_array) = @_;
 
+
     my $offset = $self->get_offset($sub_block);
     Interface::Utils::overlay_arrays_simple($self->{array}, $data_array, $offset);
 
@@ -62,6 +63,27 @@ sub animation_appearance_top {
         Printer::print_animation(\@new, $offset);
         usleep(5000);
     }
+}
+
+sub create_sub_block_list {
+    my ($self, $block, $block_name, $chooser, $list) = @_;
+
+    my $chooser_position = 999;
+    if ($chooser and $chooser->{block_name} eq $block_name) {
+        $chooser->{list}{$block_name} = $list;
+        $chooser_position = $chooser->get_position($block_name);
+        $chooser_position = Utils::clamp($chooser_position, 0, $#$list);
+        $chooser->set_position($block_name, $chooser_position);
+    }
+
+    my $args = {
+        list  => $list,
+        array => dclone($block->{array_area}),
+        chooser_position => $chooser_position,
+        size_area_frame  => $block->{size_area_frame},
+    };
+
+    return Interface::Utils::list_to_array_symbols_frame($args);
 }
 
 1;

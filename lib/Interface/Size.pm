@@ -311,6 +311,9 @@ sub set_size_all_block {
     my $size_area_char_empty = $size_area_equipment;
     my $size_area_char_desc = $size_area_desc_item;  
     my $size_area_console = $size_area_inv;
+    my $size_area_commands = $size_area_objects;
+    my $size_area_dir = $size_area_list_obj;
+    my $size_area_file = $size_area_action;
 
     $Interface->{size} = $size_interface;
     $Interface->{map}{size} = $size_area_map;
@@ -345,6 +348,10 @@ sub set_size_all_block {
 
     $Interface->{console}{size} = $size_area_console;
     $Interface->{console}{sub_block}{text}{size} = $size_area_console;
+
+    $Interface->{commands}{size} = $size_area_commands;
+    $Interface->{commands}{sub_block}{dir}{size} = $size_area_dir;
+    $Interface->{commands}{sub_block}{file}{size} = $size_area_file;
 
     return;
 }

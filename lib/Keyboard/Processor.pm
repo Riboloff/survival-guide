@@ -14,10 +14,10 @@ use Logger qw(dmp);
 
 sub enter {
     my ($interface) = @_;
-    
-    my $chooser   = $interface->get_chooser(); 
-    my $character = $interface->get_character(); 
-    my $inv       = $interface->get_inv_obj(); 
+
+    my $chooser   = $interface->get_chooser();
+    my $character = $interface->get_character();
+    my $inv       = $interface->get_inv_obj();
 
     my $process_block = {};
 
@@ -152,7 +152,7 @@ sub char_move {
     my $interface = shift;
     my $action    = shift;
 
-    my $chooser   = $interface->get_chooser(); 
+    my $chooser   = $interface->get_chooser();
     my $character = $interface->get_character();
 
     my $process_block = {};
@@ -249,7 +249,7 @@ sub chooser_move {
     my ($interface, $action) = @_;
 
     my $chooser = $interface->get_chooser();
-    $chooser->move_chooser($action);
+    $chooser->move($action);
     return { $chooser->{block_name}  => 1 };
 }
 
@@ -330,7 +330,7 @@ sub _move_item_craft {
 sub create_event_minus {
     my ($interface) = @_;
 
-    my $character = $interface->get_character(); 
+    my $character = $interface->get_character();
     my $current_time = $interface->get_time();
 
     Events->new(
@@ -351,9 +351,9 @@ sub create_event_minus {
 sub used_item {
     my ($interface) = @_;
 
-    my $chooser   = $interface->get_chooser(); 
-    my $character = $interface->get_character(); 
-    my $inv       = $interface->get_inv_obj(); 
+    my $chooser   = $interface->get_chooser();
+    my $character = $interface->get_character();
+    my $inv       = $interface->get_inv_obj();
 
     my $obj = $chooser->get_target_object();
     my $process_block = {};
@@ -412,7 +412,7 @@ sub used_item {
 sub inv {
     my ($interface) = @_;
 
-    my $chooser = $interface->get_chooser(); 
+    my $chooser = $interface->get_chooser();
 
     my $process_block = {};
     if ($interface->get_main_block_show_name() ne 'inv') {
@@ -429,7 +429,7 @@ sub inv {
 sub craft {
     my ($interface) = @_;
 
-    my $chooser = $interface->get_chooser(); 
+    my $chooser = $interface->get_chooser();
 
     my $process_block = {};
     if ($interface->get_main_block_show_name() ne 'craft') {
@@ -447,7 +447,7 @@ sub craft {
 sub char {
     my ($interface) = @_;
 
-    my $chooser = $interface->get_chooser(); 
+    my $chooser = $interface->get_chooser();
 
     my $process_block = {};
     if ($interface->get_main_block_show_name() ne 'char') {
@@ -470,18 +470,27 @@ sub console {
     if ($interface->get_main_block_show_name() ne 'console') {
         $process_block = {console => 1};
     }
-    else { 
+    else {
         _close_block($interface, $process_block, 'console');
     }
 
-
     return $process_block;
+}
+
+sub commands {
+    my ($interface) = @_;
+
+    my $chooser = $interface->get_chooser();
+    $chooser->{block_name} = 'dir';
+    $chooser->{position}{dir} = 0;
+
+    return {commands => 1};
 }
 
 sub _close_block {
     my ($interface, $process_block, $block_name) = @_;
 
-    my $chooser = $interface->get_chooser(); 
+    my $chooser = $interface->get_chooser();
     $interface->clean_after_itself($block_name);
     $chooser->{block_name} = 'list_obj';
     $chooser->{position}{inv} = 0;

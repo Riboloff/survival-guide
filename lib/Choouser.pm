@@ -9,21 +9,10 @@ use Consts;
 use Interface;
 
 sub new {
-    my $self = shift;
+    my $class = shift;
 
     my $hash = {
-        position => {
-            action       => 0,
-            list_obj     => 0,
-            inv_bag      => 0,
-            equipment    => 0,
-            loot_list    => 0,
-            looting_bag  => 0,
-            craft_place  => 0,
-            craft_bag    => 0,
-            craft_result => 0,
-            char_dis     => 0,
-        },
+        position => {},
         block_name => 'list_obj',
         list => {},
         bag  => {},
@@ -64,11 +53,33 @@ sub new {
                         'char_dis',
                     ],
                 },
+                commands => {
+                    position => 0,
+                    blocks =>[
+                        'dir',
+                        'file',
+                    ]
+                },
             },
         },
     };
 
-    return (bless $hash, $self);
+    my $self = (bless $hash, $class);
+    return $self->init();
+}
+
+sub init {
+    my $self = shift;
+
+    my $blocks = $self->{structure}{blocks};
+    for my $block (keys %$blocks) {
+        my $position = $blocks->{$block}{position};
+        for my $sub_blocks (@{$blocks->{$block}{blocks}}) {
+            $self->{position}{$sub_blocks} = $position;
+        }
+    }
+
+    return $self;
 }
 
 sub down {
@@ -84,7 +95,7 @@ sub down {
 
 sub top {
     my $self = shift;
-   
+
     my $block_name = $self->{block_name};
     $self->{position}{$block_name}--;
     my $number_last_element = $#{$self->{list}{$block_name}};
@@ -199,7 +210,7 @@ sub get_target_list {
     return  $list;
 }
 
-sub move_chooser {
+sub move {
     my $self   = shift;
     my $buttom = shift;
 

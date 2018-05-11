@@ -81,14 +81,17 @@ while(1) {
         $process_block->{all} = 1;
         next;
     }
-    my $button = Keyboard::get_action(@keys);
-    next unless($button);
-
-    if (
-        ref $button eq 'HASH'
-        and ref $button->{sub} eq 'CODE'
-    ) {
-        $process_block = $button->{sub}->($interface, $button->{args});
-        Events::check_timeout();
+    my $actions = Keyboard::get_actions(@keys);
+    next unless($actions);
+    for my $action (@{$actions}) {
+        if (
+            ref $action eq 'HASH'
+            and ref $action->{sub} eq 'CODE'
+        ) {
+            my $blocks = $action->{sub}->($interface, $action->{args});
+            map {$process_block->{$_} = $blocks->{$_}} keys %$blocks;
+        }
     }
+    #TODO Кажется не на своем месте вызов ф-и
+    Events::check_timeout();
 }

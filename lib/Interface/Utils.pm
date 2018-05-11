@@ -193,7 +193,7 @@ sub list_to_array_symbols_frame {
 
     my $list = $args->{list};
     my $array = $args->{array};
-    my $chooser_position = $args->{chooser_position} || 0;
+    my $chooser_position = $args->{chooser_position} // 0;
     my $size_area = $args->{size_area_frame};
     my $color_chooser =  $args->{color_chooser} || 'on_green';
 
