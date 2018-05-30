@@ -25,7 +25,7 @@ our $Y = 0;
 #Размеры блоков интерфейса 
 #определяются по двух точкам левого верннего и правого нижнего угла
 our $LT = 0; #Left top
-our $RD = 1; #reatht down
+our $RD = 1; #right down
 
 my ($wchar, $hchar) = GetTerminalSize();
 $wchar--;

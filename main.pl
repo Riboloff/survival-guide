@@ -21,40 +21,9 @@ use Map;
 use Keyboard;
 use Keyboard::Consts;
 use Target;
-use Text;
 use Time;
 
-use constant {
-    FRIENDLY => 1,
-    FOE => 0,
-};
-
-my $map = Map->new('squa');
-my $start_coord = [10, 18];
-my $character = Character->new($start_coord);
-
-my $chooser = Choouser->new();
-my $text_obj = Text->new(file => 'text_test');
-my $inv = $character->get_inv();
-
-my $bots = [
-    Bot->new(OB_BOT_DOG, [11,20], '@', 'blue', FRIENDLY, $map),
-    Bot->new(OB_BOT_ZOMBIE, [12,20], 'Z', 'red', FOE, $map),
-];
-my $current_time = Time->new( {'speed' => 1} );
-my $interface = Interface->new(
-    {
-        map       => $map, 
-        character => $character,
-        text_obj  => $text_obj,
-        chooser   => $chooser,
-        inv       => $inv,
-        bots      => $bots,
-        target    => Target->new(),
-        time      => Time->new( {'speed' => 1} ), 
-    }
-);
-$text_obj->set_size_area_text($interface->{text});
+my $interface = Interface->new();
 my $process_block = {};
 
 $SIG{INT} = sub {ReadMode('normal'); exit(0)};

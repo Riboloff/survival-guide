@@ -11,7 +11,6 @@ use Console;
 use Events;
 use Logger qw(dmp);
 
-
 sub enter {
     my ($interface) = @_;
 
@@ -98,6 +97,10 @@ sub enter {
             $process_block->{text} = 1;
         }
         $process_block->{craft} = 1;
+    }
+    if ($chooser->{block_name} eq 'dir') {
+        $interface->get_console_obj()->add_command('');
+        $process_block->{console} = 1;
     }
 
     return $process_block;

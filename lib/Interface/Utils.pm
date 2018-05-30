@@ -18,6 +18,7 @@ sub is_object_into_area {
 
     my $y_obj = scalar @$object_array;
     my $x_obj = scalar @{$object_array->[0]};
+
     my ($y_ar, $x_ar) = @$size_area;
     if ($y_ar >= $y_obj and $x_ar >= $x_obj) {
         return 1;
@@ -245,6 +246,10 @@ sub one_line_to_array_symbols {
     return $array;
 }
 
+#sub get_frame {
+#Добавляет рамку по краям входного массива
+#Создать рамку
+#sub create_frame {
 sub get_frame {
     my $array = shift;
     my $title = shift || '';
@@ -325,6 +330,9 @@ sub get_frame {
 #Второй оборачивает входной массив в рамку
 #TODO сделать нормальные названия
 sub get_frame_tmp {
+#
+#Обернуть в  рамку
+#sub add_frame {
     my $array = shift;
 
     my $color = 'dark';

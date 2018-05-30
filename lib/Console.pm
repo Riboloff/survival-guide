@@ -34,5 +34,10 @@ sub get_text {
     return join("\n", @text);
 }
 
+sub add_command {
+    my ($self, $string) = @_;
+
+    push(@{$self->{text}}, $string);
+}
 
 1;

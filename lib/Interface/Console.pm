@@ -14,27 +14,28 @@ use Text;
 sub process_text {
     my $interface = shift;
 
-    my $text = Text->new(text => $interface->get_console_obj->get_text);
+    my $text = Text->new(
+        text => $interface->get_console_obj->get_text,
+        area => $interface->get_console_text->{size},
+    );
+
     my $area = $interface->get_console_text->{size};
-    my $size_area = Interface::Utils::get_size($area);
-    $text->inition($area, 1);
-    my $text_array = $text->get_text_array($size_area);
+    my $text_array = $text->get_text_array();
     my $title = Language::get_title_block('console');
-    my $text_frame_array = Interface::Utils::get_frame($text_array, $title);
+
+    my $text_frame_array = Interface::Utils::get_frame_tmp($text_array, $title);
     return $text_frame_array;
 }
 
 sub process_block {
     my $interface = shift;
 
-    my $console = $interface->{console};
-
     my $text = process_text($interface);
     my $window = Interface::Window->new(
             size => {
                 main => $interface->get_console->{size},
                 sub => {
-                    text => $interface->get_console_text->{size}, 
+                    text => $interface->get_console_text->{size},
                 }
             }
     );

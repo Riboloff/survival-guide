@@ -27,6 +27,7 @@ use Interface::Text;
 use Logger qw(dmp dmp_array);
 use Printer;
 use Utils;
+use Consts;
 
 =we
 use lib './xslib';
@@ -44,17 +45,28 @@ print Data::Dumper::Dumper($tl);
 exit();
 =cut
 
+use constant {
+    FRIENDLY => 1,
+    FOE => 0,
+};
+
+
 sub new {
     my ($class, $args) = @_;
 
-    my $map       = $args->{map};
-    my $character = $args->{character};
-    my $text_obj  = $args->{text_obj};
-    my $chooser   = $args->{chooser};
-    my $inv       = $args->{inv};
-    my $bots      = Utils::create_hash_from_array_obj($args->{bots});
-    my $target    = $args->{target};
-    my $time      = $args->{time};
+    my $map       = Map->new('squa');
+
+    my $start_coord = [10, 18];
+    my $character = Character->new($start_coord);
+
+    my $inv = $character->get_inv();
+
+    my $target = Target->new();
+
+    my $bots = [
+        Bot->new(OB_BOT_DOG, [11,20], '@', 'blue', FRIENDLY, $map),
+        Bot->new(OB_BOT_ZOMBIE, [12,20], 'Z', 'red', FOE, $map),
+    ];
 
     #system('clear');
 
@@ -64,65 +76,15 @@ sub new {
             obj => $map,
             size => [],
         },
-        time => $time,
-        character => $character,
-        bots => $bots,
-        target => $target,
-        size => [],
+        time => Time->new({'speed' => 1}),
+        character => Character->new($start_coord),
+        bots => Utils::create_hash_from_array_obj($bots),
+        target => Target->new(),
+        chooser => Choouser->new(),
         data_print  => [],
         old_data_print => [],
-        text => {
-            obj => $text_obj,
-            size => [],
-        },
-        objects => {
-            sub_block => {
-                list_obj => {
-                    size => [],
-                    array_area => [],
-                },
-                action => {
-                    size => [],
-                },
-            },
-            size => [],
-        },
-        chooser => $chooser,
         inv => {
             obj => $inv,
-            size => [],
-            sub_block => {
-                inv_bag => {
-                    size => [],
-                },
-                equipment => {
-                    size => [],
-                },
-                desc_item => {
-                    size => [],
-                },
-            }
-        },
-        looting => {
-            size => [],
-            sub_block => {
-                looting_bag => {
-                    size => [],
-                },
-                loot_list => {
-                    size => [],
-                },
-                desc_item => {
-                    size => [],
-                },
-            },
-        },
-        needs => {
-            size => [],
-        },
-        craft => {
-            size => [],
-            obj => undef,
         },
     };
 
@@ -131,10 +93,14 @@ sub new {
 
     $hash->{data_print} = _data_print_init($hash->{size}, $hash->{map}{size});
 
-    $text_obj->inition($hash->{text}{size});
+    $hash->{text}{obj} = Text->new(
+        file => 'text_test',
+        area => $hash->{text}{size}
+    );
 
     my $self = bless($hash, $class);
     $self->initial();
+
     return $self;
 }
 
@@ -359,6 +325,12 @@ sub get_console {
     return $self->{console};
 }
 
+sub get_console_obj {
+    my $self = shift;
+
+    return $self->{console}{obj};
+}
+
 sub get_console_text {
     my $self = shift;
 
@@ -381,12 +353,6 @@ sub get_file {
     my $self = shift;
 
     return $self->{commands}{sub_block}{file};
-}
-
-sub get_console_obj {
-    my $self = shift;
-
-    return $self->{console}{obj};
 }
 
 sub get_equipment {
@@ -589,7 +555,7 @@ sub initial {
     #TODO Инитить все блоки. И при отрисовке использовать эту инфу всегда, для всех блоков!
     for my $block_name (qw/list_obj action objects inv_bag needs char_dis char_empty char_desc dir file/) {
         my $block = $self->get_block($block_name);
-        my $title = Language::get_title_block($block_name) || 'tmptmp';
+        my $title = Language::get_title_block($block_name);
         Interface::Utils::init_array_area($block, $title);
     }
 }
@@ -663,8 +629,6 @@ sub get_parent_block_name {
 sub create_window {
     my ($self, $window) = @_;
 
-
-    dmp($window->{size});
     my $offset = [
         $window->{size}{main}[$LT][$Y],
         $window->{size}{main}[$LT][$X]

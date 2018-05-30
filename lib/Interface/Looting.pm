@@ -105,6 +105,7 @@ sub process_desc_item {
     my $chooser_block_name = $chooser->{block_name};
     my $position_chooser = $chooser->{position}{$chooser_block_name};
     my $item = $chooser->{list}{$chooser_block_name}[$position_chooser];
+
     if (!defined $item) {
         #TODO: Пропадает блок целиком вместе с рамкой
         return [];
@@ -112,9 +113,8 @@ sub process_desc_item {
 
     my $text = $item->{item}->get_desc();
     my $area = $interface->get_looting_desc_item->{size};
-    my $size_area = Interface::Utils::get_size($area);
     $text->inition($area, 1);
-    my $text_array = $text->get_text_array($size_area);
+    my $text_array = $text->get_text_array();
     my $title = Language::get_title_block('desc_item');
     my $text_frame_array = Interface::Utils::get_frame($text_array, $title);
 

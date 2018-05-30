@@ -11,29 +11,38 @@ use lib qw(lib);
 use Logger qw(dmp);
 use Consts;
 use Language;
+use Interface::Utils;
 
 sub new {
-    my ($self, %args) = @_;
+    my ($class, %args) = @_;
 
     my $file = $args{file};
     my $text = $args{text};
+    my $area = $args{area};
+    my $frame = $args{frame} // 0;
 
     if (!$text) {
         $file = "text/$file";
         $text = Language::read_json_file_lang($file);
     }
+
     my $hash = {
         text => $text,
         array => [],
         scroll => 0,
     };
 
-    return (bless $hash, $self);
+    my $self = (bless $hash, $class);
+
+    if ($area) {
+        $self->inition($area, $frame);
+    }
+
+    return $self;
 }
 
 sub add_text {
-    my $self = shift;
-    my $text = shift;
+    my ($self, $text) = @_;
 
     $self->{text} .= "\n" . $text;
     $self->{scroll} = 0;
@@ -42,13 +51,24 @@ sub add_text {
 }
 
 sub inition {
-    my $self = shift;
-    my $size_area_text = shift;
-    my $without_frame = shift;
+    my ($self, $area, $frame) = @_;
 
-    my $size_y = $size_area_text->[$RD][$Y] - $size_area_text->[$LT][$Y];
-    my $size_x = $size_area_text->[$RD][$X] - $size_area_text->[$LT][$X];
-    if (!$without_frame) {
+    my $size_area;
+    if ($area) {
+        if ($frame) {
+            $size_area = Interface::Utils::get_size($area),
+        }
+        else {
+            $size_area = Interface::Utils::get_size_without_frame($area),
+        }
+        $self->{area} = $area;
+        $self->{size_area} = $size_area;
+    }
+
+
+    my $size_y = $area->[$RD][$Y] - $area->[$LT][$Y];
+    my $size_x = $area->[$RD][$X] - $area->[$LT][$X];
+    if (!$frame) {
         $size_y -= 2,
         $size_x -= 2,
     }
@@ -66,9 +86,8 @@ sub inition {
 
 sub get_text_array {
     my $self = shift;
-    my $size = shift;
+    my $size = shift || $self->{size_area};
 
-    my $size_y = $size->[$Y];
     my $size_x = $size->[$X];
 
     my $array = [@{$self->{array}}];
@@ -77,12 +96,11 @@ sub get_text_array {
         my $parse_text = _parse_color($line);
 
         my $words_array = _split_words($parse_text);
-        my $line_size = $size_x;
 
         my $line_buffer = [];
         for my $word (@$words_array) {
             my $size_word = scalar @$word;
-            if ((scalar @$line_buffer + $size_word) <= $line_size) {
+            if ((scalar @$line_buffer + $size_word) <= $size_x) {
                 push(@$line_buffer, @$word);
             } else {
                 push(@new_lines, $line_buffer);
@@ -110,6 +128,10 @@ sub get_text_array {
     }
 
     $self->{array} = $array;
+
+    unless (Interface::Utils::is_object_into_area($size, $array) ) {
+        $array = $self->shift();
+    }
 
     return $array;
 }
@@ -165,17 +187,23 @@ sub top {
     my $self = shift;
 
     my $scroll_lines = @{$self->{array}};
-    my $size_area_text = $self->{size_area_text}[$RD][$Y] - $self->{size_area_text}[$LT][$Y] - 2;
-    if ($self->{scroll} < $scroll_lines - $size_area_text) {
+    my $area = $self->{area}[$RD][$Y] - $self->{area}[$LT][$Y] - 2;
+    if ($self->{scroll} < $scroll_lines - $area) {
         $self->{scroll}++;
     }
 }
 
-sub set_size_area_text {
+sub shift {
     my $self = shift;
-    my $interface_text = shift;
 
-    $self->{size_area_text} = $interface_text->{size};
+    my $scroll = $self->{scroll};
+    my $area = Interface::Utils::get_size_without_frame($self->{area});
+    my $text_array = $self->{array};
+    my $last_str_number = @$text_array - $scroll - 1;
+    my $first_str_number = $last_str_number - ($area->[$Y] - 1);
+    my $text_array_chank = [@$text_array[$first_str_number .. $last_str_number]];
+
+    return $text_array_chank;
 }
 
 1;

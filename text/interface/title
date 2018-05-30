@@ -12,7 +12,9 @@
         "char_dis": " Болезни ",
         "char_empty": " Пусто ",
         "char_desc": " Описание болезней ",
-        "console": " Консоль "
+        "console": " Консоль ",
+        "dir": " Директория ",
+        "file": " Команды "
     },
 
     "en": {
@@ -29,6 +31,8 @@
         "char_dis": " Diseases  ",
         "char_empty": " Empty ",
         "char_desc": " Desc diseases ",
-        "console": " Console "
+        "console": " Console ",
+        "dir": " Dir ",
+        "file": " Commands "
     }
 }
