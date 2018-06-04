@@ -181,13 +181,12 @@ sub used_food {
 sub get_proto_feature {
     my $item = shift;
 
-    my $file_name = $Consts::items_id->{$item->{proto_id}};
-
-    my $hash = ReadFile::read_json_file($item_dir . $file_name);
-
+    my $hash = $Init::init->{items}{$item->{proto_id}};
     for my $key (keys %$hash) {
         $item->{$key} = $hash->{$key};
     }
+
+    return;
 }
 
 1;

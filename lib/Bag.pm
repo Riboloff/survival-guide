@@ -25,11 +25,18 @@ sub new {
 
     my $bag = {
         items => $items,
+        max_volume => 5, #Пока для всех одинаково
     };
 
     bless($bag, $self);
 
     return $bag;
+}
+
+sub get_max_volume {
+    my $self = shift;
+
+    return $self->{max_volume};
 }
 
 sub clean {

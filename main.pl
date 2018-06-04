@@ -22,7 +22,9 @@ use Keyboard;
 use Keyboard::Consts;
 use Target;
 use Time;
+use Init;
 
+Init->new();
 my $interface = Interface->new();
 my $process_block = {};
 

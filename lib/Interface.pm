@@ -54,12 +54,10 @@ use constant {
 sub new {
     my ($class, $args) = @_;
 
-    my $map       = Map->new('squa');
+    my $map = Map->new('squa');
 
     my $start_coord = [10, 18];
     my $character = Character->new($start_coord);
-
-    my $inv = $character->get_inv();
 
     my $target = Target->new();
 
@@ -77,14 +75,14 @@ sub new {
             size => [],
         },
         time => Time->new({'speed' => 1}),
-        character => Character->new($start_coord),
+        character => $character,
         bots => Utils::create_hash_from_array_obj($bots),
         target => Target->new(),
         chooser => Choouser->new(),
         data_print  => [],
         old_data_print => [],
         inv => {
-            obj => $inv,
+            obj => $character->get_inv(),
         },
     };
 

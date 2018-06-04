@@ -289,17 +289,27 @@ sub _move_item_looting {
 
     my $inv = $interface->get_inv_obj();
     my $bag_inv = $inv->get_bag();
-    my $volume = $inv->get_all_volume();
-    my $max_volume = $inv->get_equipment->get_max_volume();
-    if ($volume + $item->get_volume() > $max_volume) {
-        my $text_obj = $interface->get_text_obj();
-        $text_obj->add_text(Language::get_inv_info('volume_max'));
-        return;
-    }
     if (
             $block_name eq 'looting_bag' and $action eq KEYBOARD_MOVE_ITEM_RIGHT
          or $block_name eq 'loot_list'   and $action eq KEYBOARD_MOVE_ITEM_LEFT
     ) {
+        my $volume;
+        my $max_volume;
+
+        if ($block_name eq 'loot_list') {
+            $max_volume = $inv->get_equipment->get_max_volume();
+            $volume = $inv->get_all_volume();
+        }
+        elsif ($block_name eq 'looting_bag') {
+            $max_volume = $bag_cont->get_max_volume;
+            $volume = $bag_cont->get_all_volume();
+        }
+        if ($volume + $item->get_volume() > $max_volume) {
+            my $text_obj = $interface->get_text_obj();
+            $text_obj->add_text(Language::get_inv_info('volume_max'));
+            return;
+        }
+
         _move_item_between_bag($bag_inv, $action, $bag_cont, $item);
     }
 

@@ -21,6 +21,7 @@ sub process_bag {
     my $chooser_position = $chooser->get_position('inv_bag');
 
     my $bag = $interface->get_inv_obj->get_bag();
+
     my $items_list = $bag->get_all_items();
     $chooser_position = Utils::clamp($chooser_position, 0, $#$items_list);
     $chooser->set_position('inv_bag', $chooser_position);
