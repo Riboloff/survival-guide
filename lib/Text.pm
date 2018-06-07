@@ -21,7 +21,7 @@ sub new {
     my $area = $args{area};
     my $frame = $args{frame} // 0;
 
-    if (!$text) {
+    if (!defined $text and $file) {
         $file = "text/$file";
         $text = Language::read_json_file_lang($file);
     }

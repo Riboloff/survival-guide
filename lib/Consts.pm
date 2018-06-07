@@ -13,8 +13,6 @@ use base qw(Exporter);
         '$X', '$Y',
         '$LT', '$RD',
         '$size_term',
-        '$item_dir',
-        '$text_objects_dir',
         '$items_id', '$objects_id', '$actions_id',
         (grep {$_ =~ /^(AC|OB|IT|ICON|DE|KEYBOARD)_/} keys %{__PACKAGE__ . '::'}),
     );
@@ -32,13 +30,6 @@ $wchar--;
 $hchar--;
 
 our $size_term = [$hchar, $wchar];
-
-our $item_dir           = 'proto/items/';
-our $text_objects_dir   = 'text/objects/';
-our $text_interface_dir = 'text/interface';
-our $text_inform_dir    = 'text/inform';
-our $text_disease_dir   = 'text/disease';
-
 
 our $items_id = {
     eval IT_MEDICINE_BOX   => 'medicine_box',

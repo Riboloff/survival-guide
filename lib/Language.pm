@@ -10,27 +10,13 @@ use Consts;
 use Logger qw(dmp);
 use ReadFile;
 use Utils;
+use Init;
 
 my $lang = 'ru'; #TODO пока хардкод.
 #my $lang = 'en'; #TODO пока хардкод.
 
-
-my $inv_info = Utils::add_hash(
-    _get_text_lang($Consts::text_interface_dir, 'inv_info'),
-    _get_text_lang($Consts::text_inform_dir, 'inv')
-);
-
-my $tilte_blocks = _get_text_lang($Consts::text_interface_dir, 'title');
-my $needs = _get_text_lang($Consts::text_interface_dir, 'needs');
-
-my $diseases_info = _get_text_lang($Consts::text_inform_dir, 'disease');
-my $open_door_info = _get_text_lang($Consts::text_inform_dir, 'open_door');
-my $head = _get_text_lang($Consts::text_interface_dir, 'head');
-
-my $diseases = _get_text_lang($Consts::text_disease_dir, 'general');
-
 sub get_text {
-    my $id = shift;
+    my $id  = shift;
     my $dir = shift;
 
     my $file_name = '';
@@ -44,69 +30,77 @@ sub get_text {
     elsif ($dir eq 'actions') {
         $file_name = $Consts::actions_id->{$id};
     }
+    else {
+        $file_name = $id;
+    }
 
     $path .= $dir . '/' . $file_name;
 
     return read_json_file_lang($path);
 }
 
+sub get_cach_file {
+    my $path = shift;
+
+    $path =~ s{/}{_}g;
+    $path =~ s/^text_//;
+
+    return $Init::init->{text}->{$path};
+}
+
+sub put_cach_file {
+    my $path = shift;
+    my $hash = shift;
+
+    $path =~ s{/}{_}g;
+    $path =~ s/^text_//;
+
+    $Init::init->{text}->{$path} = $hash;
+}
+
 sub read_json_file_lang {
     my $path = shift;
 
+    if (my $cach = get_cach_file($path)) {
+        return $cach;
+    }
+
     my $hash = ReadFile::read_json_file($path);
+    put_cach_file($path, $hash);
 
-    return $hash->{$lang};
-}
-
-sub _get_text_lang {
-    my $dir = shift;
-    my $file_name = shift;
-
-    my $path = $dir . '/' . $file_name;
-
-    return read_json_file_lang($path);
-}
-
-sub get_title_block {
-    my $block_name = shift;
-
-    return $tilte_blocks->{$block_name};
-}
-
-sub get_head {
-    my $block_name = shift;
-
-    return $head->{$block_name};
+    return $hash->{$lang} || {};
 }
 
 sub get_inv_info {
-    my $block_name = shift;
+    my $inv_common = Utils::add_hash(
+        get_text('inv', 'inform'),
+        get_text('inv_info', 'interface')
+    );
+    return $inv_common->{$_[0]};
+}
 
-    return $inv_info->{$block_name};
+sub get_title_block {
+    return get_text('title', 'interface')->{$_[0]};
+}
+
+sub get_head {
+    return get_text('head', 'interface')->{$_[0]};
 }
 
 sub get_needs {
-    my $block_name = shift;
-
-    return $needs->{$block_name};
+    return get_text('needs', 'interface')->{$_[0]};
 }
 
 sub get_disease_info {
-    my $disease_name = shift;
-
-    return $diseases_info->{$disease_name};
+    return get_text('disease', 'inform')->{$_[0]};
 }
 
 sub get_disease {
-    my $disease_name = shift;
-
-    return $diseases->{$disease_name};
+    return get_text('general', 'disease')->{$_[0]};
 }
 
 sub get_open_door_info {
-    my $key = shift;
-
-    return $open_door_info->{$key};
+    return get_text('open_door', 'inform')->{$_[0]};
 }
 
 1;
