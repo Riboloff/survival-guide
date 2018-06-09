@@ -27,8 +27,8 @@ sub process_block {
     );
 
     my $window = Interface::Window->new(%init_window);
-    $window->add_sub_block('char_dis',   process_disease($interface));
-    $window->add_sub_block('char_empty', process_empty($interface));
+    $window->add_sub_block('char_dis',   process_disease($interface, $window));
+    $window->add_sub_block('char_empty', process_empty($interface, $window));
     $window->add_sub_block('char_desc',  process_desc_disease($interface));
 
     $interface->create_window($window);
@@ -37,43 +37,33 @@ sub process_block {
 }
 
 sub process_disease {
-    my $interface = shift;
+    my ($interface, $window) = @_;
 
-    my $chooser = $interface->{chooser};
-    my $chooser_position = $chooser->get_position('char_dis');
     my $char = $interface->{character};
     my $diseases = $char->get_disease->get_all_disease();
+
     my $disease_list = [sort keys %$diseases];
-    $chooser_position = Utils::clamp($chooser_position, 0, $#$disease_list);
-    $chooser->set_position('char_dis', $chooser_position);
-    $chooser->{list}{char_dis} = $disease_list;
-    $chooser->{bag}{char_dis} = $diseases;
-
-    my $char_dis_array = dclone($interface->get_char_dis->{array_area});
     my $disease_list_translate = [map {Language::get_disease($_)} @$disease_list];
-    my $args = {
-        list => $disease_list_translate,
-        array => $char_dis_array,
-        chooser_position => $chooser_position,
-        size_area_frame => $interface->get_char_dis->{size_area_frame},
-    };
-    $char_dis_array = Interface::Utils::list_to_array_symbols_frame($args);
 
-    return $char_dis_array;
+    return $window->create_sub_block_list(
+        dclone($interface->get_char_dis),
+        'char_dis',
+        $interface->{chooser},
+        $disease_list,
+        $disease_list_translate,
+        $diseases
+    );
 }
 
 sub process_empty {
-    my $interface = shift;
+    my ($interface, $window) = @_;
 
-    my $char_empty_array = dclone($interface->get_char_empty->{array_area});
-    my $args = {
-        list => [],
-        array => $char_empty_array,
-        chooser_position => 999,
-        size_area_frame => $interface->get_char_dis->{size_area_frame},
-    };
-    $char_empty_array = Interface::Utils::list_to_array_symbols_frame($args);
-    return $char_empty_array;
+    return $window->create_sub_block_list(
+        dclone($interface->get_char_empty),
+        undef,
+        undef,
+        [],
+    );
 }
 
 sub process_desc_disease {
