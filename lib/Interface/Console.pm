@@ -4,11 +4,10 @@ use strict;
 use warnings;
 use utf8;
 
-use Consts;
 use Interface::Utils;
 use Interface::Window;
 use Logger qw(dmp);
-use Storable qw(dclone);
+use Logger;
 use Text;
 
 sub process_text {
@@ -30,17 +29,18 @@ sub process_text {
 sub process_block {
     my $interface = shift;
 
-    my $text = process_text($interface);
-    my $window = Interface::Window->new(
-            size => {
-                main => $interface->get_console->{size},
-                sub => {
-                    text => $interface->get_console_text->{size},
-                }
+    my %init_window = (
+        size => {
+            main => $interface->get_console->{size},
+            sub => {
+                text => $interface->get_console_text->{size},
             }
+        }
     );
 
-    $window->add_sub_block('text',   $text);
+    my $window = Interface::Window->new(%init_window);
+
+    $window->add_sub_block('text', process_text($interface));
 
     if ($interface->{main_block_show} ne 'console') {
         $window->animation_appearance_top();

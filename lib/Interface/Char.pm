@@ -6,45 +6,34 @@ use utf8;
 
 use Storable qw(dclone);
 
-use Logger qw(dmp);
 use Consts;
 use Interface::Utils;
+use Logger qw(dmp);
 
 sub process_block {
     my $interface = shift;
 
     $interface->{main_block_show} = 'char';
 
-    my $char_array = init_char($interface->{char});
-    my $main_array = $interface->{data_print};
+    my %init_window = (
+        size => {
+            main => $interface->get_char->{size},
+            sub => {
+                char_dis   => $interface->get_char_dis->{size},
+                char_empty => $interface->get_char_empty->{size},
+                char_desc  => $interface->get_char_desc->{size},
+            }
+        }
+    );
 
-    my $disease_array = process_disease($interface);
-    my $empty_array = process_empty($interface);
-    my $desc_array = process_desc_disease($interface);
+    my $window = Interface::Window->new(%init_window);
+    $window->add_sub_block('char_dis',   process_disease($interface));
+    $window->add_sub_block('char_empty', process_empty($interface));
+    $window->add_sub_block('char_desc',  process_desc_disease($interface));
 
-    my $offset_disease = [
-        $interface->get_char_dis->{size}[$LT][$Y] - $interface->get_char->{size}[$LT][$Y],
-        $interface->get_char_dis->{size}[$LT][$X] - $interface->get_char->{size}[$LT][$X]
-    ];
-    my $offset_empty = [
-        $interface->get_char_empty->{size}[$LT][$Y] - $interface->get_char->{size}[$LT][$Y],
-        $interface->get_char_empty->{size}[$LT][$X] - $interface->get_char->{size}[$LT][$X]
-    ];
+    $interface->create_window($window);
 
-    my $offset_desc = [
-        $interface->get_char_desc->{size}[$LT][$Y] - $interface->get_char->{size}[$LT][$Y],
-        $interface->get_char_desc->{size}[$LT][$X] - $interface->get_char->{size}[$LT][$X]
-    ];
-
-    my $offset = [
-        $interface->get_char->{size}[$LT][$Y],
-        $interface->get_char->{size}[$LT][$X]
-    ];
-
-    Interface::Utils::overlay_arrays_simple($char_array, $disease_array, $offset_disease);
-    Interface::Utils::overlay_arrays_simple($char_array, $empty_array, $offset_empty);
-    Interface::Utils::overlay_arrays_simple($char_array, $desc_array, $offset_desc);
-    Interface::Utils::overlay_arrays_simple($main_array, $char_array, $offset);
+    return;
 }
 
 sub process_disease {
@@ -108,24 +97,6 @@ sub process_desc_disease {
     my $text_frame_array = Interface::Utils::get_frame($text_array, $title);
 
     return $text_frame_array;
-}
-
-sub init_char {
-    my $char = shift;
-
-    my $char_array = [];
-
-    my $y_bound_char = $char->{size}[$RD][$Y];
-    my $x_bound_char = $char->{size}[$RD][$X];
-
-    for my $y (0 .. $y_bound_char - 1) {
-        for my $x (0 .. $x_bound_char - 1) {
-            $char_array->[$y][$x]{symbol} = ' ';
-            $char_array->[$y][$x]{color} = '';
-        }
-    }
-
-    return $char_array;
 }
 
 1;
