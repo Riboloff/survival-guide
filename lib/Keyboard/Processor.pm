@@ -514,4 +514,37 @@ sub exit {
     $SIG{INT}->();
 }
 
+sub command_question {
+    my ($interface) = @_;
+
+    my $chooser = $interface->get_chooser();
+    if ($chooser->get_block_name eq 'file') {
+        my $command_name = $chooser->get_target_object();
+        my $console = $interface->get_console_obj();
+
+        my $out = $command_name . ' --help' . "\n" . $console->get_command($command_name)->{'desc'};
+        $console->add_command($out);
+    }
+
+    return {console => 1};
+}
+
+sub command_ping {
+    my ($interface) = @_;
+
+    my $chooser = $interface->get_chooser();
+    if ($chooser->get_block_name eq 'file') {
+        my $command_name = $chooser->get_target_object();
+        my $console = $interface->get_console_obj();
+
+        my $command = $console->get_command($command_name);
+        if ($command and $command->{ping}) {
+            my $out = $command_name . ' --ping' . "\n" . $console->get_command($command_name)->{'ping'};
+            $console->add_command($out);
+        }
+    }
+
+    return {console => 1};
+}
+
 1;

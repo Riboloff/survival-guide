@@ -49,7 +49,7 @@ sub init_text {
 
     my @list_paths = ();
     find (sub {
-        if (-f) {
+        if (-f and !/^\./) {
             my $path = $File::Find::name;
             push(@list_paths, $File::Find::name);
         }

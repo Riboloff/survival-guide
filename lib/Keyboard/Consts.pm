@@ -213,9 +213,21 @@ our $hash_keys = {
             args => undef,
         }]
     },
-    '70'       => {
+    '70'       => { #F
         default => [{
             sub => \&Keyboard::Processor::target_on_off,
+            args => undef,
+        }]
+    },
+    '63'       => {
+        default => [{
+            sub => \&Keyboard::Processor::command_question,
+            args => undef,
+        }]
+    },
+    '42'       => { # *
+        default => [{
+            sub => \&Keyboard::Processor::command_ping,
             args => undef,
         }]
     },

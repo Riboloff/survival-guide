@@ -69,12 +69,16 @@ sub create_sub_block_list {
     my ($self, $block, $block_name, $chooser, $list, $list_name, $bag) = @_;
 
     my $chooser_position = 999;
-    if ($chooser and $chooser->{block_name} eq $block_name) {
+    if ($chooser) {
         $chooser->{list}{$block_name} = $list;
-        $chooser->{bag}{$block_name} = $bag if $bag;
-        $chooser_position = $chooser->get_position($block_name);
-        $chooser_position = Utils::clamp($chooser_position, 0, $#$list);
-        $chooser->set_position($block_name, $chooser_position);
+        if ($bag) {
+            $chooser->{bag}{$block_name} = $bag;
+        }
+        if ($chooser->{block_name} eq $block_name) {
+            $chooser_position = $chooser->get_position($block_name);
+            $chooser_position = Utils::clamp($chooser_position, 0, $#$list);
+            $chooser->set_position($block_name, $chooser_position);
+        }
     }
 
     my $args = {

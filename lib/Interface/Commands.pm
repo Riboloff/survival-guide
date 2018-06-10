@@ -9,7 +9,6 @@ use Interface::Utils;
 use Interface::Window;
 use Logger qw(dmp);
 use Storable qw(dclone);
-use Text;
 
 sub process_dir {
     my ($interface, $window) = @_;
@@ -18,18 +17,21 @@ sub process_dir {
         dclone($interface->get_dir),
         'dir',
         $interface->get_chooser(),
-        [1111, 222],
+        $interface->get_console_obj->get_dirs(),
     );
 }
 
 sub process_file {
     my ($interface, $window) = @_;
 
+    my $dir = $interface->get_chooser->get_target_object('dir');
+    my $commands = $interface->get_console_obj->get_commands_enable($dir);
+
     return $window->create_sub_block_list(
         dclone($interface->get_file),
         'file',
         $interface->get_chooser(),
-        [33333, 44444],
+        $commands,
     );
 }
 

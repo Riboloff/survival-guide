@@ -111,12 +111,18 @@ sub left {
     my $position = $self->{structure}{blocks}{$parent_block}{position};
     $position-- ;
     if ($position < 0) {
-        my $number_last_element = $#{ $self->{structure}{blocks}{$parent_block}{blocks} }; 
+        my $number_last_element = $#{ $self->{structure}{blocks}{$parent_block}{blocks} };
         $position = $number_last_element;
     }
 
-    $self->{structure}{blocks}{$parent_block}{position} = $position;
-    $self->{block_name} = $self->{structure}{blocks}{$parent_block}{blocks}[$position];
+    my $next_block = $self->{structure}{blocks}{$parent_block}{blocks}[$position];
+    if (
+        $self->{list}{$next_block}
+        and @{$self->{list}{$next_block}}
+    ) {
+        $self->{structure}{blocks}{$parent_block}{position} = $position;
+        $self->{block_name} = $self->{structure}{blocks}{$parent_block}{blocks}[$position];
+    }
 }
 
 sub right {
@@ -124,13 +130,22 @@ sub right {
 
     my $parent_block = Interface::get_parent_block_name($self->{block_name});
     my $position = $self->{structure}{blocks}{$parent_block}{position};
+
+
     $position++ ;
-    my $number_last_element = $#{ $self->{structure}{blocks}{$parent_block}{blocks} }; 
+    my $number_last_element = $#{ $self->{structure}{blocks}{$parent_block}{blocks} };
     if ($position > $number_last_element) {
         $position = 0;
     }
-    $self->{structure}{blocks}{$parent_block}{position} = $position;
-    $self->{block_name} = $self->{structure}{blocks}{$parent_block}{blocks}[$position];
+
+    my $next_block = $self->{structure}{blocks}{$parent_block}{blocks}[$position];
+    if (
+        $self->{list}{$next_block}
+        and @{$self->{list}{$next_block}}
+    ) {
+        $self->{structure}{blocks}{$parent_block}{position} = $position;
+        $self->{block_name} = $self->{structure}{blocks}{$parent_block}{blocks}[$position];
+    }
 }
 
 sub get_block_name {
@@ -193,8 +208,8 @@ sub add_list {
 
 sub get_target_object {
     my $self = shift;
+    my $block_name = shift || $self->{block_name};
 
-    my $block_name = $self->{block_name};
     my $position = $self->{position}{$block_name};
     my $obj = $self->{list}{$block_name}->[$position];
 

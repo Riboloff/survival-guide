@@ -13,11 +13,13 @@ my $mods = {};
 sub get_actions {
     my @button = @_;
 
-    my $actions = 0;
+    my $actions = [];
 
     my $key = join('_', @button);
     if (ref $hash_keys->{$key} eq 'HASH') {
-        $actions = [@{$hash_keys->{$key}}{ keys %$mods}];
+        for (@{$hash_keys->{$key}}{ keys %$mods}) {
+            push(@$actions, @$_);
+        }
         if (!@$actions) {
             $actions = $hash_keys->{$key}{default};
         }
