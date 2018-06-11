@@ -22,7 +22,7 @@ sub process_text {
     my $text_array = $text->get_text_array();
     my $title = Language::get_title_block('console');
 
-    my $text_frame_array = Interface::Utils::get_frame_tmp($text_array, $title);
+    my $text_frame_array = Interface::Utils::get_frame($text_array, $title);
     return $text_frame_array;
 }
 

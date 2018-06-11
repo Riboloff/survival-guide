@@ -22,7 +22,14 @@ sub process_block {
 
     my $text = $interface->get_text_obj();
     my $text_array = $text->get_text_array();
-    my $text_frame_array = Interface::Utils::get_frame_tmp($text_array);
+    $text->set_scroll_position();
+    my $text_frame_array = Interface::Utils::get_frame_tmp(
+        $text_array,
+        {
+            scroll => $text->{scroll},
+            scroll_length => $text->{scroll_length}
+        }
+    );
 
     $window->add_sub_block('text', $text_frame_array);
 

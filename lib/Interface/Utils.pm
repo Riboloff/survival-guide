@@ -334,6 +334,7 @@ sub get_frame_tmp {
 #Обернуть в  рамку
 #sub add_frame {
     my $array = shift;
+    my $args  = shift;
 
     my $color = 'dark';
 
@@ -363,8 +364,23 @@ sub get_frame_tmp {
                 $array_frame->[$y][$x]->{symbol} = '─';
                 $array_frame->[$y][$x]->{color} = $color;
             }
-            elsif ($x == 0 or $x == $size_array_frame_x - 1) {
+            elsif ($x == 0) {
                 $array_frame->[$y][$x]->{symbol} = '│';
+                $array_frame->[$y][$x]{color} = $color;
+            }
+            elsif ($x == $size_array_frame_x - 1) {
+                my $symbol = '│';
+                if ($args->{scroll_length}) {
+                    my $procent_scroll = sprintf('%.0f', (($args->{scroll}) * $args->{scroll_length}) / scalar( $#$array ));
+
+                    if (
+                            $y >   scalar( @$array ) - $args->{scroll_length} - $procent_scroll
+                        and $y <=  scalar( @$array ) - $procent_scroll
+                    ) {
+                        $symbol = '0';
+                    }
+                }
+                $array_frame->[$y][$x]->{symbol} = $symbol;
                 $array_frame->[$y][$x]{color} = $color;
             }
         }
