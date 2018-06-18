@@ -30,7 +30,6 @@ sub new {
         text => $text,
         array => [],
         scroll => 0,
-        scroll_length => 0,
     };
 
     my $self = (bless $hash, $class);
@@ -40,18 +39,6 @@ sub new {
     }
 
     return $self;
-}
-
-sub set_scroll_position {
-    my $self = shift;
-
-    my $area = Interface::Utils::get_size_without_frame($self->{area});
-    my $text_array = $self->{array};
-
-    $self->{scroll_length} = int( ($area->[$Y] / scalar @$text_array) * $area->[$Y]) || 1;
-    if ($self->{scroll_length} == $area->[$Y]) {
-        $self->{scroll_length} = 0;
-    }
 }
 
 sub add_text {

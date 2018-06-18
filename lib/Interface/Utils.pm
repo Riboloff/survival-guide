@@ -7,6 +7,7 @@ use utf8;
 use Consts;
 use List::Util qw(min);
 use Logger qw(dmp);
+use List::Util qw(min max);
 
 use lib './xslib';
 use lib './xslib/blib/lib';
@@ -342,8 +343,24 @@ sub get_frame_tmp {
     my $size_array_frame_y = scalar( @$array ) + 2;
     my $size_array_frame_x = scalar( @{$array->[0]} + 2 );
 
+    my $title = $args->{title} || '';
+    my $start_symbol_title = 0;
+    my @title_array = ();
+    if ($title) {
+        @title_array = split(//, $title);
+        if (@title_array <= $size_array_frame_x + 2) {
+            $start_symbol_title = int($size_array_frame_x / 2 - @title_array / 2);
+        }
+    }
+
+    my $scroll = $args->{scroll};
+    my $count_string = $args->{count_string} || 1;
+    my $area_y = $args->{area_y};
+
+    my $right_side_frame = _create_right_side_frame($count_string, $area_y, $scroll);
     for (my $y = 0; $y < $size_array_frame_y; $y++) {
         for (my $x = 0; $x < $size_array_frame_x; $x++) {
+            $color = 'dark';
             if ($x == 0 and $y == 0) {
                 $array_frame->[$y][$x]->{symbol} = '╭';
                 $array_frame->[$y][$x]{color} = $color;
@@ -360,7 +377,21 @@ sub get_frame_tmp {
                 $array_frame->[$y][$x]->{symbol} = '╯';
                 $array_frame->[$y][$x]{color} = $color;
             }
-            elsif ($y == 0 or $y == $size_array_frame_y - 1) {
+            elsif ($y == 0) {
+                if (
+                    $title
+                    and $start_symbol_title <= $x
+                    and ($x - $start_symbol_title) < @title_array
+                ) {
+                    my $symbol = $title_array[$x - $start_symbol_title];
+                    $array_frame->[$y][$x]->{symbol} = $symbol;
+                    $array_frame->[$y][$x]->{color} = 'dark green';
+                } else {
+                    $array_frame->[$y][$x]->{symbol} = '─';
+                    $array_frame->[$y][$x]->{color} = $color;
+                }
+            }
+            elsif ($y == $size_array_frame_y - 1) {
                 $array_frame->[$y][$x]->{symbol} = '─';
                 $array_frame->[$y][$x]->{color} = $color;
             }
@@ -370,24 +401,61 @@ sub get_frame_tmp {
             }
             elsif ($x == $size_array_frame_x - 1) {
                 my $symbol = '│';
-                if ($args->{scroll_length}) {
-                    my $procent_scroll = sprintf('%.0f', (($args->{scroll}) * $args->{scroll_length}) / scalar( $#$array ));
-
-                    if (
-                            $y >   scalar( @$array ) - $args->{scroll_length} - $procent_scroll
-                        and $y <=  scalar( @$array ) - $procent_scroll
-                    ) {
-                        $symbol = '0';
-                    }
+                if ($right_side_frame) {
+                    my $hash = shift @$right_side_frame;
+                    $symbol = $hash->{symbol};
+                    $color = $hash->{color};
                 }
                 $array_frame->[$y][$x]->{symbol} = $symbol;
-                $array_frame->[$y][$x]{color} = $color;
+                $array_frame->[$y][$x]->{color}  = $color;
             }
         }
     }
 
     overlay_arrays_simple($array_frame, $array, [1, 1] );
     return $array_frame;
+}
+
+sub _create_right_side_frame {
+    my ($count_string, $area_y, $scroll) = @_;
+
+    return unless $count_string;
+    return unless $area_y;
+
+    my $right_side_frame = [];
+
+    my $scroll_length = ($area_y * $area_y / $count_string);
+    return if $scroll_length == $area_y;
+
+    my $procent_scroll = sprintf('%.0f', $scroll * $scroll_length / $area_y);
+    my $top_bound = $area_y - $scroll_length - $procent_scroll;
+    my $low_bound = $area_y - $procent_scroll - 1;
+    $top_bound = min($top_bound, $low_bound);
+
+    for (my $y = 0; $y < $area_y; $y++) {
+        my $color = 'dark';
+        my $symbol = '│';
+
+        if (
+                $y >= $top_bound
+            and $y <= $low_bound
+        ) {
+            $symbol = '▌';
+            $color = 'dark, green';
+        }
+        elsif (
+            $y <= $low_bound
+            and $y >= $top_bound - 0.49
+        ) {
+            #$symbol = '▖';
+            $symbol = '▌';
+            $color = 'dark, green';
+        }
+
+        push (@$right_side_frame, {symbol => $symbol, color => $color});
+    }
+
+    return $right_side_frame;
 }
 
 sub get_size_data {

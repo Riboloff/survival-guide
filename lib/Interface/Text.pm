@@ -22,12 +22,13 @@ sub process_block {
 
     my $text = $interface->get_text_obj();
     my $text_array = $text->get_text_array();
-    $text->set_scroll_position();
+    my $area = Interface::Utils::get_size_without_frame($text->{area});
     my $text_frame_array = Interface::Utils::get_frame_tmp(
         $text_array,
         {
             scroll => $text->{scroll},
-            scroll_length => $text->{scroll_length}
+            count_string => scalar @{$text->{array}},
+            area_y => $area->[$Y],
         }
     );
 
