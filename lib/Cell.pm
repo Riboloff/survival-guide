@@ -29,8 +29,7 @@ sub new {
         'icon' => $icon,
         'blocker' => 0,
         'type' => '',
-        'obj' => '',
-        'color' => '',
+        'objs' => [],
     };
     if ($symbol eq 'C' and (ref $conf eq 'HASH') ) {
         $icon = $cell->{icon} = $conf->{icon};
@@ -41,7 +40,7 @@ sub new {
         my $actions_id = $conf->{actions_id};
         my $actions = _get_actions($actions_id);
         my $items_id = $conf->{items_id};
-        $cell->{obj} = Container->new($icon, $cell->{name_id}, $actions, $items_id);
+        push(@{$cell->{objs}}, Container->new($icon, $cell->{name_id}, $actions, $items_id));
     }
     elsif ($symbol eq 'D' and (ref $conf eq 'HASH') ) {
         $icon = $cell->{icon} = $conf->{icon};
@@ -50,7 +49,7 @@ sub new {
         $cell->{name_id} = $conf->{name_id};
         my $actions_id = $conf->{actions_id};
         my $actions = _get_actions($actions_id);
-        $cell->{obj} = Door->new(
+        push(@{$cell->{objs}}, Door->new(
             {
                 icon     => $icon,
                 proto_id => $cell->{name_id},
@@ -59,7 +58,7 @@ sub new {
                 blocker  => $cell->{blocker},
                 lockpick => $conf->{lockpick},
             }
-        );
+        ));
     }
     elsif ($symbol eq 'S' and (ref $conf eq 'HASH') ) {
         $cell->{blocker} = 0;
@@ -69,7 +68,7 @@ sub new {
         my $coord_enter = $conf->{coord_enter};
         my $actions_id = $conf->{actions_id};
         my $actions = _get_actions($actions_id);
-        $cell->{obj} = Stair->new($icon, $cell->{name_id}, $map_name, $coord_enter, $actions);
+        push(@{$cell->{objs}}, Stair->new($icon, $cell->{name_id}, $map_name, $coord_enter, $actions));
     }
     elsif ($symbol =~ /[-|+]/) {
         $cell->{blocker} = 1;
@@ -84,8 +83,8 @@ sub new {
 sub get_icon {
     my $self = shift;
 
-    if ($self->{obj} and exists $self->{obj}{icon}) {
-        return $self->{obj}->get_icon();
+    if ($self->get_obj and (exists $self->get_obj->{icon} or exists $self->get_obj->{symbol})) {
+        return $self->get_obj->get_icon();
     }
     else {
         return $self->{icon};
@@ -109,7 +108,13 @@ sub get_type {
 sub get_obj {
     my $self = shift;
 
-    return $self->{obj};
+    return $self->{objs}->[-1];
+}
+
+sub get_all_objs {
+    my $self = shift;
+
+    return $self->{objs};
 }
 
 sub _get_items {
@@ -137,8 +142,8 @@ sub _get_actions {
 sub get_blocker {
     my $self = shift;
     
-    if ($self->{obj} and exists $self->{obj}{blocker}) {
-        return $self->{obj}{blocker};
+    if ($self->get_obj and exists $self->get_obj->{blocker}) {
+        return $self->get_obj->{blocker};
     } else {
         return $self->{blocker};
     }

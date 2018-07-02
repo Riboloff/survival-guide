@@ -42,7 +42,12 @@ our $hash_keys = {
             args => KEYBOARD_ESC,
         }],
     },
-    '32'       => KEYBOARD_SPACE,
+    '32'       => {
+        default  => [{
+            sub  => \&Keyboard::Processor::char_move,
+            args => KEYBOARD_SPACE,
+        }],
+    },
     '27_91_68' => {
         default  => [{
             sub  => \&Keyboard::Processor::char_move,

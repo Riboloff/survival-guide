@@ -87,11 +87,28 @@ sub get_size_area_list_obj {
         $size_area_map->[$RD][$X]
     ];
     $size_area_list_obj->[$RD] = [
-        $size_area_map->[$RD][$Y],
+        int( $size_area_map->[$RD][$Y] / 2 ) ,
         int( ($size_interface->[$RD][$X] - $size_area_map->[$RD][$X] + 1) / 2) + $size_area_map->[$RD][$X] - 1
     ];
 
     return $size_area_list_obj;
+}
+
+sub get_size_area_look {
+    my $size_object = shift;
+    my $size_needs = shift;
+
+    my $size_area_look = [];
+    $size_area_look->[$LT] = [
+            $size_object->[$RD][$Y],
+            $size_object->[$LT][$X],
+        ],
+    $size_area_look->[$RD] = [
+            $size_needs->[$LT][$Y],
+            $size_needs->[$RD][$X],
+        ],
+
+    return $size_area_look;
 }
 
 
@@ -314,7 +331,9 @@ sub set_size_all_block {
     my $size_area_commands = $size_area_objects;
     my $size_area_dir = $size_area_list_obj;
     my $size_area_file = $size_area_action;
+    my $size_area_look = get_size_area_look($size_area_objects, $size_area_needs);
 
+    dmp($size_area_look);
     $Interface->{size} = $size_interface;
     $Interface->{map}{size} = $size_area_map;
     $Interface->{text}{size} = $size_area_text;
@@ -345,6 +364,8 @@ sub set_size_all_block {
 
     $Interface->{needs}{size} = $size_area_needs;
     $Interface->{head}{size} = $size_area_head;
+
+    $Interface->{look}{size} = $size_area_look;
 
     $Interface->{console}{size} = $size_area_console;
     $Interface->{console}{sub_block}{text}{size} = $size_area_console;

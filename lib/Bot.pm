@@ -21,8 +21,10 @@ sub new {
     ];
     my $bot = {
         coord => $start_coord,
-        symbol => $symbol // '?',
-        color => $color // 'blue',
+        icon => {
+            symbol => $symbol // '?',
+            color => $color // 'blue',
+        },
         id    => create_id(),
         friendly => $friendly,
         map_name   => $map->{map_name},
@@ -30,9 +32,9 @@ sub new {
         bot_type => $bot_type,
         name => $obj_text->{name},
         desc => $obj_text->{desc},
+        look => $obj_text->{desc},
         actions => $actions,
     };
-
     bless($bot, $self);
 
     return $bot;

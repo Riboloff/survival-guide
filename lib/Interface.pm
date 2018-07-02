@@ -24,6 +24,8 @@ use Interface::Needs;
 use Interface::Objects;
 use Interface::Size;
 use Interface::Text;
+use Interface::Look;
+
 use Logger qw(dmp dmp_array);
 use Printer;
 use Utils;
@@ -153,6 +155,8 @@ sub print {
                 #}
         }
         $self->_get_screen_diff('head');
+        #TODO не очень, нужно смотреть на _process_block
+        $self->_get_screen_diff('look');
         Printer::print_diff($self->{diff});
         $self->{diff} = {};
     }
@@ -169,10 +173,12 @@ sub _process_block {
         Interface::Objects::process_block($self);
         Interface::Needs::process_block($self);
         Interface::Head::process_block($self);
+        Interface::Look::process_block($self);
     }
     elsif ($block eq 'map') {
         Interface::Map::process_block($self);
         Interface::Head::process_block($self);
+        Interface::Look::process_block($self);
     } elsif ($block eq 'text') {
         Interface::Text::process_block($self);
     } elsif ($block eq 'objects') {
@@ -466,6 +472,12 @@ sub get_text_obj {
     my $self = shift;
 
     return $self->{text}{obj};
+}
+
+sub get_look {
+    my $self = shift;
+
+    return $self->{look};
 }
 
 sub get_objects {

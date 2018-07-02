@@ -13,8 +13,10 @@ sub new {
 
     my $target = {
         position => [10, 10],
-        symbol => 'X',
-        color => 'red',
+        icon => {
+            symbol => 'X',
+            color => 'red',
+        },
         visible => 0,
     };
 
@@ -25,26 +27,36 @@ sub new {
 
 sub switch {
     my $self = shift;
+    my $position = shift;
 
     $self->{visible} = $self->{visible} ? 0 : 1;
+    $self->{position} = $position;
 }
 
 sub get_position {
     my $self = shift;
 
+    return unless ($self->{visible});
+
     return $self->{position};
+}
+
+sub get_icon {
+    my $self = shift;
+
+    return $self->{icon};
 }
 
 sub get_symbol {
     my $self = shift;
 
-    return $self->{symbol};
+    return $self->{icon}{symbol};
 }
 
 sub get_color {
     my $self = shift;
 
-    return $self->{color};
+    return $self->{icon}{color};
 }
 
 sub move {

@@ -18,7 +18,9 @@ sub get_actions {
     my $key = join('_', @button);
     if (ref $hash_keys->{$key} eq 'HASH') {
         for (@{$hash_keys->{$key}}{ keys %$mods}) {
-            push(@$actions, @$_);
+            if (ref $_ eq 'ARRAY') {
+                push(@$actions, @$_);
+            }
         }
         if (!@$actions) {
             $actions = $hash_keys->{$key}{default};

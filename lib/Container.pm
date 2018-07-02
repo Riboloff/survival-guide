@@ -14,6 +14,7 @@ sub new {
     my $obj_text = Language::get_text($proto_id, 'objects');
     my $name = $obj_text->{name};
     my $desc = Utils::split_text($obj_text->{desc});
+    my $look = $obj_text->{look} // join("\n", @$desc);
 
     my $container = {
         'icon' => $icon,
@@ -24,6 +25,7 @@ sub new {
         'type' => 'Container',
         'proto_id' => $proto_id,
         'desc'     => $desc,
+        'look' => $look,
     };
 
     bless($container, $self);
@@ -59,6 +61,12 @@ sub get_bag {
     my $self = shift;
 
     return $self->{bag};
+}
+
+sub get_look {
+    my $self = shift;
+
+    return $self->{look};
 }
 
 sub get_desc {

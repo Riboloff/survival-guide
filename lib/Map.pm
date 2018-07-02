@@ -67,24 +67,63 @@ sub get_map {
 }
 
 sub get_map_static {
-    my ($self, $character, $bots, $target) = @_;
+    my ($self, $character, $bots, $target, %args) = @_;
 
     my $map = $self->{map};
     my $map_stat = dclone($map);
 
+    $self->_placement_character($map_stat, $character, $bots);
+    if ($target->{visible}) {
+        $self->_placement_target($target);
+    }
+    $self->_create_map_static_visible_area($character);
+    $self->_create_flat_map();
+
+    return $self->{map_array_flat};
+}
+
+sub _create_map_static_visible_area {
+    my ($self, $character) = @_;
+
     my $map_array = [];
+    my $map_stat = $self->{map_stat_obj};
     my $char_coord = $character->get_coord();
     my $radius     = $character->get_radius_visibility();
     my $bound_map = [scalar @$map_stat, scalar @{$map_stat->[0]}];
 
     for (my $y = 0; $y < $bound_map->[$Y]; $y++) {
         for (my $x = 0; $x < $bound_map->[$X]; $x++) {
-            $map_array->[$y][$x]->{symbol} = ' ';
-            $map_array->[$y][$x]->{color} = '';
+            $map_array->[$y][$x] = undef;
 
             my $cell = $map_stat->[$y][$x];
             next unless _is_into_circle($radius, $char_coord, [$y, $x]);
             next unless $self->_is_visible_cell($char_coord, [$y, $x]);
+
+            $map_array->[$y][$x] = $cell;
+        }
+    }
+
+    $self->{map_array_obj} = $map_array;
+
+    return;
+}
+
+sub _create_flat_map {
+    my ($self) = @_;
+
+    my $map_array = [];
+
+    my $map_stat = dclone $self->{map_array_obj};
+
+    my $bound_map = [scalar @$map_stat, scalar @{$map_stat->[0]}];
+    for (my $y = 0; $y < $bound_map->[$Y]; $y++) {
+        for (my $x = 0; $x < $bound_map->[$X]; $x++) {
+            my $cell = $map_stat->[$y][$x];
+            if (!defined $cell) {
+                $map_array->[$y][$x]->{symbol} = ' ';
+                $map_array->[$y][$x]->{color} = '';
+                next;
+            }
             my $icon = $cell->get_icon;
 
             my $backgroung = 'on_yellow,dark';
@@ -98,12 +137,10 @@ sub get_map_static {
             }
         }
     }
-    $map_array = $self->_placement_character($map_array, $character, $bots);
-    if ($target->{visible}) {
-        $map_array = _placement_target($map_array, $target);
-    }
 
-    return $map_array;
+    $self->{map_array_flat} = $map_array;
+
+    return;
 }
 
 sub _is_visible_cell {
@@ -129,17 +166,15 @@ sub _is_visible_cell {
 }
 
 sub _placement_target {
-    my $map_array = shift;
+    my $self = shift;
     my $target = shift;
 
+    my $map_stat = $self->{map_stat_obj};
+
     my ($y, $x) = @{$target->get_position()};
+    push(@{$map_stat->[$y][$x]->{objs}}, $target);
 
-    $map_array->[$y][$x] = {
-        symbol => $target->get_symbol(),
-        color  => $target->get_color(),
-    };
-
-    return $map_array;
+    return;
 }
 
 sub _is_into_circle {
@@ -179,10 +214,7 @@ sub _get_area_around {
 }
 
 sub _placement_character {
-    my $self = shift;
-    my $map = shift;
-    my $character = shift;
-    my $bots_hash = shift;
+    my ($self, $map, $character, $bots_hash) = @_;
 
     my $bots = [values %$bots_hash];
     $bots = [grep {$_->{map_name} eq $self->{map_name}} @$bots];
@@ -191,24 +223,18 @@ sub _placement_character {
     my $y = $coord->[$Y];
     my $x = $coord->[$X];
 
-    $map->[$y][$x]->{symbol} = $character->{symbol};
-    $map->[$y][$x]->{color} = join(',', $map->[$y][$x]->{color}, $character->{color});
+    push(@{$map->[$y][$x]->{objs}}, $character);
 
-    my $radius = $character->get_radius_visibility();
     for my $bot (@$bots) {
         my $coord = $bot->get_coord();
         my $y = $coord->[$Y];
         my $x = $coord->[$X];
 
-        my $char_coord = $character->get_coord();
-        next unless _is_into_circle($radius, $char_coord, [$y, $x]);
-        next unless $self->_is_visible_cell($char_coord, [$y, $x]);
-
-        $map->[$y][$x]->{symbol} = $bot->{symbol};
-        $map->[$y][$x]->{color} = join(',', $map->[$y][$x]->{color}, $bot->{color});
+       push(@{$map->[$y][$x]->{objs}}, $bot);
     }
+    $self->{map_stat_obj} = $map;
 
-    return $map;
+    return;
 }
 
 #В области с радиусом 1, найти все контейнеры

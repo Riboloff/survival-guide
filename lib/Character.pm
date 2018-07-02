@@ -26,10 +26,15 @@ sub new {
 
     my $inv = Inv->new();
     my $equip = $inv->get_equipment();
+    my $id = OB_CHAR;
+    my $obj_text = Language::get_text($id, 'objects');
     my $character = {
+        look => $obj_text->{look},
         coord => $start_coord,
-        symbol => 'Я',
-        color => 'red',
+        icon => {
+            symbol => 'Я',
+            color => 'red',
+        },
         inv => $inv,
         radius_visibility => $start_radius_visibility,
         default_radius_visibility => $start_radius_visibility,
@@ -45,6 +50,12 @@ sub new {
     bless($character, $self);
 
     return $character;
+}
+
+sub get_look {
+    my $self = shift;
+
+    return $self->{look};
 }
 
 sub get_inv {
@@ -82,6 +93,12 @@ sub get_health {
     my $self = shift;
 
     return $self->{needs}{health};
+}
+
+sub get_icon {
+    my $self = shift;
+
+    return $self->{icon};
 }
 
 sub get_hunger {

@@ -15,16 +15,24 @@ sub new {
     my $obj_text = Language::get_text($args->{proto_id}, 'objects');
     my $name = $obj_text->{name};
     my $desc = Utils::split_text($obj_text->{desc});
+    my $look = $obj_text->{look};
 
     my $door = {
         type => 'Door',
         desc => $desc,
         name => $name,
+        look => $look,
         %$args,
     };
     bless($door, $self);
 
     return $door;
+}
+
+sub get_look {
+    my $self = shift;
+
+    return $self->{look};
 }
 
 sub get_icon {

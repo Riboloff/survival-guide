@@ -131,7 +131,8 @@ sub _move_item_between_bag {
 sub target_on_off {
     my $interface = shift;
 
-    $interface->get_target->switch();
+    my $coord = $interface->get_character->get_coord;
+    $interface->get_target->switch([$coord->[$Y], $coord->[$X]]);
     Keyboard::set_or_rm_mod('target');
 
     return {map => 1};
