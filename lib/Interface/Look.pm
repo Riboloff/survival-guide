@@ -32,10 +32,10 @@ sub process_block {
             for my $obj (@$objs) {
                 next if (ref $obj eq 'Target');
 
-                if (UNIVERSAL::can($obj, 'get_look')) {
+                if (eval {$obj->can('get_look')}) {
                     push(@desc, $obj->get_look());
                 }
-                else {
+                elsif (eval {$obj->can('get_desc')}) {
                     push(@desc, $obj->get_desc());
                 }
             }

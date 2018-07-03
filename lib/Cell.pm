@@ -13,6 +13,7 @@ use Action;
 use Consts;
 use Language;
 use Logger qw(dmp);
+use Wall;
 
 sub new {
     my $self   = shift;
@@ -73,6 +74,11 @@ sub new {
     elsif ($symbol =~ /[-|+]/) {
         $cell->{blocker} = 1;
         $cell->{type} = 'wall';
+        my $icon = {
+            symbol => $symbol,
+            color => 'red',
+        };
+        push(@{$cell->{objs}}, Wall->new($icon));
     }
 
     bless($cell, $self);
