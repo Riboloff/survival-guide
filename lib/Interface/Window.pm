@@ -49,19 +49,64 @@ sub get_offset {
 }
 
 sub animation_appearance_top {
-    my $self = shift;
-    my $inf = shift;
+    my ($self) = @_;
 
     my $animation_array = dclone $self->{array};
     my @new = ();
     while (my $string = pop @$animation_array) {
         unshift(@new, $string);
-        my $offset = [
+        my $bound = [
             $self->{size}{main}->[0],
             [scalar @new, scalar @$string]
         ];
-        Printer::print_animation(\@new, $offset);
+        Printer::print_animation(\@new, $bound);
         usleep(5000);
+    }
+}
+
+sub animation_print_text {
+    my ($self, $text, $offset_x) = @_;
+
+    my $animation_array = dclone $self->{array};
+    my @new = ();
+    my @text = split(/\n/, $text->{string});
+    for my $i (0 .. length $text[0] || 0) {
+        my $bound = [
+           [
+               $self->{size}{main}->[0][$Y] + $text->{number} - 1,
+               0
+           ],
+           [
+               $self->{size}{main}->[0][$Y] + $text->{number} - 1,
+               $i + $offset_x
+           ],
+        ];
+        my $offset = [
+            $self->{size}{main}[$LT][$Y],
+            $self->{size}{main}[$LT][$X]
+        ];
+        Printer::print_animation_text($animation_array, $bound, $offset);
+        usleep(100000);
+    }
+}
+
+sub animation_print_spin {
+    my ($self, $offset_into_block, $count) = @_;
+
+    my $offset_block = [
+        $self->{size}{main}[$LT][$Y] + 1,
+        $self->{size}{main}[$LT][$X] + 1
+    ];
+    my $coord = [
+        $offset_block->[$Y] + $offset_into_block->[$Y],
+        $offset_block->[$X] + $offset_into_block->[$X]
+    ];
+    for (1 .. $count) {
+        for my $symbol (qw(\ | / -)) {
+            my $icon = {symbol => $symbol, color => 'white'};
+            Printer::print_icon($icon, $coord);
+            usleep(150000);
+        }
     }
 }
 

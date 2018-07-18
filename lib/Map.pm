@@ -71,7 +71,6 @@ sub get_map_static {
 
     my $map = $self->{map};
     my $map_stat = dclone($map);
-
     $self->_placement_character($map_stat, $character, $bots);
     if ($target->{visible}) {
         $self->_placement_target($target);

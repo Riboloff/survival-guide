@@ -15,6 +15,10 @@ sub new {
     my $self = {
         ps1 => '[c=green,dark]gamer[/c]:[c=blue]~[/c]$ ',
         text => ['sudo rm -rf'],
+        hot_text => {
+            string => '',
+            number => 1,
+        },
         start_text => 'hello world',
         commands => {
             'connect' => {
@@ -47,10 +51,28 @@ sub get_text {
     return join("\n", @text);
 }
 
+sub get_ps1 {
+    my $self = shift;
+
+    return $self->{ps1};
+}
+
+sub get_hot_text {
+    my $self = shift;
+
+    return $self->{hot_text};
+}
+
 sub add_command {
     my ($self, $string) = @_;
 
+    my $number = scalar split(/\n/, $self->get_text()) - 1,
     push(@{$self->{text}}, $string);
+
+    $self->{hot_text} = {
+        string => $string,
+        number => $number,
+    }
 }
 
 sub get_commands_enable {

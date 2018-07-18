@@ -19,6 +19,7 @@ use lib qw/lib/;
 use Consts qw($X $Y $size_term $LT $RD);
 use Logger qw(dmp);
 
+
 $| = 1;
 
 my $console = Term::ANSIScreen->new;
@@ -142,6 +143,35 @@ sub print_animation {
             print $line;
         }
     }
+}
+
+sub print_animation_text {
+    my $array  = shift;
+    my $bound  = shift;
+    my $offset = shift;
+
+    my $bound_lt = $bound->[$LT];
+    my $bound_rd = $bound->[$RD];
+    for (my $y = $bound_lt->[$Y]; $y <= $bound_rd->[$Y]; $y++) {
+        for (my $x = $bound_lt->[$X]; $x < $bound_rd->[$X]; $x++) {
+            my $y_offset = $offset->[$Y] + $y;
+            my $x_offset = $offset->[$X] + $x;
+            $console->Cursor($x_offset, $y_offset);
+            my $symbol = $array->[$y][$x]->{symbol};
+            my $color = $array->[$y][$x]->{color};
+            print colored($symbol, split(/,/, $color));
+        }
+    }
+}
+
+sub print_icon {
+    my $icon = shift;
+    my $coord = shift;
+
+    $console->Cursor($coord->[$X], $coord->[$Y]);
+    my $symbol = $icon->{symbol};
+    my $color   = $icon->{color};
+    print colored($symbol, split(/,/, $color));
 }
 
 1;

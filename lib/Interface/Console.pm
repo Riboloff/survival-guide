@@ -45,6 +45,17 @@ sub process_block {
     if ($interface->{main_block_show} ne 'console') {
         $window->animation_appearance_top();
     }
+
+    my $hot_text = $interface->get_console_obj->get_hot_text();
+    if ($hot_text->{string}) {
+        my $ps1 = $interface->get_console_obj->get_ps1;
+        $ps1 =~ s/\[.*?\]//g;
+        my $offset_x = length($ps1) + 1;
+        $window->animation_print_text($hot_text, $offset_x);
+        my $bound_for_spin = [$hot_text->{number} + 1, 0];
+        $window->animation_print_spin($bound_for_spin, 5);
+    }
+
     $interface->{main_block_show} = 'console';
 
     $interface->create_window($window);
