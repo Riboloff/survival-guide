@@ -32,15 +32,21 @@ $SIG{INT} = sub {ReadMode('normal'); exit(0)};
 
 while(1) {
     $interface->print($process_block);
-
     $process_block = {};
     ReadMode('cbreak');
-    while( defined (my $key_tmp = ReadKey(-1) )) {};
-    my $key = ReadKey(0);
+    while( defined (my $key_tmp = ReadKey(-1) )) {}; #Сброс буфера.
+    my $key;
+    while ( not defined ($key = ReadKey(-1) )) { #Во время простоя
+        my $key_interrupt = $interface->print_animation();
+        if ($key_interrupt) {
+            $key = $key_interrupt;
+            last;
+        }
+    };
     my @keys = ();
     push(@keys, ord $key);
 
-    if (ord $key == 27) {
+    if (ord $key == 27) { #Обработка нажатие кнопки из некольких символов
         while( defined (my $key_yet = ReadKey(-1) )) {
             push @keys, ord $key_yet;
         }

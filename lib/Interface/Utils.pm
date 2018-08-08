@@ -362,19 +362,19 @@ sub get_frame_tmp {
         for (my $x = 0; $x < $size_array_frame_x; $x++) {
             $color = 'dark';
             if ($x == 0 and $y == 0) {
-                $array_frame->[$y][$x]->{symbol} = '╭';
+                $array_frame->[$y][$x]->{symbol} = FRAME_ANGLE_LEFT_TOP;
                 $array_frame->[$y][$x]{color} = $color;
             }
             elsif ($x == 0 and $y == $size_array_frame_y - 1) {
-                $array_frame->[$y][$x]->{symbol} = '╰';
+                $array_frame->[$y][$x]->{symbol} = FRAME_ANGLE_LEFT_DOWN;
                 $array_frame->[$y][$x]{color} = $color;
             }
             elsif ($x == $size_array_frame_x - 1 and $y == 0) {
-                $array_frame->[$y][$x]->{symbol} = '╮';
+                $array_frame->[$y][$x]->{symbol} = FRAME_ANGLE_RIGHT_TOP;
                 $array_frame->[$y][$x]{color} = $color;
             }
             elsif ($x == $size_array_frame_x - 1 and $y == $size_array_frame_y - 1) {
-                $array_frame->[$y][$x]->{symbol} = '╯';
+                $array_frame->[$y][$x]->{symbol} = FRAME_ANGLE_RIGHT_DOWN;
                 $array_frame->[$y][$x]{color} = $color;
             }
             elsif ($y == 0) {
@@ -387,16 +387,16 @@ sub get_frame_tmp {
                     $array_frame->[$y][$x]->{symbol} = $symbol;
                     $array_frame->[$y][$x]->{color} = 'dark green';
                 } else {
-                    $array_frame->[$y][$x]->{symbol} = '─';
+                    $array_frame->[$y][$x]->{symbol} = FRAME_HORIZON;
                     $array_frame->[$y][$x]->{color} = $color;
                 }
             }
             elsif ($y == $size_array_frame_y - 1) {
-                $array_frame->[$y][$x]->{symbol} = '─';
+                $array_frame->[$y][$x]->{symbol} = FRAME_HORIZON;
                 $array_frame->[$y][$x]->{color} = $color;
             }
             elsif ($x == 0) {
-                $array_frame->[$y][$x]->{symbol} = '│';
+                $array_frame->[$y][$x]->{symbol} = FRAME_VERTICAL;
                 $array_frame->[$y][$x]{color} = $color;
             }
             elsif ($x == $size_array_frame_x - 1) {
@@ -434,21 +434,20 @@ sub _create_right_side_frame {
 
     for (my $y = 0; $y < $area_y; $y++) {
         my $color = 'dark';
-        my $symbol = '│';
+        my $symbol = FRAME_VERTICAL;
 
         if (
                 $y >= $top_bound
             and $y <= $low_bound
         ) {
-            $symbol = '▌';
+            $symbol = FRAME_SCROLL;
             $color = 'dark, green';
         }
         elsif (
             $y <= $low_bound
             and $y >= $top_bound - 0.49
         ) {
-            #$symbol = '▖';
-            $symbol = '▌';
+            $symbol = FRAME_SCROLL;
             $color = 'dark, green';
         }
 

@@ -11,6 +11,7 @@ use Interface::Utils;
 use Storable qw(dclone);
 use Printer;
 use Time::HiRes qw/usleep/;
+use Utils;
 
 sub new {
     my $class = shift;
@@ -29,7 +30,6 @@ sub new {
 
 sub add_sub_block {
     my ($self, $sub_block, $data_array) = @_;
-
 
     my $offset = $self->get_offset($sub_block);
     Interface::Utils::overlay_arrays_simple($self->{array}, $data_array, $offset);
@@ -65,27 +65,15 @@ sub animation_appearance_top {
 }
 
 sub animation_print_text {
-    my ($self, $text, $offset_x) = @_;
+    my ($self, $array, $offset) = @_;
 
-    my $animation_array = dclone $self->{array};
-    my @new = ();
-    my @text = split(/\n/, $text->{string});
-    for my $i (0 .. length $text[0] || 0) {
-        my $bound = [
-           [
-               $self->{size}{main}->[0][$Y] + $text->{number} - 1,
-               0
-           ],
-           [
-               $self->{size}{main}->[0][$Y] + $text->{number} - 1,
-               $i + $offset_x
-           ],
+    for my $i (0 .. @{$array->[0]}) {
+        my $bound = [ [0, 0], [0, $i]];
+        my $offset_ = [
+            $self->{size}{main}[$LT][$Y] + $offset->[$Y],
+            $self->{size}{main}[$LT][$X] + $offset->[$X]
         ];
-        my $offset = [
-            $self->{size}{main}[$LT][$Y],
-            $self->{size}{main}[$LT][$X]
-        ];
-        Printer::print_animation_text($animation_array, $bound, $offset);
+        Printer::print_animation_text($array, $bound, $offset_);
         usleep(100000);
     }
 }

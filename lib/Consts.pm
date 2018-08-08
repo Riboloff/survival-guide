@@ -2,6 +2,7 @@ package Consts;
 
 use strict;
 use warnings;
+use utf8;
 
 use Term::ReadKey;
 use Term::Cap;
@@ -14,7 +15,7 @@ use base qw(Exporter);
         '$LT', '$RD',
         '$size_term',
         '$items_id', '$objects_id', '$actions_id',
-        (grep {$_ =~ /^(AC|OB|IT|ICON|DE|KEYBOARD)_/} keys %{__PACKAGE__ . '::'}),
+        (grep {$_ =~ /^(AC|OB|IT|ICON|DE|KEYBOARD|FRAME)_/} keys %{__PACKAGE__ . '::'}),
     );
 }
 our $X = 1;
@@ -132,6 +133,20 @@ use constant {
     KEYBOARD_TARGET_DOWN   => 24,
     KEYBOARD_TARGET_UP     => 25,
     KEYBOARD_SPACE         => 26,
+};
+
+use constant {
+    FRAME_VERTICAL         => '│',
+    FRAME_HORIZON          => '─',
+    FRAME_ANGLE_LEFT_TOP   => '╭',
+    FRAME_ANGLE_RIGHT_TOP  => '╮',
+    FRAME_ANGLE_LEFT_DOWN  => '╰',
+    FRAME_ANGLE_RIGHT_DOWN => '╯',
+    FRAME_SCROLL           => '▌',
+}; 
+
+use constant {
+    FRAME_SYMBOLS => [FRAME_VERTICAL, FRAME_HORIZON, FRAME_ANGLE_LEFT_TOP, FRAME_ANGLE_RIGHT_TOP, FRAME_ANGLE_LEFT_DOWN, FRAME_ANGLE_RIGHT_DOWN, FRAME_SCROLL],
 };
 
 1;

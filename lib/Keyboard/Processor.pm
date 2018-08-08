@@ -99,7 +99,7 @@ sub enter {
         $process_block->{craft} = 1;
     }
     if ($chooser->{block_name} eq 'dir') {
-        $interface->get_console_obj()->add_command('');
+        $interface->get_console_obj()->add_command({command => '', output => ''});
         $process_block->{console} = 1;
     }
 
@@ -523,8 +523,10 @@ sub command_question {
         my $command_name = $chooser->get_target_object();
         my $console = $interface->get_console_obj();
 
-        my $out = $command_name . ' --help' . "\n" . $console->get_command($command_name)->{'desc'};
-        $console->add_command($out);
+        $console->add_command({
+            command => '--help',
+            output  => $console->get_command($command_name)->{'desc'},    
+        });
     }
 
     return {console => 1};
@@ -540,8 +542,10 @@ sub command_ping {
 
         my $command = $console->get_command($command_name);
         if ($command and $command->{ping}) {
-            my $out = $command_name . ' --ping' . "\n" . $console->get_command($command_name)->{'ping'};
-            $console->add_command($out);
+            $console->add_command({
+                command => '--ping',
+                output  => $command->{ping},    
+            });
         }
     }
 

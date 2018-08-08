@@ -333,7 +333,6 @@ sub set_size_all_block {
     my $size_area_file = $size_area_action;
     my $size_area_look = get_size_area_look($size_area_objects, $size_area_needs);
 
-    dmp($size_area_look);
     $Interface->{size} = $size_interface;
     $Interface->{map}{size} = $size_area_map;
     $Interface->{text}{size} = $size_area_text;

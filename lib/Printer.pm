@@ -172,6 +172,7 @@ sub print_icon {
     my $symbol = $icon->{symbol};
     my $color   = $icon->{color};
     print colored($symbol, split(/,/, $color));
+    $console->Cursor(0, $size_term->[$X]);
 }
 
 1;

@@ -10,9 +10,9 @@ use Data::Dumper;
 my $tracefrom = 2;
 
 sub dmp {
-
     my $fname = (caller(1 + $tracefrom - 1))[3];
-    $fname = (caller(0 + $tracefrom - 1))[0] if $fname eq '(eval)' or !$fname;
+    $fname = (caller(0 + $tracefrom - 1))[0] if !$fname;
+    $fname //= '';
 
     my @d = ();
     for my $m1 (@_ ? @_ : $_) {

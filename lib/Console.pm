@@ -14,12 +14,12 @@ sub new {
     my $text = Language::read_json_file_lang('commands/connect');
     my $self = {
         ps1 => '[c=green,dark]gamer[/c]:[c=blue]~[/c]$ ',
-        text => ['sudo rm -rf'],
-        hot_text => {
-            string => '',
-            number => 1,
-        },
-        start_text => 'hello world',
+        #text => ['sudo rm -rf'],
+        text => [
+            {command => 'sudo rm -rf', output => 'access denied'},
+        ],
+        text_bufer => [],
+        start_text => 'hello World',
         commands => {
             'connect' => {
                 enable => 1,
@@ -32,6 +32,7 @@ sub new {
             '/bin',
             '/home',
         ],
+        coord_cur => [0, 0],
     };
 
     bless($self, $class);
@@ -39,13 +40,37 @@ sub new {
     return $self;
 }
 
+sub get_coord_cur {
+    my $self = shift;
+
+    my $text = $self->get_text_flat();
+dmp($text);
+    my @text = split(/\n/, $text);
+    my $y = scalar @text;
+    my $last_str = $text[-1];
+    $last_str =~ s/\[.*?\]//g;
+    my $x = length $last_str;
+dmp($y, $x);
+    return [$y, $x];
+}
+
 sub get_text {
+    my $self = shift;
+
+    return $self->{text};
+}
+
+sub get_text_flat {
     my $self = shift;
 
     my @text = ($self->{start_text});
     for my $line (@{$self->{text}}) {
-        push(@text, $self->{ps1} . $line);
+        push(@text, $self->{ps1} . $line->{command});
+        if ($line->{output}) {
+            push(@text, $line->{output});
+        }
     }
+
     push(@text, $self->{ps1} . '_' );
 
     return join("\n", @text);
@@ -57,21 +82,26 @@ sub get_ps1 {
     return $self->{ps1};
 }
 
-sub get_hot_text {
+sub get_last_command {
     my $self = shift;
 
-    return $self->{hot_text};
+    #return $self->{text}[-1];
+    return $self->{text_bufer}[-1];
 }
 
 sub add_command {
-    my ($self, $string) = @_;
+    my ($self, $text) = @_;
 
-    my $number = scalar split(/\n/, $self->get_text()) - 1,
-    push(@{$self->{text}}, $string);
+    #push(@{$self->{text}}, $text);
+    push(@{$self->{text_bufer}}, $text);
+}
 
-    $self->{hot_text} = {
-        string => $string,
-        number => $number,
+sub add_command_from_bufer {
+    my ($self, $text) = @_;
+
+    my $buff_command = shift @{$self->{text_bufer}};
+    if ($buff_command) {
+        push(@{$self->{text}}, $buff_command);
     }
 }
 

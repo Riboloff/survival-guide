@@ -59,6 +59,7 @@ sub inition {
             $size_area = Interface::Utils::get_size($area),
         }
         else {
+            dmp(11111111111);
             $size_area = Interface::Utils::get_size_without_frame($area),
         }
         $self->{area} = $area;

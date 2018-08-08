@@ -69,4 +69,19 @@ sub are_coords_nearby {
     );
 }
 
+sub get_y_last_char {
+    my $text_array = shift;
+    
+    for my $i (reverse 0 .. $#$text_array) {
+        my $row = $text_array->[$i];
+        for my $icon (@$row) {
+            next if ($icon->{symbol} ~~ FRAME_SYMBOLS);
+            if ($icon->{symbol} and $icon->{symbol} ne ' ') {
+                return $i;
+            }
+        }
+    }
+}
+
+
 1;

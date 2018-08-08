@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
+use Term::ReadKey;
 use Storable qw(dclone);
 use Term::ANSIColor;
 use Term::ReadKey;
@@ -11,6 +12,7 @@ use Term::Cap;
 use POSIX;
 use List::Util qw(min);
 
+use Animation;
 use Consts qw($X $Y $LT $RD $size_term);
 use Interface::Char;
 use Interface::Commands;
@@ -30,6 +32,7 @@ use Logger qw(dmp dmp_array);
 use Printer;
 use Utils;
 use Consts;
+use Time::HiRes qw/usleep/;
 
 =we
 use lib './xslib';
@@ -649,6 +652,27 @@ sub create_window {
         $window->{array},
         $offset
     );
+}
+
+sub print_animation {
+    my ($self) = @_;
+
+    my $animations = Animation::get()->get_animations({block => $self->{main_block_show}});
+
+    my $key_interrupt;
+    for my $anim (@$animations) {
+        if ($anim->{type} eq 'blink') {
+            my $coord = $anim->{coord};
+            for my $symbol (@{$anim->{symbols}}) {
+                my $icon = {
+                    symbol => $symbol,
+                    color => 'green'
+                };
+                Printer::print_icon($icon, $coord);
+                return $key_interrupt if ($key_interrupt = ReadKey($anim->{mtime} / 1000));
+            }
+        }
+    }
 }
 
 1;
