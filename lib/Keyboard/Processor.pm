@@ -98,8 +98,14 @@ sub enter {
         }
         $process_block->{craft} = 1;
     }
-    if ($chooser->{block_name} eq 'dir') {
+
+    if ($chooser->get_block_name eq 'dir') {
         $interface->get_console_obj()->add_command({command => '', output => ''});
+        $process_block->{console} = 1;
+    }
+
+    if ($chooser->get_block_name eq 'file') {
+        command_run($interface);
         $process_block->{console} = 1;
     }
 
@@ -524,8 +530,25 @@ sub command_question {
         my $console = $interface->get_console_obj();
 
         $console->add_command({
-            command => '--help',
-            output  => $console->get_command($command_name)->{'desc'},    
+            command => join(' ', $command_name, '--help'),
+            output  => $console->get_command($command_name)->{'desc'},
+        });
+    }
+
+    return {console => 1};
+}
+
+sub command_run {
+    my ($interface) = @_;
+
+    my $chooser = $interface->get_chooser();
+    if ($chooser->get_block_name eq 'file') {
+        my $command_name = $chooser->get_target_object();
+        my $console = $interface->get_console_obj();
+
+        $console->add_command({
+            command => join(' ', $command_name, '127.1.1'),
+            output  => $console->get_command($command_name)->{'run'},
         });
     }
 
@@ -543,8 +566,8 @@ sub command_ping {
         my $command = $console->get_command($command_name);
         if ($command and $command->{ping}) {
             $console->add_command({
-                command => '--ping',
-                output  => $command->{ping},    
+                command => join(' ', $command_name, '--ping'),
+                output  => $command->{ping},
             });
         }
     }

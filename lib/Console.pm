@@ -23,6 +23,7 @@ sub new {
         commands => {
             'connect' => {
                 enable => 1,
+                run => $text->{run},
                 desc => $text->{desc},
                 ping => $text->{ping},
                 dir => '/bin'
@@ -38,20 +39,6 @@ sub new {
     bless($self, $class);
 
     return $self;
-}
-
-sub get_coord_cur {
-    my $self = shift;
-
-    my $text = $self->get_text_flat();
-dmp($text);
-    my @text = split(/\n/, $text);
-    my $y = scalar @text;
-    my $last_str = $text[-1];
-    $last_str =~ s/\[.*?\]//g;
-    my $x = length $last_str;
-dmp($y, $x);
-    return [$y, $x];
 }
 
 sub get_text {
@@ -85,14 +72,12 @@ sub get_ps1 {
 sub get_last_command {
     my $self = shift;
 
-    #return $self->{text}[-1];
     return $self->{text_bufer}[-1];
 }
 
 sub add_command {
     my ($self, $text) = @_;
 
-    #push(@{$self->{text}}, $text);
     push(@{$self->{text_bufer}}, $text);
 }
 

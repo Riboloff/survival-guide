@@ -70,13 +70,25 @@ sub animation_print_text {
     for my $i (0 .. @{$array->[0]}) {
         my $bound = [ [0, 0], [0, $i]];
         my $offset_ = [
-            $self->{size}{main}[$LT][$Y] + $offset->[$Y],
-            $self->{size}{main}[$LT][$X] + $offset->[$X]
+            $self->{size}{main}[$LT][$Y] + 1 + $offset->[$Y],
+            $self->{size}{main}[$LT][$X] + 1 + $offset->[$X]
         ];
         Printer::print_animation_text($array, $bound, $offset_);
         usleep(100000);
     }
 }
+
+sub animation_clear_text {
+    my ($self, $array, $offset) = @_;
+
+    my $bound = [ [0, 0], [0, scalar @{$array->[0]}]];
+    my $offset_ = [
+        $self->{size}{main}[$LT][$Y] + 1 + $offset->[$Y],
+        $self->{size}{main}[$LT][$X] + 1 + $offset->[$X]
+    ];
+    Printer::print_animation_text($array, $bound, $offset_);
+}
+
 
 sub animation_print_spin {
     my ($self, $offset_into_block, $count) = @_;

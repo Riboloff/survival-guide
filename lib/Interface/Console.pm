@@ -49,37 +49,38 @@ sub process_block {
     if ($interface->{main_block_show} ne 'console') {
         $window->animation_appearance_top();
     }
-
+    #Наговнякал :(
     my $console = $interface->get_console_obj;
     my $last_command = $console->get_last_command();
     if ($last_command->{command}) {
-        my $ps1 = $interface->get_console_obj->get_ps1;
-        $ps1 =~ s/\[.*?\]//g;
-        my $offset_x = length($ps1) + 1;
         my $command = $last_command->{command};
 
-        my $offset_y = -1;
-        my @out_console = @{$interface->get_console_obj->get_text};
-        for (@out_console) {
-            $offset_y += scalar split(/\n/, $_->{command});
-            $offset_y += scalar split(/\n/, $_->{output});
-        }
-        my $offset = [
-            $offset_y,
-            $offset_x,
-        ];
-        my $coord = $console->get_coord_cur();
-        
+        my $coord = Text->new(
+            text => $interface->get_console_obj->get_text_flat,
+            area => $interface->get_console_text->{size},
+        )->get_coord_last_litteral();
+
         my $text_obj = Text->new(
             text => $command,
             area => [[0,0],[1, length $command]],
             frame => 1
         );
-        
-        #$window->animation_print_text($command, $offset);
         $window->animation_print_text($text_obj->get_text_array(), $coord);
-        #my $bound_for_spin = [$hot_text->{number} + 1, 0];
-        #$window->animation_print_spin($bound_for_spin, 5);
+
+        my $ps1 = $interface->get_console_obj->get_ps1;
+        $ps1 =~ s/\[.*?\]//g;
+        my $offset_x = length($ps1 . ' ' . $command);
+
+        my $bound_for_spin = [$coord->[$Y], $offset_x];
+        $window->animation_print_spin($bound_for_spin, 5);
+
+        $text_obj = Text->new(
+            text => ' ' x $offset_x,
+            area => [[0,0],[1, $offset_x]],
+            frame => 1
+        );
+        $window->animation_clear_text($text_obj->get_text_array(), $coord);
+
     }
     $interface->get_console_obj->add_command_from_bufer();
 
@@ -88,17 +89,12 @@ sub process_block {
 
     $interface->create_window($window);
 
-    my $text = $interface->get_console_obj->get_text_flat();
-    my @text = split(/\n/, $text);
-
-    my $ps1 = $interface->get_console_obj->get_ps1;
-    $ps1 =~ s/\[.*?\]//g;
-    my $offset_x = length($ps1) + 1;
-
-    my $coord = [
-        $window->{size}{main}[$LT][$Y] + scalar @text,
-        $window->{size}{main}[$LT][$X] + $offset_x
-    ];
+    my $coord = Text->new(
+        text => $interface->get_console_obj->get_text_flat,
+        area => $interface->get_console_text->{size},
+    )->get_coord_last_litteral();
+    $coord->[$Y] = $window->{size}{main}[$LT][$Y] + $coord->[$Y] + 1;
+    $coord->[$X]++;
 
     Animation->get()->add(
         {

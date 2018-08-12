@@ -59,7 +59,6 @@ sub inition {
             $size_area = Interface::Utils::get_size($area),
         }
         else {
-            dmp(11111111111);
             $size_area = Interface::Utils::get_size_without_frame($area),
         }
         $self->{area} = $area;
@@ -131,7 +130,7 @@ sub get_text_array {
     $self->{array} = $array;
 
     unless (Interface::Utils::is_object_into_area($size, $array) ) {
-        $array = $self->shift();
+        $array = $self->_shift();
     }
 
     return $array;
@@ -194,7 +193,7 @@ sub top {
     }
 }
 
-sub shift {
+sub _shift {
     my $self = shift;
 
     my $scroll = $self->{scroll};
@@ -205,6 +204,20 @@ sub shift {
     my $text_array_chank = [@$text_array[$first_str_number .. $last_str_number]];
 
     return $text_array_chank;
+}
+
+sub get_coord_last_litteral {
+    my $self = shift;
+
+    my $array = $self->get_text_array();
+
+    for my $y (reverse  0 .. $#$array) {
+        for my $x (reverse 0 .. $#{$array->[$y]}) {
+            if ($array->[$y][$x]->{symbol} !~ /\s/) {
+                return [$y, $x];
+            }
+        }
+    }
 }
 
 1;
