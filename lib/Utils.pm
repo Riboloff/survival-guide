@@ -83,5 +83,19 @@ sub get_y_last_char {
     }
 }
 
+sub eq_coords {
+    my ($coord1, $coord2) = @_;
+
+    if (
+        $coord1->[$Y] eq $coord2->[$Y]
+        and
+        $coord1->[$X] eq $coord2->[$X]
+    ) {
+        return 1;
+    }
+
+    return 0;
+}
+
 
 1;

@@ -114,7 +114,8 @@ sub get_type {
 sub get_obj {
     my $self = shift;
 
-    return $self->{objs}->[-1];
+    #return $self->{objs}->[-1];
+    return $self->{objs}->[0];
 }
 
 sub get_all_objs {

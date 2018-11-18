@@ -167,10 +167,8 @@ sub char_move {
 
     my $process_block = {};
 
-    $interface->get_bot_by_id(0)->move_bot($interface);
-    $interface->get_bot_by_id(1)->move_bot($interface);
     if ($interface->get_main_block_show_name() eq 'map') {
-        if ($character->move($interface->get_map_obj, $action)) {
+        if ($character->move($interface, $action)) {
             my $text_obj = $interface->get_text_obj();
             _change_time(
                 $text_obj,
@@ -184,6 +182,9 @@ sub char_move {
         }
         $chooser->reset_all_position();
     }
+
+    $interface->get_bot_by_id(0)->move_bot($interface);
+    $interface->get_bot_by_id(1)->move_bot($interface);
 
     return $process_block;
 }

@@ -27,7 +27,7 @@ sub new {
         },
         id    => create_id(),
         friendly => $friendly,
-        map_name   => $map->{map_name},
+        map_name => $map->{map_name},
         bot => 1,
         bot_type => $bot_type,
         name => $obj_text->{name},
@@ -80,7 +80,7 @@ sub move_bot {
         }
     }
     if ($chosen_direction) {
-        $self->move($interface->get_map_obj, $chosen_direction);
+        $self->move($interface, $chosen_direction);
     }
 }
 

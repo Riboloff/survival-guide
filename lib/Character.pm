@@ -149,10 +149,9 @@ sub get_cause_no_enable_craft {
 }
 
 sub move {
-    my $self    = shift;
-    my $map_obj = shift;
-    my $move    = shift;
+    my ($self, $interface, $move) = @_;
 
+    my $map_obj = $interface->get_map_obj();
     if (
         $self->{bot}
         and $map_obj->{map_name} ne $self->{map_name}
@@ -180,17 +179,36 @@ sub move {
         if ($y + 1 < @$map) {
             $y++;
         }
+    } elsif ($move == KEYBOARD_SPACE) {
+        return 1;
     }
+
     my $cell = $map->[$y][$x];
 
-    if ($cell->get_blocker) {
-        return 0;
-    }
+    return 0 if $cell->get_blocker();
+    return 0 if _is_character_or_boot($interface, [$y, $x]);
 
     $self->get_coord->[$X] = $x;
     $self->get_coord->[$Y] = $y;
 
     return 1;
+}
+
+sub _is_character_or_boot {
+    my ($interface, $coord) = @_;
+
+    my @pers = (
+        values %{$interface->get_bots()},
+        $interface->get_character()
+    );
+
+    for my $bot (@pers) {
+        if (Utils::eq_coords($bot->get_coord(), $coord)) {
+            return 1;
+        }
+    }
+
+    return 0;
 }
 
 1;
