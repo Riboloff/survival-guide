@@ -1,0 +1,259 @@
+#include <iostream>
+#include <vector>
+#include <map>
+#include <random>
+
+using namespace std;
+
+map <int, char> mappingSymbols = {
+    {-3, '+'},
+    {-2, '-'},
+    {-1, '|'},
+};
+
+const int X = 1;
+const int Y = 0;
+
+const int COEF_VERT_WALL = 5;
+const int COEF_GOR_WALL = 5;
+
+struct Point {
+    int y;
+    int x;
+};
+
+void printVector(const vector<int>& vec) {
+    for (const int &v: vec) {
+        if (v >= 0) {
+            cout <<  " ";
+        }
+        else {
+            cout << mappingSymbols[v];
+        }
+    }
+    cout << endl;
+}
+
+void printVectorDebug(const vector<int>& vec) {
+    for (const int &v: vec) {
+        if (v >= 0) {
+            cout <<  v << " ";
+        }
+        else {
+            //cout << mappingSymbols[v] << " ";
+            cout << v << " ";
+        }
+    }
+    cout << endl;
+}
+
+void _printMap(const vector<vector<int>>& map) {
+    for (const vector<int>& str: map) {
+        printVector(str);
+    }
+}
+
+void unity(vector<int>& str, int pos_wall) {
+    for (int j=pos_wall - 1; j > 0; j--) {
+        if (str[j-1] == -1) {
+            break;
+        }
+        str[j-1] = str[j];
+    }
+}
+
+void createString(vector<int>& str) {
+    random_device rd; 
+    mt19937 mersenne(rd());
+    for (int i = 0; i < str.size(); i++) {
+        if (str[i] == 0 && (mersenne() % COEF_VERT_WALL == 0 || str[i-1] == str[i+1])) {
+            str[i] = -1;
+            unity(str, i);
+        }
+    }
+    unity(str, str.size());
+}
+
+void createFooterWall(vector<int>& footer, int start, int finish) {
+    random_device rd; 
+    mt19937 mersenne(rd());
+    int flag = 0;
+
+    for (int i = start; i <= finish; i++) {
+        if (footer[i] == -1) {
+            footer[i] = -3;
+            continue;
+        }
+        footer[i] = -2;
+
+        if (mersenne() % COEF_GOR_WALL  == 0 || (flag == 0 && i == finish)) {
+            footer[i] = 0;
+            flag = 1;
+        }
+    }
+}
+
+vector<int> createFooter(vector<int>& str) {
+    vector<int> footer = str;
+
+    int start = str.size() - 1;
+    int finish = str.size() - 1;
+
+    for (int i = str.size() - 1; i >= 0; i--) {
+        if (str[i] == -1 || i == 0) {
+            start = i + 1;
+            createFooterWall(footer, start - 1, finish);
+            finish = i - 1; 
+        }
+    }
+
+    return footer;
+}
+
+void initString(vector<int>& str, vector<int>& str_pre, vector<int>& footer_pre) {
+
+    if (str_pre.size()) {
+        for (int i = 0; i < str_pre.size(); i++) {
+            if (footer_pre[i] == 0) {
+                str[i] = str_pre[i];
+            }
+        }
+    }
+
+    int inc = 1;
+    for (int i = 0; i < str.size(); i++) {
+        if (str[i]) {
+            inc = str[i] + 1;
+            continue;
+        }
+
+        if (i % 2 ) {
+            str[i] = 0;
+        }
+        else {
+            str[i] = inc;
+            inc++;
+        }
+    }
+}
+
+void createFrame(vector<vector<int>>& map) {
+    vector<int> str;
+
+    for (auto& m: map) {
+        m.insert(m.begin(), 1, -1);
+        m.push_back(-1);
+    }
+
+    for (int i = 0; i < map[0].size(); i++) {
+        if (i == 0 || i == map[0].size() - 1) {
+            str.push_back(-3);
+        }
+        else {
+            str.push_back(-2);
+        }
+    }
+
+    map.insert(map.begin(), {str.begin(), str.end()});
+    map.push_back(str);
+}
+
+vector<Point> getNeighbors(int x, int y, int max_x, int max_y) {
+    int s_x = x - 1;
+    int s_y = y - 1;
+    
+    int f_x = x + 1;
+    int f_y = y + 1;
+
+    vector<Point> neighbors;
+    for (int i = s_y; i <= f_y; i++) {
+        if (i < 0 || i > max_y) {
+            continue;
+        }
+
+        for (int j = s_x; j <= f_x; j++) {
+            if (j < 0 || j > max_x || (i == y && j == x)) {
+                continue;
+            }
+
+            neighbors.push_back({i, j});
+        }
+    }
+
+    return neighbors;
+}
+
+pair<Point, bool> getDownNeighbor(int x, int y, int max_y) {
+    Point point;
+
+    if (y + 1 > max_y) {
+         return {{}, false};
+    }
+
+    pair<Point, bool> pa = {{y + 1, x}, true}; 
+    return pa;
+}
+
+vector<Point> getGorNeighbors(int x, int y, int max_x, int max_y) {
+    vector<Point> points;
+
+    if (y - 1 >= 0) {
+        points.push_back({y - 1, x});
+    }
+    if (y + 1 <= max_y) {
+        points.push_back({y + 1, x});
+    }
+    
+    return points;
+}
+
+void afterCreate(vector<vector<int>>& map) {
+    for (int y = 0; y < map.size(); y++) {
+        for (int x = 0; x < map.size(); x++) {
+            int symbol = map[y][x];
+            int max_x = map[0].size();
+            int max_y = map.size();
+
+            pair<Point, bool> pp = getDownNeighbor(x, y, max_y - 1);
+            if (pp.second) {
+                Point p = pp.first;
+                int s = map[p.y][p.x];
+                if (symbol == -2 && s == -1) {
+                    symbol = map[y][x] = -3;
+                }
+            }
+        }
+    }
+}
+
+int main() {
+    const vector<int> size = {21, 21};
+    vector<vector<int>> map;
+
+
+    vector<int> str_pre(size[X]);
+    vector<int> footer_pre(size[X]);
+
+    for (int i = 0; i < size[Y] / 2; i++) {
+        vector<int> str(size[X]);
+        initString(str, str_pre, footer_pre);
+        createString(str);
+        vector<int> footer = createFooter(str);
+
+        map.push_back(str);
+        if (i != size[Y] - 1) {
+            map.push_back(footer);
+        }
+
+        str_pre = str;
+        footer_pre = footer;
+    }
+    
+    createFrame(map);
+    _printMap(map);
+    afterCreate(map);
+
+    _printMap(map);
+
+    return 0;
+}
