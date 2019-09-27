@@ -63,7 +63,7 @@ void unity(vector<int>& str, int pos_wall) {
 }
 
 void createString(vector<int>& str) {
-    random_device rd; 
+    random_device rd;
     mt19937 mersenne(rd());
     for (int i = 0; i < str.size(); i++) {
         if (str[i] == 0 && (mersenne() % COEF_VERT_WALL == 0 || str[i-1] == str[i+1])) {
@@ -75,7 +75,7 @@ void createString(vector<int>& str) {
 }
 
 void createFooterWall(vector<int>& footer, int start, int finish) {
-    random_device rd; 
+    random_device rd;
     mt19937 mersenne(rd());
     int flag = 0;
 
@@ -103,7 +103,7 @@ vector<int> createFooter(vector<int>& str) {
         if (str[i] == -1 || i == 0) {
             start = i + 1;
             createFooterWall(footer, start - 1, finish);
-            finish = i - 1; 
+            finish = i - 1;
         }
     }
 
@@ -161,7 +161,7 @@ void createFrame(vector<vector<int>>& map) {
 vector<Point> getNeighbors(int x, int y, int max_x, int max_y) {
     int s_x = x - 1;
     int s_y = y - 1;
-    
+
     int f_x = x + 1;
     int f_y = y + 1;
 
@@ -190,7 +190,7 @@ pair<Point, bool> getDownNeighbor(int x, int y, int max_y) {
          return {{}, false};
     }
 
-    pair<Point, bool> pa = {{y + 1, x}, true}; 
+    pair<Point, bool> pa = {{y + 1, x}, true};
     return pa;
 }
 
@@ -203,7 +203,7 @@ vector<Point> getGorNeighbors(int x, int y, int max_x, int max_y) {
     if (y + 1 <= max_y) {
         points.push_back({y + 1, x});
     }
-    
+
     return points;
 }
 
@@ -230,7 +230,6 @@ int main() {
     const vector<int> size = {21, 21};
     vector<vector<int>> map;
 
-
     vector<int> str_pre(size[X]);
     vector<int> footer_pre(size[X]);
 
@@ -248,7 +247,7 @@ int main() {
         str_pre = str;
         footer_pre = footer;
     }
-    
+
     createFrame(map);
     _printMap(map);
     afterCreate(map);
