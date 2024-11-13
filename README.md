@@ -16,7 +16,7 @@
 Запуск:
 ./main.pl
 
-
+https://www.youtube.com/watch?v=6yonEsOc3yQ
 
 makcimgovorov@gmail.com
 ```
